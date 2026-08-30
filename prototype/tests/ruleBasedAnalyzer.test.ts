@@ -29,6 +29,16 @@ const cases = [
     message: '정부 지원금 대상자입니다. 오늘까지 링크에서 신청하세요. https://example.com',
     expected: 'MEDIUM',
   },
+  {
+    name: 'family new-number impersonation requires confirmation',
+    message: '엄마 나 휴대폰이 고장나서 새 번호야. 이 번호로 답장해.',
+    expected: 'MEDIUM',
+  },
+  {
+    name: 'plain police information is not automatically high risk',
+    message: '경찰청에서 교통안전 캠페인을 안내합니다.',
+    expected: 'LOW',
+  },
 ] as const
 
 describe('RuleBasedRiskAnalyzer', () => {
@@ -36,6 +46,7 @@ describe('RuleBasedRiskAnalyzer', () => {
     it(testCase.name, async () => {
       const result = await analyzer.analyze(testCase.message)
       expect(result.level).toBe(testCase.expected)
+      expect(result.verification.level).toBe('RULES_ONLY')
     })
   }
 
@@ -43,5 +54,12 @@ describe('RuleBasedRiskAnalyzer', () => {
     const result = await analyzer.analyze('인증번호를 알려주고 지금 이체하세요.')
     expect(result.level).toBe('HIGH')
     expect(result.shouldEscalate).toBe(true)
+  })
+
+  it('does not describe low risk as verified safe', async () => {
+    const result = await analyzer.analyze('내일 오전 10시에 만나요.')
+    expect(result.level).toBe('LOW')
+    expect(result.summary).toContain('안전 확인이 끝난 것은 아니에요')
+    expect(result.verification.detail).toContain('공식 자료로 확인한 것은 아닙니다')
   })
 })
