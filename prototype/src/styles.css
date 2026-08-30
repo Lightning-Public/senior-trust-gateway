@@ -17,6 +17,13 @@ body {
 button, textarea { font: inherit; }
 button { cursor: pointer; }
 
+button:focus-visible,
+summary:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(44, 91, 201, 0.28);
+  outline-offset: 2px;
+}
+
 .shell {
   width: min(100%, 680px);
   margin: 0 auto;
@@ -72,7 +79,6 @@ textarea {
 }
 
 textarea:focus {
-  outline: 3px solid rgba(44, 91, 201, 0.2);
   border-color: #2c5bc9;
 }
 
@@ -102,29 +108,32 @@ textarea:focus {
 }
 
 .samples summary {
-  padding: 8px 2px;
+  min-height: 48px;
+  padding: 12px 2px;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .sample-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-top: 8px;
 }
 
 .sample {
-  min-height: 44px;
+  min-height: 48px;
+  padding: 8px 10px;
   border: 1px solid #d7dce5;
   border-radius: 12px;
   background: #fff;
+  font-weight: 700;
 }
 
 .result { margin-top: 20px; }
 .result-topline {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
 }
 
@@ -134,12 +143,6 @@ textarea:focus {
   border-radius: 999px;
   font-size: 1rem;
   font-weight: 900;
-}
-
-.risk-code {
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: #687287;
 }
 
 .level-low .badge { background: #e5f5ea; color: #135b2b; }
@@ -157,15 +160,38 @@ textarea:focus {
   font-size: 1.05rem;
 }
 
-.summary, .reason-box, .next-action, .family-status {
+.summary,
+.verification-box,
+.reason-box,
+.next-action,
+.family-status {
   font-size: 1.06rem;
   line-height: 1.65;
 }
 
-.reason-box, .next-action {
+.verification-box,
+.reason-box,
+.next-action {
   margin-top: 16px;
   padding: 16px;
   border-radius: 14px;
+}
+
+.verification-box {
+  border: 1px solid #dbe0e7;
+  background: #fff;
+}
+
+.verification-box strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.verification-box p,
+.next-action p { margin: 0; }
+
+.reason-box,
+.next-action {
   background: #f6f8fa;
 }
 
@@ -174,18 +200,17 @@ textarea:focus {
   padding-left: 22px;
 }
 
-.next-action p { margin: 0; }
 .family-status { margin-bottom: 0; color: #3d4a61; }
 
 footer {
   margin-top: 28px;
   color: #70798c;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
 @media (max-width: 460px) {
   .shell { padding: 22px 16px 40px; }
   .check-card, .result { padding: 17px; border-radius: 18px; }
-  .sample-list { grid-template-columns: repeat(2, 1fr); }
+  .sample-list { grid-template-columns: 1fr; }
 }
