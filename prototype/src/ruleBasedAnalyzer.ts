@@ -1,4 +1,4 @@
-import type { RiskAnalysis, RiskAnalyzer, RiskLevel, RiskSignal } from './types'
+import type { RiskAnalysis, RiskAnalyzer, RiskLevel, RiskSignal, VerificationStatus } from './types'
 
 type Rule = {
   id: string
@@ -24,13 +24,16 @@ const rules: Rule[] = [
     id: 'remote-control',
     label: '앱 설치·원격제어 요구',
     level: 'HIGH',
-    patterns: [/앱.*설치/i, /원격.*제어/i, /원격.*지원/i, /화면.*공유/i],
+    patterns: [/앱.*설치/i, /원격.*제어/i, /원격.*지원/i, /화면.*공유/i, /AnyDesk/i, /TeamViewer/i, /퀵서포트/i],
   },
   {
     id: 'authority-pressure',
-    label: '기관 사칭 또는 압박 가능성',
+    label: '수사기관·금융기관 사칭 및 압박 가능성',
     level: 'HIGH',
-    patterns: [/검찰/i, /검사/i, /경찰/i, /금융감독원/i, /계좌.*범죄/i],
+    patterns: [
+      /(검찰|검사|경찰|금융감독원).*(범죄|수사|압류|체포|보호조치)/i,
+      /(범죄|수사|압류|체포).*(검찰|검사|경찰|금융감독원)/i,
+    ],
   },
   {
     id: 'external-link',
@@ -50,9 +53,24 @@ const rules: Rule[] = [
     level: 'MEDIUM',
     patterns: [/지원금/i, /당첨/i, /환급금/i, /무료.*지급/i],
   },
+  {
+    id: 'family-impersonation',
+    label: '가족·지인 사칭 가능성',
+    level: 'MEDIUM',
+    patterns: [
+      /(아들|딸|엄마|아빠).*(휴대폰|핸드폰|폰).*(고장|분실|잃어)/i,
+      /(새 번호|번호 바꿨|내 번호 바뀌)/i,
+    ],
+  },
 ]
 
 const rank: Record<RiskLevel, number> = { LOW: 0, MEDIUM: 1, HIGH: 2 }
+
+const rulesOnlyVerification: VerificationStatus = {
+  level: 'RULES_ONLY',
+  label: '문장 속 위험 신호만 확인했어요',
+  detail: '아직 발신자나 기관의 진짜 여부를 공식 자료로 확인한 것은 아닙니다.',
+}
 
 function matchedSignals(message: string): RiskSignal[] {
   return rules
@@ -70,14 +88,15 @@ function highestLevel(signals: RiskSignal[]): RiskLevel {
 function analysisFor(level: RiskLevel, signals: RiskSignal[]): RiskAnalysis {
   const reasons = signals.length > 0
     ? signals.map((signal) => signal.label)
-    : ['돈·인증정보·앱 설치를 요구하는 뚜렷한 위험 신호를 찾지 못했습니다.']
+    : ['현재 규칙에서 송금·인증정보·앱 설치·외부 링크·재촉 같은 위험 신호를 찾지 못했습니다.']
 
   if (level === 'HIGH') {
     return {
       level,
       summary: '지금은 행동하지 않는 것이 안전해요.',
       reasons,
-      recommendation: '링크를 누르거나 돈·인증정보를 보내지 마세요. 공식 대표번호나 믿을 수 있는 가족에게 먼저 확인하세요.',
+      recommendation: '문자 속 링크나 전화번호를 이용하지 말고, 공식 대표번호를 직접 찾아 확인하거나 믿을 수 있는 가족에게 먼저 확인하세요.',
+      verification: rulesOnlyVerification,
       shouldEscalate: true,
       signals,
     }
@@ -88,7 +107,8 @@ function analysisFor(level: RiskLevel, signals: RiskSignal[]): RiskAnalysis {
       level,
       summary: '바로 진행하기 전에 한 번 더 확인하는 게 좋아요.',
       reasons,
-      recommendation: '메시지 안의 링크 대신 해당 기관의 공식 앱이나 홈페이지를 직접 열어 확인하세요.',
+      recommendation: '메시지 안의 링크나 연락처 대신 해당 기관의 공식 앱·홈페이지·대표번호를 직접 찾아 확인하세요.',
+      verification: rulesOnlyVerification,
       shouldEscalate: false,
       signals,
     }
@@ -96,9 +116,10 @@ function analysisFor(level: RiskLevel, signals: RiskSignal[]): RiskAnalysis {
 
   return {
     level,
-    summary: '현재 문장에서는 뚜렷한 위험 신호가 보이지 않아요.',
+    summary: '뚜렷한 위험 신호는 적지만, 안전 확인이 끝난 것은 아니에요.',
     reasons,
-    recommendation: '그래도 돈, 비밀번호, 인증번호를 요구하거나 앱 설치를 시키면 진행하지 말고 다시 확인하세요.',
+    recommendation: '추가 행동을 요구하지 않는 안내라면 내용만 확인하세요. 돈·개인정보·링크 클릭·앱 설치를 요구하면 진행하지 말고 다시 확인하세요.',
+    verification: rulesOnlyVerification,
     shouldEscalate: false,
     signals,
   }
