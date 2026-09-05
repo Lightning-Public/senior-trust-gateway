@@ -1,8 +1,16 @@
 import './styles.css'
+import { GroundedRiskAnalyzer } from './groundedRiskAnalyzer'
+import { KisaPhishingSnapshotVerifier } from './officialVerification'
 import { RuleBasedRiskAnalyzer } from './ruleBasedAnalyzer'
-import type { RiskAnalysis, RiskLevel } from './types'
+import type { OfficialCheckResult, RiskAnalysis, RiskLevel } from './types'
 
-const analyzer = new RuleBasedRiskAnalyzer()
+const officialVerifier = new KisaPhishingSnapshotVerifier([], {
+  authoritative: false,
+  dataDate: '2024-12-31',
+})
+const analyzer = new GroundedRiskAnalyzer(new RuleBasedRiskAnalyzer(), officialVerifier)
+
+const KISA_SMISHING_GUIDE = 'https://www.boho.or.kr/kr/subPage.do?menuNo=205116'
 
 const samples = [
   { label: '일정 안내', message: '건강검진 예약일은 9월 3일 오전 10시입니다.' },
@@ -46,7 +54,7 @@ app.innerHTML = `
     <section id="result" class="result" hidden aria-live="polite"></section>
 
     <footer>
-      <p>현재 프로토타입은 문자 속 위험 신호만 확인합니다. 실제 기관·발신자 확인은 아직 연결되지 않았습니다. 중요한 금전·계정 행동은 공식 대표번호나 믿을 수 있는 사람에게 다시 확인하세요.</p>
+      <p>위험 신호와 공식 확인 수준을 따로 표시합니다. 공식 공개 목록에서 찾지 못했다는 사실만으로 안전하다고 판단하지 않습니다.</p>
     </footer>
   </section>
 `
@@ -63,10 +71,30 @@ document.querySelectorAll<HTMLButtonElement>('[data-sample]').forEach((button) =
   })
 })
 
+function renderOfficialCheck(check: OfficialCheckResult): string {
+  if (check.outcome === 'NO_URL') return ''
+
+  const heading = check.outcome === 'MATCH' && check.authoritative
+    ? '공식 자료에서 일치했어요'
+    : '공식 자료 대조 상태'
+
+  const sourceDate = check.source.dataDate ? `<p>데이터 기준: ${check.source.dataDate}</p>` : ''
+
+  return `
+    <div class="reason-box">
+      <h3>${heading}</h3>
+      <p>${check.detail}</p>
+      ${sourceDate}
+      <p><a href="${check.source.url}" target="_blank" rel="noopener noreferrer">공공데이터 출처 보기</a></p>
+    </div>
+  `
+}
+
 function renderResult(analysis: RiskAnalysis) {
   const copy = levelCopy[analysis.level]
   const showFamilyCheck = analysis.level !== 'LOW'
   const familyButtonCopy = analysis.shouldEscalate ? '가족에게 먼저 확인 부탁하기' : '가족과 같이 확인하기'
+  const officialChecks = (analysis.officialChecks ?? []).map(renderOfficialCheck).join('')
 
   result.className = `result level-${analysis.level.toLowerCase()}`
   result.hidden = false
@@ -83,6 +111,8 @@ function renderResult(analysis: RiskAnalysis) {
       <p>${analysis.verification.detail}</p>
     </div>
 
+    ${officialChecks}
+
     <div class="reason-box">
       <h3>왜 이렇게 말씀드리나요?</h3>
       <ul>${analysis.reasons.map((reason) => `<li>${reason}</li>`).join('')}</ul>
@@ -92,6 +122,8 @@ function renderResult(analysis: RiskAnalysis) {
       <h3>지금 이렇게 하세요</h3>
       <p>${analysis.recommendation}</p>
     </div>
+
+    <a class="secondary action-link" href="${KISA_SMISHING_GUIDE}" target="_blank" rel="noopener noreferrer">보호나라 스미싱 확인방법 보기</a>
 
     ${showFamilyCheck ? `
       <button type="button" id="ask-family" class="secondary">${familyButtonCopy}</button>
