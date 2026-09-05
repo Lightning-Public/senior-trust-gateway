@@ -150,11 +150,15 @@ Last updated: 2026-09-06
 
 - 둥근 말풍선/동행자 형태
 - 두 눈과 미소로 부담 없는 안내자 인상
-- 작은 노란 포인트로 기억점 형성
+- 작은 포인트로 기억점 형성
 - 앱 헤더, 온보딩, 제품 방향 영역에 반복 노출
 - 과한 캐릭터보다 시니어 서비스의 신뢰성을 유지하는 소형 브랜드 요소
 
 브라우저 title도 `AI 안심매니저`에서 **`시니어 AI 생활매니저`**로 수정했다.
+
+상세 디자인 근거:
+
+- [`docs/contest/product-design-evidence.md`](docs/contest/product-design-evidence.md)
 
 변경 파일:
 
@@ -189,6 +193,8 @@ PR #14 code head `918951b18fcc5feb553a5710ecf7f64859ec01a5` 기준 Prototype CI 
 - snapshot generator: PASS
 - risk policy tests: PASS
 - production build: PASS
+
+문서 현행화 이후 CI run #106도 동일 test/build 경로를 모두 통과했다.
 
 안전정책/규칙엔진은 변경하지 않았다.
 
