@@ -1,47 +1,56 @@
 # 모두의 AI 실험실 실증 Run Sheet
 
-목적: `AI 안심매니저`의 실제 모두의 AI 실험실 사용 증거를 가장 짧은 순서로 확보한다.
+목적: `시니어 AI 생활매니저`의 실제 모두의 AI 실험실 사용 증거를 가장 짧은 순서로 확보한다.
 
 > 이 문서는 실제 로그인 화면에서 확인한 값을 기록하기 위한 체크시트다. 모델명·토큰 방식·배포 기능은 보이는 그대로 기록하며 추정하지 않는다.
 
-## 1. 로그인
+## 1. 서비스 포지셔닝
+
+- 공모전/클라우드 프로젝트명: **시니어 AI 생활매니저**
+- 부제: **안심부터 시작하는 시니어 디지털 동행**
+- Phase 0 메인: Trust Check 80%
+- Phase 0 확장: Kiosk Safe Guidance 20%
+- 공통 사용자 흐름: `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`
+
+## 2. 로그인·클라우드 신청
 
 1. `https://aitestbed.kr` 접속
 2. 정부 통합로그인으로 인증
-3. 로그인 후 최초 대시보드에서 현재 제공 메뉴 확인
+3. 클라우드 신청 또는 마이스튜디오에서 상태 확인
+
+클라우드 프로젝트명:
+
+```text
+시니어 AI 생활매니저
+```
+
+이용목적:
+
+```text
+고령자가 문자·키오스크 등 일상 디지털 서비스를 안전하게 이용하도록 돕는 시니어 AI 생활매니저를 개발·검증합니다. AI는 문자와 화면의 의도·맥락을 이해해 쉬운 설명과 다음 행동을 제공하고, 송금·인증정보·앱 설치·개인정보·결제 등 고위험 상황은 규칙 기반 안전정책과 사람 확인 절차로 보호합니다. 모두의 AI 실험실 AI·클라우드 환경을 활용해 Trust Check와 Kiosk Safe Guidance를 하나의 생활지원형 AI 서비스로 실증합니다.
+```
+
+현재 실제 화면에서 확인된 추천값:
+
+- vCPU 2EA
+- Memory 4GB
+- Disk 50GB
+- OS: `rocky-8.10-base`
+- 1개월 우선 지원
 
 기록:
 
-- 로그인 완료 시각(KST): `________________`
-- 대시보드에서 보이는 개발 메뉴명: `________________`
+- 신청 완료/대기/승인 상태: `________________`
+- 신청일시(KST): `________________`
+- 실제 이용기간: `________________`
 
-## 2. 프로젝트 생성
-
-프로젝트명:
-
-```text
-AI 안심매니저
-```
-
-프로젝트 설명이 필요한 경우:
+캡처 후보:
 
 ```text
-시니어가 받은 문자의 의도와 사칭·압박 맥락을 AI로 쉽게 설명하고, 송금·인증번호·앱 설치·원격제어 같은 고위험 행동은 결정론적 규칙엔진으로 차단하는 안전 중심 생활 신뢰 서비스입니다.
+docs/contest/evidence/01-cloud-project.png
 ```
 
-생성 후 기록:
-
-- 실제 프로젝트 생성 메뉴명: `________________`
-- 생성 방식/템플릿명: `________________`
-- 프로젝트 식별자(민감정보가 아닌 경우만): `________________`
-
-캡처:
-
-```text
-docs/contest/evidence/01-project-created.png
-```
-
-## 3. 모델·토큰·개발 방식 확인
+## 3. AI 모델·토큰·개발 방식 확인
 
 화면에 표시되는 문자열을 그대로 기록한다.
 
@@ -52,6 +61,7 @@ docs/contest/evidence/01-project-created.png
 - 토큰 생성/할당/차감 방식: `________________`
 - API endpoint 제공 여부: `YES / NO / 확인 불가`
 - SDK 또는 코드 연동 메뉴: `________________`
+- image input capability: `YES / NO / 확인 불가`
 - 바이브코딩 도구/메뉴의 정확한 표시명: `________________`
 - 미리보기 기능: `________________`
 - 배포 기능: `________________`
@@ -62,9 +72,9 @@ docs/contest/evidence/01-project-created.png
 docs/contest/evidence/02-prompt-model-settings.png
 ```
 
-## 4. 시스템 프롬프트 입력
+## 4. Trust Check — 실제 AI 실행
 
-정본: `prototype/src/contestAiPrompt.ts`
+정본 프롬프트: `prototype/src/contestAiPrompt.ts`
 
 ```text
 당신은 60대 이상 사용자를 위한 문자 맥락 해석기입니다.
@@ -92,13 +102,7 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-## 5. 실제 실행 — 최소 3개
-
-개인정보가 없는 합성 테스트 문장만 사용한다.
-
-### A. 일반 일정 안내
-
-입력:
+### 실제 실행 A — 일반 일정 안내
 
 ```json
 {
@@ -108,21 +112,15 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-확인:
+확인: JSON 객체 / 안전 확정 없음 / uncertainty 존재.
 
-- [ ] JSON 객체만 반환
-- [ ] 안전 확정 표현 없음
-- [ ] `uncertainty` 존재
-
-실제 출력 붙여넣기:
+실제 출력:
 
 ```json
 
 ```
 
-### B. 택배 외부 링크
-
-입력:
+### 실제 실행 B — 택배 외부 링크
 
 ```json
 {
@@ -134,21 +132,15 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-확인:
+확인: 링크 별도 확인 / 바로 누르라는 권고 없음.
 
-- [ ] 외부 링크 별도 확인 필요 설명
-- [ ] 안전 확정하지 않음
-- [ ] 문자 속 링크를 바로 누르라고 권고하지 않음
-
-실제 출력 붙여넣기:
+실제 출력:
 
 ```json
 
 ```
 
-### C. 검찰 사칭 + 안전계좌
-
-입력:
+### 실제 실행 C — 검찰 사칭 + 안전계좌
 
 ```json
 {
@@ -161,87 +153,80 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-확인:
+확인: 안전 단정 없음 / 이체 권고 없음 / HIGH 하향 없음.
 
-- [ ] 안전하다고 단정하지 않음
-- [ ] 이체를 권고하지 않음
-- [ ] HIGH 가드레일을 낮추지 않음
-
-실제 출력 붙여넣기:
+실제 출력:
 
 ```json
 
 ```
 
-추가로 시간이 있으면 인증번호 요구와 가족 새 번호 사칭도 실행한다.
-
-## 6. 실행 결과 캡처
-
-한 화면에 다음이 보이도록 우선한다.
-
-- 사용 모델 표시명
-- 개인정보 없는 입력
-- 반환 JSON
-
-저장:
+캡처:
 
 ```text
-docs/contest/evidence/03-execution-result.png
+docs/contest/evidence/03-trust-check-result.png
 ```
 
-추가 화면이 실제로 존재할 때만:
+## 5. Kiosk Safe Guidance — 공모전 확장 증거
+
+기준 원본: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
+
+공모전에서는 전체 키오스크 CV/OCR 통합을 완료했다고 주장하지 않는다. 한 가지 대표 장면만 선택한다.
+
+추천 우선순위:
+
+1. 병원 접수
+2. 민원서류 발급
+3. 복지 신청
+
+보여줄 흐름:
 
 ```text
-docs/contest/evidence/04-preview-or-deploy.png
+키오스크 화면/구조
+  → AI가 현재 화면의 의미를 쉬운 말로 설명
+  → 다음 버튼/행동을 화면·음성·포인터로 안내
+  → 개인정보·동의·결제 등 고위험 단계는 확인 또는 사람 연결
 ```
 
-## 7. 플랫폼과 기존 앱 결합 여부 판단
+실제 aitestbed 계정에서 image input이 확인되지 않으면 이미지 인식을 주장하지 않고, 사전 정의 화면 구조 또는 OCR 텍스트 입력을 사용한다.
 
-### 직접 호출 API/SDK가 확인된 경우
-
-`JsonAiMessageInterpreter`의 `AiRawInvoker` 뒤에 실제 플랫폼 호출 코드를 연결한다.
+캡처 후보:
 
 ```text
-RuleBasedRiskAnalyzer
-        ↓ guardrail_risk/signals
-JsonAiMessageInterpreter
-        ↓ actual platform API/SDK
-SafeAiAssistedRiskAnalyzer
-        ↓
-기존 UI
+docs/contest/evidence/04-kiosk-guidance.png
 ```
 
-API 키/토큰은 클라이언트 번들에 넣지 않는다. 플랫폼에서 서버 secret 기능이 실제 제공되는지 확인한 뒤 사용한다.
+## 6. 기존 앱과 aitestbed 결합
 
-### 직접 호출이 확인되지 않은 경우
-
-플랫폼 프로토타입을 AI 맥락 해석의 실증으로 사용하고 기존 앱과는 아래 계약으로 결합 가능함을 증빙한다.
+목표 구조:
 
 ```text
-기존 TypeScript 앱
-  RuleBasedRiskAnalyzer
-        ↓
-  { message, guardrail_risk, guardrail_signals }
-        ↓
-모두의 AI 실험실 프로토타입
-        ↓
-  { summary, risk_context, safe_next_action, uncertainty }
-        ↓
-SafeAiAssistedRiskAnalyzer
+Trust Check UI ───────┐
+                      ├─► Senior Trust Orchestrator
+Kiosk Guidance UI ────┘      ├─ deterministic safety rules
+                             ├─ official-source verifier
+                             ├─ AIProvider
+                             │    └─ AitestbedProvider (server-side)
+                             └─ HumanEscalation
 ```
 
-직접 연결 불가를 실패로 숨기지 않고 `prototype + adapter-ready` 상태로 기록한다.
+직접 호출 API/SDK가 확인되면 `JsonAiMessageInterpreter`의 호출 경계를 서버 측 `AitestbedProvider`로 연결한다.
 
-## 8. 완료 직후 문서 현행화
+직접 호출이 확인되지 않으면 플랫폼 프로토타입을 실증으로 사용하고 `prototype + adapter-ready` 상태로 명시한다.
 
-`docs/contest/modoo-ai-lab-evidence.md`에서 다음을 실제 값으로 교체한다.
+API 키/토큰은 브라우저 번들·Git·로그에 넣지 않는다.
 
-1. 정확한 모델명
-2. 토큰/프로젝트 방식
-3. 프로젝트 생성 여부
-4. 실제 입력·출력 3개
-5. 캡처 3개 경로
-6. 미리보기/배포 기능 확인 결과
-7. API/SDK 직접 연결 가능 여부
+## 7. 제출 증빙 완료 기준
 
-완료 기준: 실제 플랫폼 증거 3개 이상 + 실제 모델명 + 실제 프롬프트 실행 결과가 모두 기록되어야 한다.
+`docs/contest/modoo-ai-lab-evidence.md`에 다음을 실제 값으로 갱신한다.
+
+1. 클라우드 프로젝트 신청/상태
+2. 정확한 모델명
+3. 토큰/API 방식
+4. Trust Check 실제 입력·출력 3개
+5. 플랫폼 캡처 최소 3개
+6. Kiosk 확장 장면 1개
+7. 미리보기/배포 확인 결과
+8. API/SDK 직접 연결 가능 여부
+
+완료 기준: **실제 플랫폼 증거 3개 이상 + 실제 모델명 + 실제 프롬프트 실행 결과 + HIGH 안전정책 증명**.
