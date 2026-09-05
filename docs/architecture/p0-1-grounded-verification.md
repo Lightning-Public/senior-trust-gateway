@@ -112,6 +112,8 @@ public/data/kisa-phishing/
 - 동일 세션에서 manifest와 버킷 결과를 캐시
 - manifest상 빈 버킷은 네트워크 요청 없이 `NO_MATCH`
 - 필요한 버킷 로딩 실패 시 `UNAVAILABLE`
+- manifest의 버킷 건수와 실제 버킷 파일 레코드 수가 다르면 `UNAVAILABLE`
+- 버킷 파일 내부 URL이 해당 해시 버킷과 일치하지 않으면 `UNAVAILABLE`
 - 다른 버킷 로딩이 실패했더라도 성공적으로 읽은 공식 버킷에서 exact match가 발견되면 해당 MATCH 근거는 사용할 수 있음
 
 이 구조는 전체 데이터 크기와 무관하게 한 번의 URL 확인 시 네트워크·메모리 비용을 작은 부분 집합으로 제한한다.
@@ -145,13 +147,18 @@ node scripts/build-kisa-snapshot.mjs /path/to/official-kisa.csv public/data/kisa
 - CSV → partitioned JSON build generator
 - fail-safe non-authoritative placeholder manifest
 - lazy manifest/bucket loader + per-session cache
+- bucket count / bucket-key integrity checks
 - fixture-based tests without network/API key
 - CI smoke test that executes the generator on a synthetic CSV
+
+## Verification status
+
+The partitioned snapshot implementation, fail-safe rules, generator smoke test, policy tests and production build pass CI.
 
 ## Remaining validation
 
 - 실제 KISA CSV 1회 적재
-- real-data manifest/버킷 총 크기 및 최대 버킷 크기 측정
+- real-data manifest 총 건수/버킷별 파일 크기 측정
 - Preview/device QA
 
-실데이터 파일 다운로드 URL이 포털 페이지에서 동적으로 처리되어 현재 자동화 환경에서는 원문 CSV 자체를 아직 확보하지 못했다. 다만 131,752행 전체를 한 파일로 로드하는 설계 위험은 해시 버킷 분할로 선제 제거했다.
+실데이터 파일 다운로드 URL이 포털 페이지에서 동적으로 처리되어 현재 자동화 환경에서는 원문 CSV 자체를 아직 확보하지 못했다. 다만 131,752행 전체를 한 파일로 로드하는 설계 위험은 256-way 해시 버킷 분할로 선제 제거했다.
