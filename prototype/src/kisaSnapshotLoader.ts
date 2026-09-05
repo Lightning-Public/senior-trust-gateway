@@ -29,6 +29,7 @@ function isBucketManifest(value: unknown): value is KisaBucketManifest {
     && typeof candidate.source === 'string'
     && candidate.bucketCount === 256
     && typeof candidate.totalRecords === 'number'
+    && candidate.totalRecords >= 0
     && Boolean(candidate.buckets)
     && typeof candidate.buckets === 'object'
 }
@@ -36,12 +37,25 @@ function isBucketManifest(value: unknown): value is KisaBucketManifest {
 function isBucketDocument(value: unknown, expectedBucket: string, manifest: KisaBucketManifest): value is KisaBucketDocument {
   if (!value || typeof value !== 'object') return false
   const candidate = value as Partial<KisaBucketDocument>
-  return candidate.kind === 'KISA_PHISHING_BUCKET'
-    && candidate.authoritative === true
-    && candidate.source === manifest.source
-    && candidate.dataDate === manifest.dataDate
-    && candidate.bucket === expectedBucket
-    && Array.isArray(candidate.records)
+  if (candidate.kind !== 'KISA_PHISHING_BUCKET'
+    || candidate.authoritative !== true
+    || candidate.source !== manifest.source
+    || candidate.dataDate !== manifest.dataDate
+    || candidate.bucket !== expectedBucket
+    || !Array.isArray(candidate.records)) {
+    return false
+  }
+
+  const expectedCount = manifest.buckets[expectedBucket] ?? 0
+  if (candidate.records.length !== expectedCount) return false
+
+  return candidate.records.every((record) => {
+    if (!record || typeof record !== 'object') return false
+    const typed = record as Partial<KisaPhishingRecord>
+    return typeof typed.url === 'string'
+      && typeof typed.detectedDate === 'string'
+      && urlBucketKey(typed.url) === expectedBucket
+  })
 }
 
 async function loadManifest(): Promise<KisaBucketManifest | null> {
