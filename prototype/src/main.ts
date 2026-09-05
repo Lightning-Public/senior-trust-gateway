@@ -201,7 +201,7 @@ app.innerHTML = `
 
       <div class="kiosk-demo">
         <div class="kiosk-context"><span class="status-chip status-live">병원 접수 도움</span><strong>병원 접수 → 예약 진료 → 민감정보 단계 → 안전 중단 → 직원 도움</strong></div>
-        <div class="kiosk-screen" aria-label="병원 키오스크 구조화 화면 데모">
+        <div class="kiosk-screen" aria-label="병원 키오스크 안내 화면">
           <div class="kiosk-screen-topline"><span>병원 접수 화면</span><span id="kiosk-risk" class="kiosk-risk">LOW</span></div>
           <h2 id="kiosk-screen-title"></h2>
           <p id="kiosk-screen-description"></p>
