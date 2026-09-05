@@ -9,6 +9,7 @@ export type KisaPhishingRecord = {
 export type KisaVerifierOptions = {
   authoritative?: boolean
   dataDate?: string
+  available?: boolean
 }
 
 const KISA_SOURCE = {
@@ -21,10 +22,12 @@ export class KisaPhishingSnapshotVerifier implements OfficialSourceVerifier {
   private readonly normalizedRecords: Map<string, KisaPhishingRecord>
   private readonly authoritative: boolean
   private readonly dataDate?: string
+  private readonly available: boolean
 
   constructor(records: KisaPhishingRecord[], options: KisaVerifierOptions = {}) {
     this.authoritative = options.authoritative ?? false
     this.dataDate = options.dataDate
+    this.available = options.available ?? records.length > 0
     this.normalizedRecords = new Map(
       records.flatMap((record) => {
         const normalized = normalizeHttpUrl(record.url)
@@ -65,11 +68,11 @@ export class KisaPhishingSnapshotVerifier implements OfficialSourceVerifier {
     }
 
     return {
-      outcome: this.normalizedRecords.size > 0 ? 'NO_MATCH' : 'UNAVAILABLE',
+      outcome: this.available ? 'NO_MATCH' : 'UNAVAILABLE',
       source,
       checkedUrls,
       authoritative: this.authoritative,
-      detail: this.normalizedRecords.size > 0
+      detail: this.available
         ? '공개 스냅샷에서 일치 항목을 찾지 못했습니다. 안전하다는 뜻은 아닙니다.'
         : '공식 데이터 스냅샷이 아직 앱에 적재되지 않아 자동 대조하지 못했습니다.',
     }
