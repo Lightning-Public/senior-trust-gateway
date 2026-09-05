@@ -235,13 +235,23 @@ PR #14 구현 흐름:
 
 PR #10 최신 head 기준 Prototype CI run #63: **SUCCESS**.
 
-- 기존 snapshot generator tests: PASS
-- Trust Check / Grounded Verification tests: PASS
-- contest AI safety suite: PASS
+PR #14 prototype code 기준 Prototype CI run #70: **SUCCESS**.
+
+- snapshot generator smoke test: PASS
+- Vitest: **5 test files / 35 tests passed**
+  - Grounded Verification: 14
+  - contest AI safety: 8
+  - rule-based analyzer: 9
+  - KISA 131,752-row bucket distribution guard: 1
+  - hospital Kiosk safety: 3
+- HIGH 하향 금지: PASS
+- malformed JSON / model exception / timeout fallback: PASS
+- hospital 민감정보 단계 HIGH 안전중단: PASS
 - `tsc --noEmit`: PASS
 - Vite production build: PASS
+- bundle: JS 18.06 kB (gzip 7.33 kB), CSS 4.57 kB (gzip 1.53 kB)
 
-PR #14에서는 추가로 병원 Kiosk HIGH 안전중단 테스트와 동적 결과 HTML escape 하드닝을 검증한다. 최종 CI 결과는 PR #14 완료 시 이 문서에 기록한다.
+run #70 이후 변경은 검증 결과를 기록하는 문서 현행화뿐이며 prototype 코드는 변경하지 않았다.
 
 ## 11. 개인정보·보안
 
