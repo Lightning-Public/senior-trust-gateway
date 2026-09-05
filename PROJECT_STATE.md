@@ -4,9 +4,9 @@ Last updated: 2026-09-05
 
 ## Status
 
-**P0 merged / P0.1 Grounded Verification active**
+**P0 merged / P0.1 Grounded Verification infrastructure ready**
 
-제품 기준선과 P0 Trust Check 프로토타입은 `main`에 병합되었다. 현재 Issue #7 / Draft PR #8에서 공식 근거 확인 레이어를 구현·검증 중이다.
+제품 기준선과 P0 Trust Check 프로토타입은 `main`에 병합되었다. Issue #7 / PR #8에서 공식 근거 확인 레이어의 인프라를 구현·검증했다.
 
 ## Repository
 
@@ -79,10 +79,17 @@ URL 하나를 확인할 때 일반적으로:
 
 따라서 실데이터 전체 크기가 커져도 사용자 한 번의 확인에 필요한 네트워크/메모리 비용은 작은 부분 집합으로 제한된다.
 
-## P0.1 completion still pending
+## Verification
+
+- partitioned snapshot generator smoke test: pass
+- grounded verification policy tests: pass
+- production build: pass
+- latest code CI: Prototype CI run #32 success
+
+## Remaining P0.1 data/QA work
 
 - 실제 KISA 공식 CSV 1회 ingest
-- 실제 manifest 총 건수/버킷별 크기 측정
+- real-data manifest 총 건수/버킷별 파일 크기 측정
 - Preview 배포
 - 대표 모바일 기기 UX/성능 QA
 
@@ -90,7 +97,6 @@ URL 하나를 확인할 때 일반적으로:
 
 ## Next action
 
-1. PR #8 최신 CI와 리뷰 완료
-2. grounded verification 인프라를 `main`에 병합 가능한지 결정
-3. 실제 KISA CSV ingest를 별도 data increment로 추적
-4. Preview 배포 확보 후 P0/P0.1 모바일 QA 수행
+1. Grounded Verification 인프라 PR을 `main`에 병합
+2. Issue #7에서 실제 KISA CSV ingest를 계속 추적
+3. Preview 배포 확보 후 P0/P0.1 모바일 QA 수행
