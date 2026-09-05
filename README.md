@@ -46,6 +46,13 @@
 
 실제 공식 CSV가 적재되기 전 기본 배포는 `authoritative: false` placeholder manifest를 사용하므로 공식 판정을 내리지 않습니다.
 
+## Roadmap
+
+- [`AI 안심동행 — aitestbed + Kiosk AI 융합 로드맵`](docs/roadmap/aitestbed-kiosk-fusion.md)
+  - `kiosk_ar_assistant`의 시니어용 화면·음성·포인터 UX를 Trust Gateway의 위험·검증·권한정책과 연결합니다.
+  - aitestbed AI는 문맥 이해와 쉬운 설명에 사용하고, 규칙엔진은 고위험 행동을 통제합니다.
+  - 단기 제출 범위는 Trust Check 80% + Kiosk 확장 시나리오 20%로 제한합니다.
+
 ## Local run
 
 ```bash

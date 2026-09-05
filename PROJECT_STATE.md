@@ -72,6 +72,18 @@ Last updated: 2026-09-05
 - latest code CI before merge: Prototype CI run #32 success
 - P0.1 merge commit: `c0197e99aa6647a073a93b691510658d77c19c0c`
 
+## Roadmap decision — aitestbed + Kiosk AI
+
+2026-09-05 기준 다음 융합 방향을 채택했다.
+
+- Senior Trust Gateway를 신뢰·보호·권한관리 본체로 유지한다.
+- `Lightning-Public/kiosk_ar_assistant`를 Kiosk Safe Guidance의 UX 원본으로 연결한다.
+- aitestbed AI는 의도·문맥 이해와 시니어용 쉬운 설명에 사용한다.
+- 규칙엔진은 결제·인증정보·민감정보 등 고위험 행동을 계속 통제하며 AI가 `HIGH`를 낮추지 못하게 한다.
+- 단기 범위는 Trust Check 80% + Kiosk 확장 시나리오 20%다.
+
+상세 단계, 저장소 책임 경계, aitestbed 공급자 구조와 사실 경계는 [`docs/roadmap/aitestbed-kiosk-fusion.md`](docs/roadmap/aitestbed-kiosk-fusion.md)를 기준으로 한다.
+
 ## Remaining work
 
 - 실제 최신 KISA 공식 CSV 1회 확보/ingest
@@ -79,7 +91,10 @@ Last updated: 2026-09-05
 - Preview 배포
 - 대표 모바일 기기 UX/성능 QA
 - 공식 match / miss / unavailable UX 실기기 확인
+- aitestbed 계정의 실제 API 승인 상태·모델·한도·image input capability 확인
+- 공통 `AIProvider` 계약과 안전 fallback 구현
+- `kiosk_ar_assistant@3a7da8f` 재현 빌드 및 선택적 포팅 범위 확정
 
 ## Next action
 
-Issue #7에서 **최신 공식 KISA CSV 확보 → bucket snapshot 생성 및 크기 측정**을 진행한다. Preview가 확보되면 P0/P0.1 모바일 QA를 병행한다.
+공모전 단기 경로에서는 **aitestbed 실제 사용 증빙 → Trust Check AI 설명 한 기능 → 안전 fallback 검증 → Kiosk 확장 화면 한 장** 순서로 진행한다. P0.1 KISA 실데이터 적재와 Preview/모바일 QA는 병행 가능한 별도 작업으로 유지한다.
