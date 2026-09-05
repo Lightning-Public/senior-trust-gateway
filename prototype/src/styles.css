@@ -18,6 +18,7 @@ button, textarea { font: inherit; }
 button { cursor: pointer; }
 
 button:focus-visible,
+a:focus-visible,
 summary:focus-visible,
 textarea:focus-visible {
   outline: 3px solid rgba(44, 91, 201, 0.28);
@@ -100,6 +101,15 @@ textarea:focus {
 .secondary {
   color: #183b7a;
   background: #e8eefc;
+}
+
+.action-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  text-align: center;
+  text-decoration: none;
 }
 
 .samples {
@@ -195,6 +205,8 @@ textarea:focus {
   background: #f6f8fa;
 }
 
+.reason-box p { margin: 6px 0; }
+.reason-box a { color: #153f99; font-weight: 700; }
 .reason-box ul {
   margin: 0;
   padding-left: 22px;
