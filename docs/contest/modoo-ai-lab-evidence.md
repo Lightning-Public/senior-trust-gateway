@@ -20,9 +20,11 @@ Last updated: 2026-09-06
 - Phase 0 메인: Trust Check 80%
 - Phase 0 확장: Hospital Kiosk Safe Guidance 20%
 
-`시니어 AI 생활매니저`는 고령자가 문자·키오스크·공공/생활 디지털 서비스에서 “이 상황을 믿어도 되는가, 지금 무엇을 해야 하는가”를 이해하도록 돕고, 위험한 행동은 AI의 확신과 관계없이 안전정책과 사람 확인으로 통제하는 서비스다.
+`시니어 AI 생활매니저`는 사용자를 대신 판단하는 AI가 아니다.
 
-핵심 흐름:
+> **위험한 행동 전에 멈춰주고, 상황을 이해하기 쉽게 설명하고, 안전한 다음 행동을 알려주며, 필요하면 사람에게 확인하도록 연결하는 생활매니저**다.
+
+공통 흐름:
 
 ```text
 이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결
@@ -33,6 +35,7 @@ Last updated: 2026-09-06
 - `AI confidence != user authorization`
 - `Risk != Verification`
 - 공식 목록 미일치 != 안전
+- 규칙엔진 HIGH는 AI가 낮추거나 승인할 수 없음
 
 ## 2. 현재 MVP
 
@@ -40,9 +43,9 @@ Last updated: 2026-09-06
 
 ```text
 문자/디지털 요청 입력
-→ LOW/MEDIUM/HIGH
-→ 쉬운 이유
-→ 안전한 다음 행동
+→ 의미 이해
+→ LOW/MEDIUM/HIGH 위험 확인
+→ 쉬운 다음 행동
 → 필요 시 가족/사람 확인
 ```
 
@@ -51,6 +54,47 @@ Last updated: 2026-09-06
 - `prototype/src/ruleBasedAnalyzer.ts`
 - `prototype/src/groundedRiskAnalyzer.ts`
 - `prototype/src/main.ts`
+
+### 공모전 제출 UI/UX — 2026-09-06
+
+기능 추가 없이 첫 화면과 결과 흐름을 **시니어 AI 생활매니저** 중심으로 재구성했다.
+
+첫 화면에서 바로 확인 가능한 내용:
+
+- 서비스명: `시니어 AI 생활매니저`
+- 핵심 메시지: `위험한 행동 전에 먼저 멈춰드려요.`
+- 역할: 쉽게 이해 → 위험 확인 → 다음 행동 → 필요 시 사람 확인
+- 첫 행동: 받은 문자/카톡 붙여넣기 → `이 내용 안심 확인하기`
+
+결과 정보 순서:
+
+1. **무슨 뜻인가요?** — 문자 의미를 쉬운 문장으로 설명
+2. **위험 확인** — LOW/MEDIUM/HIGH와 위험 근거
+3. **지금 이렇게 하세요** — 즉시 실행 가능한 안전 행동
+4. **확실하지 않은 점** — verification 수준과 공식 자료 확인 한계
+5. **필요하면 사람에게 확인하세요** — 가족/공식 기관 확인 안내
+
+HIGH에서는 별도의 강한 안전중단 UI를 먼저 표시한다.
+
+- `지금 멈추세요`
+- 링크 클릭/송금/인증번호·개인정보 전달 중단
+- 사람 확인 행동을 강한 버튼으로 표시
+
+시니어 UI 원칙 반영:
+
+- 큰 제목/본문
+- 62px 이상 주요 행동 버튼
+- 적은 선택지
+- 높은 대비
+- 넓은 여백
+- 위험도는 색상 + 텍스트 동시 표시
+- 설명보다 지금 할 행동 우선
+- 모바일 우선 단일 컬럼
+
+변경 근거:
+
+- `prototype/src/main.ts`
+- `prototype/src/styles.css`
 
 ### AI context safety contract
 
@@ -71,7 +115,7 @@ Last updated: 2026-09-06
 }
 ```
 
-중요: 실제 외부 AIProvider 계약이 확인되지 않아 기본 UI 런타임에는 외부 AI 호출을 연결하지 않았다. AI 안전 레이어는 코드/테스트 준비 상태이며 실제 모델 연동 완료로 표현하지 않는다.
+중요: 실제 외부 AIProvider 계약이 확인되지 않아 기본 UI 런타임에는 외부 AI 호출을 연결하지 않았다. 실제 모델 연동 완료로 표현하지 않는다.
 
 ### Hospital Kiosk Safe Guidance
 
@@ -85,6 +129,10 @@ Last updated: 2026-09-06
 → 직원 도움 안내
 ```
 
+기존 기능 범위는 그대로 유지했다.
+
+UI에서는 접힌 기술 메뉴가 아니라 **두 번째 생활 장면**으로 배치하여 Trust Check와 같은 생활매니저 경험으로 이어지게 했다.
+
 구현 근거:
 
 - `prototype/src/kioskHospitalScenario.ts`
@@ -95,10 +143,11 @@ Last updated: 2026-09-06
 
 ## 3. 자동 검증
 
-PR #14 prototype 기준 Prototype CI run #70: **SUCCESS**.
+### 기존 검증 기준선
 
-- snapshot generator: PASS
-- Vitest: **5 files / 35 tests passed**
+Prototype CI run #70: **SUCCESS**
+
+- Vitest: 5 files / 35 tests passed
 - Grounded Verification: 14 PASS
 - contest AI safety: 8 PASS
 - rule-based analyzer: 9 PASS
@@ -106,15 +155,27 @@ PR #14 prototype 기준 Prototype CI run #70: **SUCCESS**.
 - hospital Kiosk safety: 3 PASS
 - `tsc --noEmit && vite build`: PASS
 
-run #70 이후 prototype 코드는 변경하지 않았고 하네스/제출 문서만 현행화했다.
+### 공모전 UI 재구성 후 검증
+
+UI 코드 head `12fe8cc7b5edceb2ca0b8a6756b24a91dc3ebffd` 기준 Prototype CI run #89: **SUCCESS**.
+
+- install dependencies: PASS
+- snapshot generator: PASS
+- risk policy tests: PASS
+- production build: PASS
+
+안전정책/규칙엔진을 변경하지 않고 UI 계층과 문구/레이아웃만 변경했다.
 
 ## 4. 공모전 평가 관점 대응
 
 | 평가 관점 | 대응 |
 | --- | --- |
-| 문제 정의 및 제안 필요성 | 고령자가 문자·키오스크 등 디지털 환경의 의미·위험·다음 행동을 판단하기 어려운 문제 |
+| 문제 정의 및 제안 필요성 | 고령자가 문자·키오스크 등 디지털 환경에서 의미·위험·다음 행동을 빠르게 판단하기 어려운 문제 |
+| 서비스 정체성 | 첫 화면에서 `시니어 AI 생활매니저`와 보호 역할을 즉시 설명 |
 | 창의성 및 AI 활용 적절성 | AI 문맥 설명과 결정론적 위험/권한 통제를 분리 |
-| 실현 가능성 및 완성도 | 실행 가능한 Trust Check + Hospital Kiosk 안전 흐름 + fallback 테스트/CI + 플랫폼 활용 증빙 |
+| 사용자 완성도 | Trust Check를 첫 행동으로 두고 HIGH 안전중단과 사람 확인을 가장 강하게 표시 |
+| 확장성 | 병원 키오스크를 별도 앱이 아닌 같은 안전정책의 두 번째 생활 장면으로 제시 |
+| 실현 가능성 | 실행 가능한 Trust Check + Hospital Kiosk 안전 흐름 + fallback 테스트 + CI |
 
 ## 5. aitestbed 실제 확인 사항
 
@@ -146,72 +207,34 @@ run #70 이후 prototype 코드는 변경하지 않았고 하네스/제출 문�
 
 `AitestbedModelApiProvider`
 
-다음이 실제 확인되기 전에는 외부 AI 추론 API를 구현하지 않는다.
+공식 추론 API 문서, 호출 계약, 실제 probe 전에는 구현하지 않는다.
 
-1. 공식 추론 API 문서
-2. base URL / 인증 / 모델 / request-response schema
-3. 최소 실제 호출 probe
-4. 외부 프로젝트 사용·개인정보·상업 이용 범위
+## 7. MVP 배포 및 브라우저 QA
 
-`내 API 키` 화면만으로 추론 API를 추정하지 않는다.
+기존 UI 기준으로 local browser와 Vercel temporary deployment에서 다음 흐름을 실제 확인한 이력이 있다.
 
-## 7. 플랫폼 증빙
+- 초기 Trust Check
+- LOW/MEDIUM/HIGH
+- Hospital Kiosk 접수
+- 민감정보 HIGH 안전중단
+- 직원 도움 안내
 
-플랫폼 증빙은 MVP 개발보다 우선하지 않는다.
+과거 temporary URL은 만료형이다.
 
-runbook:
+**2026-09-06 UI 재구성 이후의 새 화면은 CI test/build까지 통과했으나, 이 ChatGPT 원격 세션에서는 브라우저 실행 환경을 사용할 수 없어 current UI head의 실제 모바일 화면 QA를 완료했다고 주장하지 않는다.**
 
-`docs/contest/platform-run-sheet.md`
+따라서 제출 캡처 전에 current UI head를 모바일 viewport에서 다시 확인해야 한다.
 
-필요 증빙:
+## 8. 제출용 MVP 캡처
 
-- [x] aitestbed 로그인
-- [x] 클라우드 신청 화면
-- [ ] 신청 완료/승인 상태
-- [ ] 플랫폼 활용 화면 3개 이상
-- [ ] 바이브코딩 실제 입력/생성 결과
-- [ ] 가능하면 소스 다운로드 증거
+current UI head 기준 필수 후보:
 
-## 8. MVP 배포 및 실제 브라우저 QA — 2026-09-06 KST
-
-### Vercel 상태
-
-- 저장소 root `vercel.json`을 확인했다.
-  - `buildCommand`: `cd prototype && npm install --no-audit --no-fund && npm run build`
-  - `outputDirectory`: `prototype/dist`
-- 실제 Vercel temporary deployment가 `READY` 상태로 생성됐다.
-- 실제 접속 URL: `https://temporary-rushing-indigo-rde96e8.vercel.app`
-- 이 URL은 anonymous temporary deployment로 60분 뒤 만료된다. team claim 및 Git 연동된 정식 project import는 별도 단계다.
-- `redsunjins-projects` team에서 GitHub repository import를 시작했고, GitHub Mobile 재인증 후 `Lightning-Public/senior-trust-gateway`가 Import 목록에 표시됐다.
-- Vercel은 이 저장소를 private GitHub organization repository로 판단한다. Hobby team에서는 정식 Import를 차단하며, existing Pro team 또는 Vercel Pro Trial/Pro 플랜이 필요하다고 안내한다. 플랜 변경은 사용자 선택 전에는 수행하지 않는다.
-
-### Deployed actual-browser QA
-
-개인정보가 없는 fixture로 위 Vercel URL의 실제 브라우저에서 아래를 확인했다.
-
-- 초기 Trust Check 화면 표시
-- 일반 일정 안내 → LOW, 안전 확정이 아님과 확인 한계 표시
-- 택배 외부 링크 → MEDIUM, 링크 대신 공식 경로 확인 안내
-- 검찰 사칭·안전계좌 이체 → HIGH, 행동 중단 및 가족/공식 대표번호 확인 안내
-- Hospital Kiosk: 접수 시작 → 예약 진료 → 민감정보 입력 단계 HIGH → 직원 도움 요청 → 안전 확인 대기
-- 민감정보를 자동 진행·입력·저장하지 않음
-
-재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
-
-정식 team project가 생성되면 동일 흐름을 해당 URL에서 한 번 더 확인하고 이 섹션을 영구 URL/배포 상태로 갱신한다.
-
-## 9. 제출용 MVP 캡처
-
-aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**을 제출 증빙으로 확보한다.
-
-필수 후보:
-
-1. 초기 Trust Check 화면
-2. HIGH 또는 MEDIUM 결과
-3. Hospital Kiosk 안내
+1. 첫 화면 — `시니어 AI 생활매니저` + 핵심 메시지 + Trust Check 입력
+2. HIGH 결과 — `지금 멈추세요` + 5단계 결과 + 사람 확인
+3. Hospital Kiosk 두 번째 생활 장면
 4. 민감정보 HIGH 안전중단 + 직원 도움 안내
 
-## 10. 개인정보·보안
+## 9. 개인정보·보안
 
 - 실제 문자 원문 저장 금지
 - 실제 전화번호/주민등록번호/인증번호 사용 금지
@@ -219,16 +242,21 @@ aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**�
 - AI가 HIGH를 낮추는 표현 금지
 - 공식 목록 미일치를 안전으로 표현 금지
 
-## 11. 현재 제출 BLOCKER
+## 10. 현재 제출 BLOCKER
 
 ### MVP/문서
 
-- [x] 실제 MVP 사용자 흐름 최종 QA (local browser)
-- [x] Vercel temporary URL에서 동일 흐름 QA
-- [ ] Vercel team project import 및 영구 URL QA (Hobby team의 private organization repository 제한 — Pro team 또는 Pro Trial 결정 필요)
+- [x] 공모전용 시니어 AI 생활매니저 UI/UX 재구성
+- [x] current UI code test/build CI
+- [ ] current UI head 실제 모바일 화면 QA
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX
+
+### 배포
+
+- [ ] current UI head 영구 또는 제출 시점 접근 가능한 URL 확보
+- [ ] 해당 URL에서 최종 모바일 QA
 
 ### 플랫폼 증빙
 
@@ -236,4 +264,4 @@ aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**�
 - [ ] aitestbed 활용 화면 3개 이상
 - [ ] 바이브코딩 생성 결과/다운로드 증빙
 
-외부 AIProvider 직접 연동은 공식 계약이 확인된 경우에만 진행하며, 현재 제출 MVP의 선행조건으로 두지 않는다.
+외부 AIProvider 직접 연동은 현재 제출 MVP의 선행조건이 아니다.
