@@ -179,13 +179,14 @@ runbook:
 - 저장소 root `vercel.json`을 확인했다.
   - `buildCommand`: `cd prototype && npm install --no-audit --no-fund && npm run build`
   - `outputDirectory`: `prototype/dist`
-- Vercel team에 아직 프로젝트가 없어서 GitHub repository import를 시작했다.
-- 계정 passkey 2단계 인증 대기로 인해 project import와 preview deployment는 아직 생성되지 않았다.
-- 실제 접속 가능한 Vercel URL: **없음 (인증 대기)**
+- 실제 Vercel temporary deployment가 `READY` 상태로 생성됐다.
+- 실제 접속 URL: `https://temporary-rushing-indigo-rde96e8.vercel.app`
+- 이 URL은 anonymous temporary deployment로 60분 뒤 만료된다. team claim 및 Git 연동된 정식 project import는 별도 단계다.
+- `redsunjins-projects` team에서 GitHub repository import를 시작했으나, 연결된 Vercel GitHub App에 `Lightning-Public/senior-trust-gateway` 접근 권한이 없어 GitHub Mobile 재인증/최소 권한 부여가 필요하다.
 
-### Local actual-browser QA
+### Deployed actual-browser QA
 
-개인정보가 없는 fixture로 실제 브라우저에서 아래를 확인했다.
+개인정보가 없는 fixture로 위 Vercel URL의 실제 브라우저에서 아래를 확인했다.
 
 - 초기 Trust Check 화면 표시
 - 일반 일정 안내 → LOW, 안전 확정이 아님과 확인 한계 표시
@@ -196,7 +197,7 @@ runbook:
 
 재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
 
-배포 URL이 생성되면 동일 흐름을 해당 URL에서 다시 확인하고 이 섹션을 URL/배포 상태로 갱신한다.
+정식 team project가 생성되면 동일 흐름을 해당 URL에서 한 번 더 확인하고 이 섹션을 영구 URL/배포 상태로 갱신한다.
 
 ## 9. 제출용 MVP 캡처
 
@@ -222,7 +223,8 @@ aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**�
 ### MVP/문서
 
 - [x] 실제 MVP 사용자 흐름 최종 QA (local browser)
-- [ ] Vercel preview URL에서 동일 흐름 QA (passkey 인증 대기)
+- [x] Vercel temporary URL에서 동일 흐름 QA
+- [ ] Vercel team project import 및 영구 URL QA (GitHub App repository access 필요)
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX

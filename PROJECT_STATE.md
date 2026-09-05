@@ -120,9 +120,10 @@ run #70 이후 prototype 코드는 변경하지 않았고 현재 하네스/제�
 ## Deployment and browser QA — 2026-09-06 KST
 
 - Vercel 설정 확인: root `vercel.json`의 `buildCommand`는 `cd prototype && npm install --no-audit --no-fund && npm run build`, `outputDirectory`는 `prototype/dist`다.
-- Vercel team에는 아직 프로젝트가 없으며, GitHub repository import를 시작했다.
-- 현재 Vercel 계정의 passkey 2단계 인증이 완료되지 않아 project import와 preview deployment가 생성되지 않았다. 따라서 실제 배포 URL은 **없음**이며, 인증을 우회하지 않는다.
-- 실제 브라우저로 local MVP를 검수했다. 초기 화면, Trust Check LOW/MEDIUM/HIGH, Hospital Kiosk 안내, 민감정보 HIGH 중단과 직원 확인 대기까지 모두 의도대로 표시됐다.
+- 실제 Vercel temporary deployment가 `READY` 상태로 생성됐다: `https://temporary-rushing-indigo-rde96e8.vercel.app`.
+- 이 temporary deployment는 Vercel CLI 기준 60분 뒤 만료되며, team claim 전에는 Git 연동된 정식 project가 아니다.
+- `redsunjins-projects` team에서 GitHub repository import를 시작했다. 현재 Vercel GitHub App에 `Lightning-Public/senior-trust-gateway` 접근 권한이 없어, GitHub Mobile 재인증 후 최소 repository access를 부여해야 한다.
+- 실제 배포 URL을 브라우저로 검수했다. 초기 화면, Trust Check LOW/MEDIUM/HIGH, Hospital Kiosk 안내, 민감정보 HIGH 중단과 직원 확인 대기까지 모두 의도대로 표시됐다.
 - 이 세션 재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
 
 ## aitestbed role
@@ -195,6 +196,6 @@ aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된�
 
 ## Next action
 
-**Vercel passkey 2단계 인증을 완료해 `Lightning-Public/senior-trust-gateway`를 import하고, preview URL에서 같은 QA를 다시 실행한다.**
+**GitHub Mobile 재인증을 완료하고 Vercel GitHub App에 `Lightning-Public/senior-trust-gateway`의 최소 접근 권한을 부여한 뒤, `redsunjins-projects` team project로 정식 import한다.**
 
 그 다음 MVP 화면을 캡처하고 제출문서 작성을 진행한다.
