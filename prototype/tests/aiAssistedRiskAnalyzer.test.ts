@@ -37,7 +37,7 @@ describe('contest safety scenarios', () => {
     expect(result.summary).toBe(benignInterpretation.summary)
     expect(result.verification.level).toBe('RULES_ONLY')
     expect(result.aiContext?.status).toBe('AVAILABLE')
-    expect(result.recommendation).toContain('안전')
+    expect(result.recommendation).toContain('내용만 확인')
   })
 
   it('2. 택배 외부 링크는 확인이 필요한 MEDIUM을 유지한다', async () => {
