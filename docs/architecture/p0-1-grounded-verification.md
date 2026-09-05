@@ -39,19 +39,17 @@ P0의 문장 규칙 판정과 실제 공식 근거 확인을 분리한다.
 ## Architecture
 
 ```text
-Message
-  ↓
-RuleBasedRiskAnalyzer
-  ↓
-GroundedRiskAnalyzer
-  ├─ URL extraction / normalization
-  └─ OfficialSourceVerifier
-       └─ KisaPhishingSnapshotVerifier
-  ↓
-RiskAnalysis
-  ├─ risk level
-  ├─ verification level
-  └─ official check result
+Official KISA CSV
+  ↓ build-time ingest
+kisa-phishing-snapshot.json
+  ↓ lazy/static load
+Message → RuleBasedRiskAnalyzer
+               ↓
+       GroundedRiskAnalyzer
+          ├─ URL normalize
+          └─ KisaPhishingSnapshotVerifier
+               ↓
+           RiskAnalysis
 ```
 
 ## Verification behavior
@@ -84,12 +82,32 @@ RiskAnalysis
 
 정적 Vite 클라이언트의 `VITE_*` 환경변수에 서비스키를 넣으면 최종 JavaScript에 노출될 수 있으므로 금지한다.
 
-허용되는 운영 방식:
+P0.1의 첫 운영 방식은 **build-time official CSV snapshot**으로 확정한다. 런타임 서버/API 호출 없이 연간 공식 데이터를 정적 스냅샷으로 배포한다.
 
-1. 서버 측 adapter가 공공데이터 API를 호출
-2. 신뢰된 빌드 파이프라인이 공식 CSV/API에서 스냅샷을 생성하고 정적 앱에는 필요한 최소 데이터만 배포
+향후 데이터 최신성 요구가 커질 때만 server-side adapter를 검토한다.
 
-P0.1 기본 브라우저 데모에는 API 키를 넣지 않는다.
+## Build-time snapshot ingest
+
+공공데이터포털에서 공식 CSV를 다운로드한 뒤 `prototype` 디렉터리에서 실행한다.
+
+```bash
+npm run build:kisa-snapshot -- /path/to/한국인터넷진흥원_피싱사이트.csv
+```
+
+기본 출력:
+
+```text
+prototype/public/data/kisa-phishing-snapshot.json
+```
+
+생성된 문서는 다음 조건을 만족할 때만 앱에서 authoritative source로 인정된다.
+
+- `kind = KISA_PHISHING_SNAPSHOT`
+- `authoritative = true`
+- `source = data.go.kr/15143094`
+- records가 1건 이상
+
+저장소 기본 파일은 `authoritative: false` + 빈 records이며, 공식 CSV를 적재하기 전에는 `OFFICIAL_SOURCE` 판정을 내릴 수 없다.
 
 ## Current implementation
 
@@ -101,17 +119,20 @@ P0.1 기본 브라우저 데모에는 API 키를 넣지 않는다.
 - no-match/unavailable fail-safe behavior
 - 보호나라 공식 확인방법 handoff
 - fixture-based tests without network/API key
+- build-time CSV → JSON snapshot generator
+- browser snapshot loader with fail-safe placeholder
+- CI snapshot-generator syntax check
 
-## Not yet implemented
+## Not yet completed
 
-- 실제 KISA CSV 스냅샷 자동 생성 파이프라인
-- 서버 측 공공데이터 Open API adapter
-- 실시간 KISA 스미싱 판별 자동연계 (공식 개발 API 계약 미확인)
+- 실제 공식 KISA CSV를 저장소/배포 스냅샷에 적재
+- 최신 스냅샷의 크기·로딩 성능 측정
 - 모바일 Preview QA
+- 실시간 KISA 스미싱 판별 자동연계 (공식 개발 API 계약 미확인)
 
 ## Next gate
 
-1. CI test/build 통과
-2. Draft PR review
-3. 공식 CSV snapshot ingest 방식을 별도 increment로 결정
-4. Vercel/GitHub Pages 등 실제 Preview 확보 후 모바일 QA
+1. PR #8 최신 CI test/build 통과
+2. fail-safe semantics review
+3. 실제 공식 CSV를 이용한 snapshot 생성 및 크기 확인
+4. Preview 확보 후 모바일 QA
