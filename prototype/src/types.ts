@@ -33,6 +33,18 @@ export type OfficialCheckResult = {
   detail: string
 }
 
+export type AiInterpretation = {
+  summary: string
+  risk_context: string
+  safe_next_action: string
+  uncertainty: string
+}
+
+export type AiContext = AiInterpretation & {
+  status: 'AVAILABLE' | 'FALLBACK'
+  detail: string
+}
+
 export type RiskAnalysis = {
   level: RiskLevel
   summary: string
@@ -40,6 +52,7 @@ export type RiskAnalysis = {
   recommendation: string
   verification: VerificationStatus
   officialChecks?: OfficialCheckResult[]
+  aiContext?: AiContext
   shouldEscalate: boolean
   signals: RiskSignal[]
 }
@@ -50,4 +63,11 @@ export interface RiskAnalyzer {
 
 export interface OfficialSourceVerifier {
   verify(message: string): Promise<OfficialCheckResult>
+}
+
+export interface AiMessageInterpreter {
+  interpret(
+    message: string,
+    guardrail: Pick<RiskAnalysis, 'level' | 'signals'>,
+  ): Promise<AiInterpretation>
 }
