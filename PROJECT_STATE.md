@@ -1,12 +1,16 @@
 # PROJECT_STATE
 
-Last updated: 2026-08-30
+Last updated: 2026-09-05
 
 ## Status
 
-**P0 — Trust Check Prototype active**
+**P0 baseline merged / P0.1 Grounded Verification active**
 
-제품 기준선과 개발 하네스는 `main`에 병합되었다. 현재 Issue #5 / Draft PR #6에서 첫 실행 가능한 Trust Check 프로토타입을 개발·검증 중이다.
+- Repository transferred to `Lightning-Public/senior-trust-gateway`
+- P0 Trust Check baseline merged through PR #6
+- P0 mobile/browser device QA remains open because no preview deployment project is connected yet
+- Current implementation branch: `feat/p0-1-grounded-verification`
+- Current tracking issue: #7
 
 ## Fixed direction
 
@@ -17,83 +21,66 @@ Last updated: 2026-08-30
 - Differentiator: 범용 AI 능력이 아니라 `신뢰 + 보호 + 권한관리 + 인간/가족 에스컬레이션`
 - Cost principle: 상시 고성능 Agent가 아니라 단계적 승격 구조
 - Trust invariant: **위험도(risk)와 실제 확인 수준(verification)을 분리한다.**
+- Grounding invariant: **공식 목록 미일치는 안전 판정이 아니다.**
 
-## First user problem
-
-시니어가 다음과 같은 상황에서 누구를 믿어야 할지 판단하기 어렵다.
-
-- “이 문자 눌러도 돼?”
-- “은행 직원이라고 하는데 진짜야?”
-- “이 앱 설치해도 돼?”
-- “지원금을 준다는 연락이 진짜야?”
-- “이 요청대로 돈을 보내도 돼?”
-
-첫 제품은 모든 생활업무를 처리하는 대신 **위험한 디지털 행동 직전에 확인받는 경험**을 검증한다.
-
-## P0 implementation
-
-현재 브랜치: `feat/p0-trust-check-prototype`
+## P0 — merged baseline
 
 구현된 흐름:
 
 `문자 입력 → 위험 신호 분석 → LOW/MEDIUM/HIGH → 확인 수준 표시 → 이유 → 다음 행동 → 필요 시 가족 확인`
 
-현재 기술 기준:
+기술 기준:
 
 - Vite + TypeScript 정적 웹
 - 기본 분석은 `RuleBasedRiskAnalyzer`
-- 기본 경로의 AI inference 비용 0
-- `RiskAnalyzer` 인터페이스로 향후 공식 데이터/AI 어댑터 교체 가능
+- 기본 경로 AI inference 비용 0
 - 메시지 저장/로그인/금융 실행 없음
-- GitHub Actions에서 테스트 + production build 검증
+- GitHub Actions test + production build 검증
 
-## Trust behavior
+P0의 `LOW`는 안전 확인 완료를 뜻하지 않는다. 기본 확인 수준은 `RULES_ONLY`다.
 
-P0에서 `LOW`는 **안전 확인 완료**를 뜻하지 않는다.
+## P0.1 — Grounded Verification
 
-현재 확인 수준은 `RULES_ONLY`이며 다음만 의미한다.
+목표:
 
-> 정의된 문장 위험 신호를 찾았는지 확인했다.
+`위험 신호 검사 → 공식 근거 대조 → 확인 수준 표시`
 
-발신자, 기관, 전화번호, URL 또는 주장 자체의 진위는 아직 공식 확인하지 않는다. 이 구분은 향후에도 제품 핵심 원칙으로 유지한다.
+현재 구현:
 
-## Current coverage
+- `OfficialSourceVerifier` contract
+- HTTP URL extraction / normalization
+- `KisaPhishingSnapshotVerifier`
+- `GroundedRiskAnalyzer`
+- authoritative 공식 URL match만 `OFFICIAL_SOURCE` + HIGH로 승격
+- NO_MATCH / UNAVAILABLE은 기존 위험도 유지
+- 보호나라 공식 스미싱 확인방법 handoff
+- API key 없는 fixture 기반 테스트
 
-대표 시나리오:
+## Official-source policy
 
-1. 일반 일정 안내 — LOW
-2. 택배 외부 링크 — MEDIUM
-3. 수사기관 + 범죄 + 안전계좌 이체 — HIGH
-4. 인증번호 요구 — HIGH
-5. 지원금 + 긴급 링크 — MEDIUM
-6. 가족 새 번호 사칭 가능성 — MEDIUM
-7. 단순 경찰청 정보 안내 — 기관명만으로 HIGH 처리하지 않음
+### KISA 보호나라
 
-## CI
+공식 대국민 스미싱 확인서비스로 수동 handoff만 제공한다. 공식 개발 API 계약이 확인되지 않은 상태에서 scraping/비공식 자동화를 하지 않는다.
 
-초기 P0 `Prototype CI`는 성공했다. 후속 trust-copy / risk-policy 수정 후 재실행 결과를 확인해야 한다.
+### KISA phishing-site public data
 
-## Still not decided
+공공데이터포털의 `한국인터넷진흥원_피싱사이트`를 첫 공식 데이터 후보로 사용한다.
 
-- 실제 모바일 앱 / PWA / 전화 중심 인터페이스의 최종 형태
-- 인증 구조
-- 실제 가족 승인 채널
-- 모델 공급자
-- 서버/데이터 저장 방식
-- 사업모델 및 가격
+- 공개 데이터는 연간 스냅샷으로 취급
+- 실시간 안전 판별로 표현하지 않음
+- Open API 서비스키를 정적 브라우저 번들에 넣지 않음
+- 운영 연동은 서버 adapter 또는 신뢰된 build-time snapshot 방식만 허용
 
-## Next milestone
+## Remaining P0 gate
 
-**P0.1 — Grounded Verification**
+- 실제 Preview URL 확보
+- 모바일/브라우저 실사용 QA
 
-규칙 판정과 별개로 최소 한 종류의 공식 출처 확인을 연결해 다음 경험을 검증한다.
+Vercel 연결 계정에는 현재 프로젝트가 없어 자동 Preview를 만들지 못했다. 저장소에는 `vercel.json`이 있으므로 프로젝트 Import 후 Preview QA 가능하다.
 
-`위험 신호 검사 → 공식 근거 확인 가능 여부 → 확인 수준 표시`
+## Next gate
 
-후보는 KISA/보호나라 등 공식 보안정보 연계이며, 실제 제공 API/이용 조건을 확인한 뒤 결정한다.
-
-## Next action
-
-1. PR #6 최신 커밋 CI 결과 확인
-2. CI 통과 시 모바일 실제 사용 QA를 위한 Preview 배포 방식 결정
-3. 공식 출처 어댑터 후보 조사 및 P0.1 Issue 분리
+1. P0.1 Draft PR CI 확인
+2. 공식 스냅샷 miss가 안전으로 승격되지 않는지 리뷰
+3. snapshot ingest/server adapter 중 첫 운영 방식 결정
+4. Preview 확보 시 P0 device QA 완료 및 Issue #5 종료 판단
