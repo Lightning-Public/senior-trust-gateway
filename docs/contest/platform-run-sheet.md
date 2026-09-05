@@ -2,107 +2,171 @@
 
 목적: `시니어 AI 생활매니저`의 실제 모두의 AI 실험실 사용 증거를 가장 짧은 순서로 확보한다.
 
-> 이 문서는 실제 로그인 화면에서 확인한 값을 기록하기 위한 체크시트다. 모델명·토큰 방식·배포 기능은 보이는 그대로 기록하며 추정하지 않는다.
+> 화면에 보이는 값만 기록한다. 모델명·토큰·API·image input·배포 기능은 추정하지 않는다.
 
-## 1. 서비스 포지셔닝
+## 1. 서비스 기준
 
-- 공모전/클라우드 프로젝트명: **시니어 AI 생활매니저**
+- 프로젝트명: **시니어 AI 생활매니저**
 - 부제: **안심부터 시작하는 시니어 디지털 동행**
-- Phase 0 메인: Trust Check 80%
-- Phase 0 확장: Kiosk Safe Guidance 20%
-- 공통 사용자 흐름: `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`
+- Trust Check 80%
+- Kiosk Safe Guidance 20%
+- Kiosk 장면: **병원 접수 1개**
+- 공통 흐름: `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`
 
-## 2. 로그인·클라우드 신청
+## 2. 클라우드 신청 상태 확인
 
-1. `https://aitestbed.kr` 접속
-2. 정부 통합로그인으로 인증
-3. 클라우드 신청 또는 마이스튜디오에서 상태 확인
+`aitestbed.kr` 로그인 후 클라우드 신청 또는 마이스튜디오에서 현재 상태를 확인한다.
 
-클라우드 프로젝트명:
-
-```text
-시니어 AI 생활매니저
-```
-
-이용목적:
-
-```text
-고령자가 문자·키오스크 등 일상 디지털 서비스를 안전하게 이용하도록 돕는 시니어 AI 생활매니저를 개발·검증합니다. AI는 문자와 화면의 의도·맥락을 이해해 쉬운 설명과 다음 행동을 제공하고, 송금·인증정보·앱 설치·개인정보·결제 등 고위험 상황은 규칙 기반 안전정책과 사람 확인 절차로 보호합니다. 모두의 AI 실험실 AI·클라우드 환경을 활용해 Trust Check와 Kiosk Safe Guidance를 하나의 생활지원형 AI 서비스로 실증합니다.
-```
-
-현재 실제 화면에서 확인된 추천값:
+이미 실제 화면에서 확인된 추천값:
 
 - vCPU 2EA
 - Memory 4GB
 - Disk 50GB
 - OS: `rocky-8.10-base`
 - 1개월 우선 지원
+- 2026년 1인 1회 신청 제한
 
 기록:
 
-- 신청 완료/대기/승인 상태: `________________`
-- 신청일시(KST): `________________`
-- 실제 이용기간: `________________`
+```text
+신청 완료/대기/승인 상태:
+신청일시(KST):
+실제 이용기간:
+```
 
-캡처 후보:
+캡처:
 
 ```text
 docs/contest/evidence/01-cloud-project.png
 ```
 
-## 3. AI 모델·토큰·개발 방식 확인
+## 3. aitestbed 바이브코딩 프로젝트 생성
 
-화면에 표시되는 문자열을 그대로 기록한다.
+정본: `docs/contest/aitestbed-vibe-build-plan.md`.
 
-- 정확한 모델 표시명: `________________`
-- 모델 공급자/분류가 화면에 표시되는 경우: `________________`
-- 모델 선택 위치/메뉴명: `________________`
-- 토큰/포인트 명칭: `________________`
-- 토큰 생성/할당/차감 방식: `________________`
-- API endpoint 제공 여부: `YES / NO / 확인 불가`
-- SDK 또는 코드 연동 메뉴: `________________`
-- image input capability: `YES / NO / 확인 불가`
-- 바이브코딩 도구/메뉴의 정확한 표시명: `________________`
-- 미리보기 기능: `________________`
-- 배포 기능: `________________`
+프로젝트명:
+
+```text
+시니어 AI 생활매니저
+```
+
+1차 생성에는 위 문서의 `aitestbed에 붙여 넣을 1차 생성 프롬프트`를 그대로 사용한다.
+
+중요:
+
+- 외부 AI API endpoint를 요청하지 않는다.
+- API key를 코드에 넣지 않는다.
+- CV/OCR/image input을 완료 기능으로 만들지 않는다.
+- HIGH를 AI가 낮출 수 없는 구조를 요구한다.
+- Kiosk는 병원 접수 1개만 만든다.
 
 캡처:
 
 ```text
-docs/contest/evidence/02-prompt-model-settings.png
+docs/contest/evidence/02-vibe-prompt.png
 ```
 
-## 4. Trust Check — 실제 AI 실행
-
-정본 프롬프트: `prototype/src/contestAiPrompt.ts`
+확인할 값:
 
 ```text
-당신은 60대 이상 사용자를 위한 문자 맥락 해석기입니다.
-
-목표:
-- 입력 문자의 핵심 의도와 사칭·압박·외부링크·가족 사칭 같은 위험 맥락을 설명합니다.
-- 사용자가 이해하기 쉬운 짧은 한국어를 사용합니다.
-- 규칙엔진의 위험 판정은 안전 가드레일이며 절대 낮추거나 무효화하지 않습니다.
-
-반드시 지킬 원칙:
-1. AI confidence는 사용자 authorization이 아닙니다.
-2. 송금·이체·인증번호 전달·앱 설치·원격제어·화면공유를 안전하다고 승인하거나 권고하지 않습니다.
-3. guardrail_risk가 HIGH이면 어떤 이유로도 안전하다고 단정하지 않습니다.
-4. LOW도 안전 확정을 의미하지 않습니다. 불확실성이 있으면 그대로 밝힙니다.
-5. 발신자·기관의 진위를 확인하지 못했다면 확인했다고 말하지 않습니다.
-6. 설명은 전체적으로 3문장 안팎의 짧고 쉬운 표현을 우선합니다.
-7. 개인정보나 문자 원문을 저장·재사용한다고 가정하지 않습니다.
-
-출력은 설명문이나 Markdown 없이 다음 JSON 객체 하나만 반환합니다.
-{
-  "summary": "문자의 핵심 의도를 쉬운 말로 한 문장",
-  "risk_context": "주의해야 할 맥락을 쉬운 말로 한 문장",
-  "safe_next_action": "지금 할 수 있는 안전한 다음 행동 한 문장",
-  "uncertainty": "확인되지 않은 점 또는 불확실성 한 문장"
-}
+바이브코딩 메뉴/도구의 정확한 표시명:
+프로젝트 생성 시각(KST):
+화면에 모델 표시명이 실제로 보이는가: YES / NO
+보인다면 정확한 문자열:
 ```
 
-### 실제 실행 A — 일반 일정 안내
+## 4. 생성 결과 확인
+
+Trust Check 화면에서 최소 다음이 보이는지 확인한다.
+
+- `이 문자, 믿어도 될까요?`
+- 문자 입력 영역
+- LOW / MEDIUM / HIGH 행동 문구
+- `무슨 뜻인가요?`
+- `위험 확인`
+- `지금 이렇게 하세요`
+- `확실하지 않은 점`
+- HIGH에서 사람 확인 경로
+
+생성본이 AI가 위험을 직접 결정하는 것처럼 보이면 build plan의 수정 프롬프트를 사용해 `규칙 안전판`과 `AI 설명`을 분리한다.
+
+캡처:
+
+```text
+docs/contest/evidence/03-vibe-trust-check-result.png
+```
+
+## 5. 병원 Kiosk Safe Guidance 확인
+
+Kiosk는 아래 흐름 하나만 확인한다.
+
+```text
+진료 접수
+→ 접수 시작
+→ 예약 진료 선택
+→ 본인 확인 정보 입력 화면
+→ 주민등록번호 전체 입력 요청 예시에서 HIGH
+→ 자동 진행 중단
+→ 직원 도움 요청
+```
+
+확인 조건:
+
+- 큰 글씨/큰 버튼
+- 노란 포인터 또는 명확한 다음 위치 강조
+- HIGH에서 계속 진행 버튼이 없음
+- 개인정보를 대신 입력하거나 저장하지 않음
+- `구조화된 화면 데모이며 실제 CV/OCR이 아님` 표시
+
+캡처:
+
+```text
+docs/contest/evidence/04-kiosk-hospital-guidance.png
+```
+
+## 6. 생성 소스 다운로드
+
+바이브코딩 생성 소스를 다운로드한다.
+
+기록:
+
+```text
+다운로드 파일명:
+다운로드 시각(KST):
+주요 프레임워크/파일 구조:
+```
+
+캡처 또는 파일 목록 증빙:
+
+```text
+docs/contest/evidence/05-source-download.png
+```
+
+원본 다운로드 소스를 제공받으면 `senior-trust-gateway`의 현재 TypeScript prototype과 비교한다.
+
+비교 우선순위:
+
+1. 레이아웃/시니어 UX
+2. Trust Check 결과 카드
+3. 병원 Kiosk 단계/포인터 표현
+4. 접근성
+
+가져오지 않는 것:
+
+- 추정 AI endpoint
+- client-side API key
+- AI가 HIGH를 낮추는 코드
+- 실제 개인정보 저장
+- 확인되지 않은 CV/OCR
+- 기존 `RuleBasedRiskAnalyzer` / `GroundedRiskAnalyzer`를 대체하는 생성 로직
+
+## 7. Trust Check 실제 AI 출력 — 조건부
+
+외부 AI 추론 API 또는 플랫폼 내부 실제 모델 실행 기능이 **실제 화면에서 확인된 경우에만** 수행한다.
+
+정본 프롬프트: `prototype/src/contestAiPrompt.ts`.
+
+### A. 일반 일정 안내
 
 ```json
 {
@@ -112,15 +176,7 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-확인: JSON 객체 / 안전 확정 없음 / uncertainty 존재.
-
-실제 출력:
-
-```json
-
-```
-
-### 실제 실행 B — 택배 외부 링크
+### B. 택배 외부 링크
 
 ```json
 {
@@ -132,15 +188,7 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-확인: 링크 별도 확인 / 바로 누르라는 권고 없음.
-
-실제 출력:
-
-```json
-
-```
-
-### 실제 실행 C — 검찰 사칭 + 안전계좌
+### C. 검찰 사칭 + 안전계좌
 
 ```json
 {
@@ -153,80 +201,39 @@ docs/contest/evidence/02-prompt-model-settings.png
 }
 ```
 
-확인: 안전 단정 없음 / 이체 권고 없음 / HIGH 하향 없음.
+실제 출력은 `summary`, `risk_context`, `safe_next_action`, `uncertainty` JSON인지 확인한다. HIGH에서는 안전 단정/이체 권고가 없어야 한다.
 
-실제 출력:
+실제 모델 실행 기능이 확인되지 않으면 이 단계는 **BLOCKED/UNVERIFIED**로 남기고 fixture를 실제 출력으로 바꾸지 않는다.
 
-```json
+## 8. API/모델 capability 확인 — 조건부
 
-```
-
-캡처:
+화면에 실제로 보이는 경우에만 기록한다.
 
 ```text
-docs/contest/evidence/03-trust-check-result.png
+정확한 모델 표시명:
+모델 공급자/분류:
+토큰/포인트 명칭:
+AI API endpoint 제공 여부: YES / NO / 확인 불가
+인증 방식:
+SDK/코드 연동 메뉴:
+image input: YES / NO / 확인 불가
+미리보기 기능:
+배포 기능:
 ```
 
-## 5. Kiosk Safe Guidance — 공모전 확장 증거
+`내 API 키` 화면만으로 외부 추론 API가 있다고 결론내리지 않는다.
 
-기준 원본: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
+## 9. 완료 기준
 
-공모전에서는 전체 키오스크 CV/OCR 통합을 완료했다고 주장하지 않는다. 한 가지 대표 장면만 선택한다.
+Phase 0 플랫폼 증빙 완료 조건:
 
-추천 우선순위:
+- [ ] 클라우드 신청/상태 화면
+- [ ] 바이브코딩 프로젝트 생성
+- [ ] 생성 프롬프트 화면
+- [ ] 생성된 Trust Check 화면
+- [ ] 병원 Kiosk 확장 화면
+- [ ] 생성 소스 다운로드
+- [ ] 다운로드 소스와 현재 prototype 비교 기록
+- [ ] 실제 모델/API 기능은 확인된 것과 미확인 항목을 분리 기록
 
-1. 병원 접수
-2. 민원서류 발급
-3. 복지 신청
-
-보여줄 흐름:
-
-```text
-키오스크 화면/구조
-  → AI가 현재 화면의 의미를 쉬운 말로 설명
-  → 다음 버튼/행동을 화면·음성·포인터로 안내
-  → 개인정보·동의·결제 등 고위험 단계는 확인 또는 사람 연결
-```
-
-실제 aitestbed 계정에서 image input이 확인되지 않으면 이미지 인식을 주장하지 않고, 사전 정의 화면 구조 또는 OCR 텍스트 입력을 사용한다.
-
-캡처 후보:
-
-```text
-docs/contest/evidence/04-kiosk-guidance.png
-```
-
-## 6. 기존 앱과 aitestbed 결합
-
-목표 구조:
-
-```text
-Trust Check UI ───────┐
-                      ├─► Senior Trust Orchestrator
-Kiosk Guidance UI ────┘      ├─ deterministic safety rules
-                             ├─ official-source verifier
-                             ├─ AIProvider
-                             │    └─ AitestbedProvider (server-side)
-                             └─ HumanEscalation
-```
-
-직접 호출 API/SDK가 확인되면 `JsonAiMessageInterpreter`의 호출 경계를 서버 측 `AitestbedProvider`로 연결한다.
-
-직접 호출이 확인되지 않으면 플랫폼 프로토타입을 실증으로 사용하고 `prototype + adapter-ready` 상태로 명시한다.
-
-API 키/토큰은 브라우저 번들·Git·로그에 넣지 않는다.
-
-## 7. 제출 증빙 완료 기준
-
-`docs/contest/modoo-ai-lab-evidence.md`에 다음을 실제 값으로 갱신한다.
-
-1. 클라우드 프로젝트 신청/상태
-2. 정확한 모델명
-3. 토큰/API 방식
-4. Trust Check 실제 입력·출력 3개
-5. 플랫폼 캡처 최소 3개
-6. Kiosk 확장 장면 1개
-7. 미리보기/배포 확인 결과
-8. API/SDK 직접 연결 가능 여부
-
-완료 기준: **실제 플랫폼 증거 3개 이상 + 실제 모델명 + 실제 프롬프트 실행 결과 + HIGH 안전정책 증명**.
+최소 제출 증거: **플랫폼 화면 3개 이상 + 실제 생성 프롬프트/결과 + 다운로드 소스 + 병원 Kiosk 장면 + 안전정책 테스트 결과**.
