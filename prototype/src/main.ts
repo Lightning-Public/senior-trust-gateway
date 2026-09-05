@@ -1,6 +1,7 @@
 import './styles.css'
 import { GroundedRiskAnalyzer } from './groundedRiskAnalyzer'
 import { BundledKisaSnapshotVerifier } from './kisaSnapshotLoader'
+import { getHospitalKioskStep, type HospitalKioskStepId } from './kioskHospitalScenario'
 import { RuleBasedRiskAnalyzer } from './ruleBasedAnalyzer'
 import type { OfficialCheckResult, RiskAnalysis, RiskLevel } from './types'
 
@@ -24,6 +25,16 @@ const levelCopy: Record<RiskLevel, { badge: string; heading: string }> = {
   LOW: { badge: '위험 신호 적음', heading: '아직 안전하다고 확인된 것은 아니에요' },
   MEDIUM: { badge: '확인 필요', heading: '바로 누르거나 진행하지 마세요' },
   HIGH: { badge: '멈추세요', heading: '지금은 행동하지 않는 것이 안전해요' },
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  })[character] ?? character)
 }
 
 const app = document.querySelector<HTMLElement>('#app')
@@ -52,6 +63,32 @@ app.innerHTML = `
 
     <section id="result" class="result" hidden aria-live="polite"></section>
 
+    <details class="kiosk-scene">
+      <summary>생활 장면 2 · 병원 키오스크 접수</summary>
+      <div class="kiosk-demo">
+        <p class="scene-note"><strong>Kiosk Safe Guidance</strong> · 카메라/CV/OCR 없이 사전 정의된 화면 구조로 신뢰정책 확장을 보여주는 공모전 데모입니다.</p>
+        <div class="kiosk-screen" aria-label="병원 키오스크 구조화 화면 데모">
+          <div class="kiosk-screen-topline">
+            <span>병원 키오스크</span>
+            <span id="kiosk-risk" class="kiosk-risk">LOW</span>
+          </div>
+          <h2 id="kiosk-screen-title"></h2>
+          <p id="kiosk-screen-description"></p>
+          <div class="kiosk-target" aria-live="polite">
+            <span class="kiosk-pointer">👉</span>
+            <strong id="kiosk-target-label"></strong>
+          </div>
+        </div>
+        <div class="kiosk-guide">
+          <p class="kiosk-guide-label">생활매니저 안내</p>
+          <h3 id="kiosk-guide-title"></h3>
+          <p id="kiosk-guide-text"></p>
+        </div>
+        <button id="kiosk-action" type="button" class="secondary"></button>
+        <p id="kiosk-safety-note" class="kiosk-safety-note"></p>
+      </div>
+    </details>
+
     <footer>
       <p>위험 신호와 공식 확인 수준을 따로 표시합니다. 공식 공개 목록에서 찾지 못했다는 사실만으로 안전하다고 판단하지 않습니다.</p>
     </footer>
@@ -61,6 +98,16 @@ app.innerHTML = `
 const form = document.querySelector<HTMLFormElement>('#check-form')!
 const textarea = document.querySelector<HTMLTextAreaElement>('#message')!
 const result = document.querySelector<HTMLElement>('#result')!
+const kioskRisk = document.querySelector<HTMLElement>('#kiosk-risk')!
+const kioskScreenTitle = document.querySelector<HTMLElement>('#kiosk-screen-title')!
+const kioskScreenDescription = document.querySelector<HTMLElement>('#kiosk-screen-description')!
+const kioskTargetLabel = document.querySelector<HTMLElement>('#kiosk-target-label')!
+const kioskGuideTitle = document.querySelector<HTMLElement>('#kiosk-guide-title')!
+const kioskGuideText = document.querySelector<HTMLElement>('#kiosk-guide-text')!
+const kioskAction = document.querySelector<HTMLButtonElement>('#kiosk-action')!
+const kioskSafetyNote = document.querySelector<HTMLElement>('#kiosk-safety-note')!
+
+let kioskStepId: HospitalKioskStepId = 'welcome'
 
 document.querySelectorAll<HTMLButtonElement>('[data-sample]').forEach((button) => {
   button.addEventListener('click', () => {
@@ -77,12 +124,12 @@ function renderOfficialCheck(check: OfficialCheckResult): string {
     ? '공식 자료에서 일치했어요'
     : '공식 자료 대조 상태'
 
-  const sourceDate = check.source.dataDate ? `<p>데이터 기준: ${check.source.dataDate}</p>` : ''
+  const sourceDate = check.source.dataDate ? `<p>데이터 기준: ${escapeHtml(check.source.dataDate)}</p>` : ''
 
   return `
     <div class="reason-box">
       <h3>${heading}</h3>
-      <p>${check.detail}</p>
+      <p>${escapeHtml(check.detail)}</p>
       ${sourceDate}
       <p><a href="${check.source.url}" target="_blank" rel="noopener noreferrer">공공데이터 출처 보기</a></p>
     </div>
@@ -102,24 +149,24 @@ function renderResult(analysis: RiskAnalysis) {
       <span class="badge">${copy.badge}</span>
     </div>
     <h2>${copy.heading}</h2>
-    <p class="summary">${analysis.summary}</p>
+    <p class="summary">${escapeHtml(analysis.summary)}</p>
 
     <div class="verification-box">
       <h3>어디까지 확인했나요?</h3>
-      <strong>${analysis.verification.label}</strong>
-      <p>${analysis.verification.detail}</p>
+      <strong>${escapeHtml(analysis.verification.label)}</strong>
+      <p>${escapeHtml(analysis.verification.detail)}</p>
     </div>
 
     ${officialChecks}
 
     <div class="reason-box">
       <h3>왜 이렇게 말씀드리나요?</h3>
-      <ul>${analysis.reasons.map((reason) => `<li>${reason}</li>`).join('')}</ul>
+      <ul>${analysis.reasons.map((reason) => `<li>${escapeHtml(reason)}</li>`).join('')}</ul>
     </div>
 
     <div class="next-action">
       <h3>지금 이렇게 하세요</h3>
-      <p>${analysis.recommendation}</p>
+      <p>${escapeHtml(analysis.recommendation)}</p>
     </div>
 
     <a class="secondary action-link" href="${KISA_SMISHING_GUIDE}" target="_blank" rel="noopener noreferrer">보호나라 스미싱 확인방법 보기</a>
@@ -139,6 +186,27 @@ function renderResult(analysis: RiskAnalysis) {
   result.scrollIntoView({ behavior: 'auto', block: 'nearest' })
 }
 
+function renderKioskStep() {
+  const step = getHospitalKioskStep(kioskStepId)
+
+  kioskRisk.textContent = step.riskLevel
+  kioskRisk.className = `kiosk-risk risk-${step.riskLevel.toLowerCase()}`
+  kioskScreenTitle.textContent = step.screenTitle
+  kioskScreenDescription.textContent = step.screenDescription
+  kioskTargetLabel.textContent = step.targetLabel
+  kioskGuideTitle.textContent = step.guideTitle
+  kioskGuideText.textContent = step.guideText
+  kioskAction.textContent = step.actionLabel
+  kioskSafetyNote.textContent = step.requiresHuman
+    ? 'HIGH 단계: 생활매니저가 자동 진행하거나 민감정보를 대신 입력하지 않습니다.'
+    : 'LOW 단계: 화면 의미와 다음 위치만 쉽게 안내합니다.'
+}
+
+kioskAction.addEventListener('click', () => {
+  kioskStepId = getHospitalKioskStep(kioskStepId).nextStep
+  renderKioskStep()
+})
+
 form.addEventListener('submit', async (event) => {
   event.preventDefault()
   const message = textarea.value.trim()
@@ -153,3 +221,5 @@ form.addEventListener('submit', async (event) => {
 
   renderResult(await analyzer.analyze(message))
 })
+
+renderKioskStep()
