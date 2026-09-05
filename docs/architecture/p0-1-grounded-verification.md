@@ -30,8 +30,8 @@ P0의 문장 규칙 판정과 실제 공식 근거 확인을 분리한다.
 - 제공기관: 한국인터넷진흥원(KISA)
 - 데이터셋 기준: `한국인터넷진흥원_피싱사이트_20241231`
 - 주요 컬럼: 탐지날짜, 피싱사이트 URL
+- 전체 행: 131,752
 - 업데이트 주기: 연간
-- 공공데이터포털 페이지 기준 전체 131,752행
 - Open API는 활용신청 및 서비스키가 필요
 
 이 자료는 **실시간 피싱 판별 API가 아니라 공개된 탐지 URL 스냅샷**으로 취급한다.
@@ -39,17 +39,20 @@ P0의 문장 규칙 판정과 실제 공식 근거 확인을 분리한다.
 ## Architecture
 
 ```text
-Official KISA CSV
-  ↓ build-time ingest
-kisa-phishing-snapshot.json
-  ↓ lazy/static load
-Message → RuleBasedRiskAnalyzer
-               ↓
-       GroundedRiskAnalyzer
-          ├─ URL normalize
-          └─ KisaPhishingSnapshotVerifier
-               ↓
-           RiskAnalysis
+Message
+  ↓
+RuleBasedRiskAnalyzer
+  ↓
+GroundedRiskAnalyzer
+  ├─ URL extraction / normalization
+  └─ BundledKisaSnapshotVerifier
+       ├─ manifest.json
+       └─ required hash bucket only
+  ↓
+RiskAnalysis
+  ├─ risk level
+  ├─ verification level
+  └─ official check result
 ```
 
 ## Verification behavior
@@ -74,40 +77,61 @@ Message → RuleBasedRiskAnalyzer
 
 - 기존 위험도 유지
 - verification은 `RULES_ONLY`
-- 자동 공식 대조가 불가능했음을 표시
+- manifest 또는 필요한 버킷 파일을 신뢰성 있게 읽지 못한 경우 자동 공식 대조 실패로 표시
 
 ## Browser/API-key policy
 
-공공데이터포털 Open API는 서비스키가 필요하다.
+공공데이터포털 Open API는 서비스키가 필요한다.
 
 정적 Vite 클라이언트의 `VITE_*` 환경변수에 서비스키를 넣으면 최종 JavaScript에 노출될 수 있으므로 금지한다.
 
-P0.1의 첫 운영 방식은 **build-time official CSV snapshot**으로 확정한다. 런타임 서버/API 호출 없이 연간 공식 데이터를 정적 스냅샷으로 배포한다.
+1차 운영 방식은 **trusted build-time CSV snapshot ingest**다.
 
-향후 데이터 최신성 요구가 커질 때만 server-side adapter를 검토한다.
+향후 최신성이 더 필요해질 때만 서버 측 adapter를 검토한다.
 
-## Build-time snapshot ingest
+## Partitioned snapshot design
 
-공공데이터포털에서 공식 CSV를 다운로드한 뒤 `prototype` 디렉터리에서 실행한다.
+131,752행 전체를 모바일 브라우저에 한 번에 전달하지 않는다.
 
-```bash
-npm run build:kisa-snapshot -- /path/to/한국인터넷진흥원_피싱사이트.csv
-```
-
-기본 출력:
+빌드 시 공식 CSV를 다음 구조로 변환한다.
 
 ```text
-prototype/public/data/kisa-phishing-snapshot.json
+public/data/kisa-phishing/
+  manifest.json
+  00.json
+  01.json
+  ...
+  ff.json
 ```
 
-생성된 문서는 다음 조건을 만족할 때만 앱에서 authoritative source로 인정된다.
+- URL 정규화 후 FNV-1a 기반 8-bit bucket key 사용
+- 최대 256개 버킷
+- manifest에는 전체 레코드 수, 데이터 기준일, 버킷별 건수만 저장
+- URL이 없는 메시지는 manifest조차 요청하지 않음
+- URL이 있으면 manifest를 한 번 읽고 해당 URL에 필요한 버킷만 로드
+- 동일 세션에서 manifest와 버킷 결과를 캐시
+- manifest상 빈 버킷은 네트워크 요청 없이 `NO_MATCH`
+- 필요한 버킷 로딩 실패 시 `UNAVAILABLE`
+- 다른 버킷 로딩이 실패했더라도 성공적으로 읽은 공식 버킷에서 exact match가 발견되면 해당 MATCH 근거는 사용할 수 있음
 
-- `kind = KISA_PHISHING_SNAPSHOT`
-- `authoritative = true`
-- `source = data.go.kr/15143094`
-- records가 1건 이상
+이 구조는 전체 데이터 크기와 무관하게 한 번의 URL 확인 시 네트워크·메모리 비용을 작은 부분 집합으로 제한한다.
 
-저장소 기본 파일은 `authoritative: false` + 빈 records이며, 공식 CSV를 적재하기 전에는 `OFFICIAL_SOURCE` 판정을 내릴 수 없다.
+## Build-time generator
+
+```bash
+cd prototype
+node scripts/build-kisa-snapshot.mjs /path/to/official-kisa.csv public/data/kisa-phishing
+```
+
+생성기는:
+
+1. 공식 CSV의 날짜/URL 컬럼을 찾는다.
+2. HTTP(S) URL만 정규화한다.
+3. 중복 URL을 제거한다.
+4. 256개 해시 버킷으로 분할한다.
+5. authoritative manifest와 각 bucket JSON을 생성한다.
+
+기본 저장소에는 `authoritative: false`, `totalRecords: 0`인 manifest만 포함한다. 실제 공식 CSV가 적재되지 않은 상태에서는 공식 판정을 절대 내리지 않는다.
 
 ## Current implementation
 
@@ -115,24 +139,19 @@ prototype/public/data/kisa-phishing-snapshot.json
 - HTTP URL extraction and normalization
 - `KisaPhishingSnapshotVerifier`
 - `GroundedRiskAnalyzer`
-- authoritative match만 `OFFICIAL_SOURCE`로 승격
+- authoritative exact match만 `OFFICIAL_SOURCE`로 승격
 - no-match/unavailable fail-safe behavior
 - 보호나라 공식 확인방법 handoff
+- CSV → partitioned JSON build generator
+- fail-safe non-authoritative placeholder manifest
+- lazy manifest/bucket loader + per-session cache
 - fixture-based tests without network/API key
-- build-time CSV → JSON snapshot generator
-- browser snapshot loader with fail-safe placeholder
-- CI snapshot-generator syntax check
+- CI smoke test that executes the generator on a synthetic CSV
 
-## Not yet completed
+## Remaining validation
 
-- 실제 공식 KISA CSV를 저장소/배포 스냅샷에 적재
-- 최신 스냅샷의 크기·로딩 성능 측정
-- 모바일 Preview QA
-- 실시간 KISA 스미싱 판별 자동연계 (공식 개발 API 계약 미확인)
+- 실제 KISA CSV 1회 적재
+- real-data manifest/버킷 총 크기 및 최대 버킷 크기 측정
+- Preview/device QA
 
-## Next gate
-
-1. PR #8 최신 CI test/build 통과
-2. fail-safe semantics review
-3. 실제 공식 CSV를 이용한 snapshot 생성 및 크기 확인
-4. Preview 확보 후 모바일 QA
+실데이터 파일 다운로드 URL이 포털 페이지에서 동적으로 처리되어 현재 자동화 환경에서는 원문 CSV 자체를 아직 확보하지 못했다. 다만 131,752행 전체를 한 파일로 로드하는 설계 위험은 해시 버킷 분할로 선제 제거했다.
