@@ -41,5 +41,9 @@ export function urlBucketKey(rawUrl: string): string | null {
     hash = Math.imul(hash, 0x01000193) >>> 0
   }
 
-  return (hash & 0xff).toString(16).padStart(2, '0')
+  // Do not use only the low byte of FNV-1a. Patterned URL strings can make
+  // low bits cluster badly. Fold all four bytes so each bucket key depends
+  // on the full 32-bit hash while remaining deterministic in browser/build.
+  const folded = hash ^ (hash >>> 8) ^ (hash >>> 16) ^ (hash >>> 24)
+  return (folded & 0xff).toString(16).padStart(2, '0')
 }

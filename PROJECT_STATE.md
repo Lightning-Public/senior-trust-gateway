@@ -4,119 +4,119 @@ Last updated: 2026-09-05
 
 ## Status
 
-**P0 merged / P0.1 Grounded Verification merged / aitestbed + Kiosk fusion roadmap merged / contest hardening in Draft PR #10**
+**P0 / P0.1 merged / aitestbed + Kiosk fusion roadmap merged / contest hardening in Draft PR #10**
 
-제품 기준선과 P0/P0.1은 `main`에 병합되었다. PR #12 / merge `7553cfe9490ca1daec69cca03baafeaaa5495432`에서 aitestbed + Kiosk AI 융합 로드맵을 확정했다. 현재 공모전 대응은 Draft PR #10 `feat/modoo-ai-lab-contest`에서 진행한다.
+2026-09-06 18:00 KST 마감 `모두의 AI 실험실 AI 서비스 경진대회` 제출 후보는 **시니어 AI 생활매니저 — 안심부터 시작하는 시니어 디지털 동행**이다.
 
-## Product naming
+제품 본체는 Senior Trust Gateway의 신뢰·위험·검증·권한정책이며, 공모전 구현 범위는 **Trust Check 80% + Kiosk Safe Guidance 확장 20%**로 제한한다.
 
-- Repository / trust core: **Senior Trust Gateway**
+사용자는 `aitestbed.kr`에 실제 로그인해 클라우드 신청 화면까지 진입했다. 실제 화면에서 다음을 확인했다.
+
+- 추천 자원: vCPU 2 / Memory 4GB / Disk 50GB
+- OS: `rocky-8.10-base`
+- 1개월 우선 지원
+- 2026년 클라우드 1인 1회 신청 제한
+
+정확한 모델 표시명, 외부 AI 추론 API 호출 계약, 승인 상태, 실제 모델 출력은 아직 확인하지 않았으므로 추정하지 않는다.
+
+## Repository
+
+- Canonical remote: `Lightning-Public/senior-trust-gateway`
+- Default branch: `main`
+- P0 merge: PR #6
+- P0.1 infrastructure merge: PR #8
+- KISA bucket balance fix: `3b6088c4f52e3a5b1a1ec0e7f396871af8dbf7ab`
+- aitestbed + Kiosk fusion roadmap: PR #12 / merge `7553cfe9490ca1daec69cca03baafeaaa5495432`
+- aitestbed API fact-boundary clarification: PR #13 / merge `e1e111a8e310b42de5333886d17023c432e7f21c`
+- Contest hardening: Draft PR #10 `feat/modoo-ai-lab-contest`
+- Kiosk UX reference: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
+
+## Fixed direction
+
 - Contest service: **시니어 AI 생활매니저**
-- Subtitle: **안심부터 시작하는 시니어 디지털 동행**
-- Phase 0 first capability: **Trust Check** — 의심 문자·디지털 요청 안심확인
-- Phase 0 extension: **Kiosk Safe Guidance**
-- Long-term sequence: **Protect → Trust → Delegate**
-
-`AI 안심매니저`는 전체 제품명이 아니라 초기 Trust Check 기능을 설명하는 표현으로 사용한다.
-
-## Fixed architecture
-
-- Senior Trust Gateway = 위험등급·검증수준·권한정책·사람 에스컬레이션 본체
-- `Lightning-Public/kiosk_ar_assistant@3a7da8f` = Kiosk 화면·음성·포인터 UX 원본
-- aitestbed AI = 공통 `AIProvider`를 통한 의도·문맥 이해와 시니어용 쉬운 설명
-- 모델/API 호출 = 서버 측 경로 우선
-- 개인정보·문자 원문·키오스크 화면 정보 = 최소화·마스킹
-- quota / timeout / 모델 장애 / 잘못된 JSON / 모델 거부 = 결정론적 fallback
+- Subtitle / integrated expression: **안심부터 시작하는 시니어 디지털 동행**
+- Product sequence: **Protect → Trust → Delegate**
+- Senior Trust Gateway = 위험·검증·권한정책 본체
+- Trust Check = 첫 핵심 기능
+- Kiosk Safe Guidance = 두 번째 생활장면
 - AI authorization invariant: **AI confidence != user authorization**
 - Trust invariant: **Risk != Verification**
 - Official-data invariant: **공식 목록 미일치 != 안전**
 
-## Contest Phase 0 scope
+## P0 / P0.1 implementation
 
-단기 범위는 **Trust Check 80% + Kiosk 확장 20%**다.
-
-공통 사용자 흐름:
-
-```text
-이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결
-```
-
-### Trust Check
-
-- Vite + TypeScript 프로토타입
+- Vite + TypeScript 정적 웹
 - `RuleBasedRiskAnalyzer`
 - `OfficialSourceVerifier` / `GroundedRiskAnalyzer`
+- authoritative exact match만 공식 근거로 승격
+- build-time KISA CSV ingest + 256-way hash bucket snapshot
+- 최신 main의 folded 32-bit hash bucket selector와 distribution regression test를 기준으로 유지
+
+## Contest AI context layer — PR #10
+
+- `AiMessageInterpreter` / `AiInterpretation`
+- JSON: `summary`, `risk_context`, `safe_next_action`, `uncertainty`
+- `CONTEST_AI_SYSTEM_PROMPT`
+- `JsonAiMessageInterpreter`
 - `SafeAiAssistedRiskAnalyzer`
-- AI JSON: `summary`, `risk_context`, `safe_next_action`, `uncertainty`
-- HIGH는 AI가 낮추거나 행동을 승인할 수 없음
-- 모델 장애·지연·잘못된 JSON → 규칙엔진 fallback
+- 모델 exception / timeout / malformed JSON → 규칙엔진 fallback
+- HIGH는 AI 출력으로 하향 또는 승인 불가
+- prototype 코드 CI: 31 tests + production build 성공 이력 보유
 
-### Kiosk Safe Guidance
+## aitestbed fact boundary
 
-- 원본: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
-- 공모전에서는 전체 CV/OCR 통합보다 한 가지 대표 생활장면만 사용
-- 우선 후보: 병원 접수 또는 민원서류 발급
-- 화면·음성·포인터로 쉬운 다음 행동을 안내
-- 개인정보·동의·결제 단계는 확인 또는 사람 연결
-- image input은 aitestbed 실제 계정에서 지원 확인 전 완료로 주장하지 않음
+### Confirmed
 
-## Aitestbed actual observation
+- `AitestbedVibeWorkflow`: 바이브코딩 프로토타입 생성·수정·소스 다운로드·공모전 증빙
+- 로그인 후 클라우드 신청 화면과 위 자원/OS/지원조건
 
-사용자는 `aitestbed.kr` 정부 통합로그인 후 **클라우드 신청 화면**까지 실제 진입했다.
+### Unverified candidate
 
-확인값:
+- `AitestbedModelApiProvider`
 
-- 필수 입력: 프로젝트명 / 이용기간 / 이용목적 500자
-- 추천 자원: vCPU 2EA / Memory 4GB / Disk 50GB
-- OS: `rocky-8.10-base`
-- 1개월 우선 지원
-- 2026년 클라우드 1인당 1회 신청 안내
+외부 프로젝트가 호출할 AI 추론 API는 다음 채택 게이트를 모두 통과하기 전 구현 완료로 주장하지 않는다.
 
-클라우드 프로젝트 권장명: **시니어 AI 생활매니저**.
+1. 공식 AI 추론 API 문서 확인
+2. base URL / 인증 header / 모델 목록 / request-response schema 기록
+3. 최소 호출 probe 성공
+4. 외부 프로젝트 사용·개인정보·상업 이용 범위 확인
 
-상세: `docs/contest/platform-cloud-observation.md`
+로그인 전용 `내 API 키` 화면이나 키 관리 endpoint의 존재만으로 외부 추론 API를 증명하지 않는다. 확인 전에는 mock 또는 다른 승인된 AIProvider를 사용한다.
 
-## Verification
+## Roadmap
 
-- P0.1 snapshot generator smoke test: pass
-- grounded verification policy tests: pass
-- Contest PR #10 Prototype CI run #53: **success**
-- Contest test result: **3 files / 31 tests passed**
-- `aiAssistedRiskAnalyzer.test.ts`: **8 tests passed**
-- HIGH downgrade prevention: pass
-- malformed JSON / model exception / timeout fallback: pass
-- production build: **pass** (`tsc --noEmit && vite build`)
+정본: [`docs/roadmap/aitestbed-kiosk-fusion.md`](docs/roadmap/aitestbed-kiosk-fusion.md)
 
-## Contest documents
+- Phase 0: 공모전 증빙 — aitestbed 바이브코딩 사용·생성 결과·소스 다운로드 + Kiosk 확장 한 장
+- Phase 1: Text Trust Assistant — AIProvider 계약, mock/fallback, 검증된 provider만 연결
+- Phase 2: Kiosk Structured Guidance — 한 가지 공공 키오스크 시나리오
+- Phase 3: Vision/OCR — 실제 image input capability 확인 후에만
+- Phase 4: 공공 프로젝트 공통 AIProvider 계층 후보
 
-- `docs/roadmap/aitestbed-kiosk-fusion.md` — merged architecture/phase roadmap
-- `docs/contest/modoo-ai-lab-evidence.md` — contest evidence source of truth
-- `docs/contest/ai-use-one-page.md` — one-page proposal narrative
-- `docs/contest/platform-run-sheet.md` — authenticated platform execution checklist
-- `docs/contest/platform-cloud-observation.md` — actual cloud application observations
+## Contest evidence
 
-## Remaining contest blockers
+- `docs/contest/modoo-ai-lab-evidence.md`
+- `docs/contest/ai-use-one-page.md`
+- `docs/contest/platform-run-sheet.md`
+- `docs/contest/platform-cloud-observation.md`
 
-- [ ] 클라우드 신청 완료/승인대기 상태 확인
-- [ ] 정확한 aitestbed AI 모델 표시명 확인
-- [ ] AI API/key/token 할당·승인 방식 확인
-- [ ] 모델 quota / image input capability 확인
-- [ ] 정본 프롬프트 실제 실행
-- [ ] 실제 JSON 출력 최소 3개 기록
-- [ ] 플랫폼 캡처 최소 3개 확보
-- [ ] Kiosk 확장 장면 1개 확보
-- [ ] 미리보기/배포 기능 확인
-- [ ] PR #10을 최신 `main`과 동기화하고 충돌 해소
+## Remaining contest work
 
-## Existing P0.1 follow-up
-
-공모전과 별도 병행 작업:
-
-- 실제 최신 KISA 공식 CSV 확보/ingest
-- real-data bucket 크기/분포 측정
-- Preview 배포
-- 대표 모바일 기기 UX/성능 QA
+- [x] aitestbed 로그인
+- [x] 클라우드 신청 화면 진입 및 사양 확인
+- [ ] 클라우드 신청 완료/승인 상태 확인
+- [ ] 바이브코딩 프로젝트 `시니어 AI 생활매니저` 생성
+- [ ] 프로젝트 생성 / 프롬프트 / 생성 결과 화면 캡처 3개 이상
+- [ ] 생성 소스 다운로드 및 저장소와 포팅 범위 기록
+- [ ] 화면에 실제 모델 표시명이 있으면 정확한 문자열 기록
+- [ ] 외부 AI 추론 API 문서 및 호출 probe 여부 확인
+- [ ] Kiosk 확장 장면 1개를 제출 자료에 포함
+- [ ] 최종 제출 PDF/PPT/PPTX 정리
 
 ## Next action
 
-공모전 마감 전 최우선은 **클라우드 프로젝트 `시니어 AI 생활매니저` 신청 완료 → 실제 모델/API·토큰 확인 → Trust Check 프롬프트 3개 실행·캡처 → Kiosk 확장 장면 1개 정리 → 증빙 문서 현행화**다. 확인되지 않은 플랫폼 기능은 추정하지 않는다.
+공모전 마감 전 우선순위:
+
+**클라우드 신청 완료 상태 확인 → aitestbed 바이브코딩 프로젝트 생성 → 실제 프롬프트/생성 결과/소스 다운로드 증빙 → Kiosk 확장 한 장 → 제출자료 완성**
+
+외부 AI 추론 API는 공식 문서와 실제 probe가 확보된 경우에만 별도 adapter 구현으로 진행한다.

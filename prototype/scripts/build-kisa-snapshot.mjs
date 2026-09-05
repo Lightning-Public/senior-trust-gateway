@@ -80,7 +80,11 @@ function urlBucketKey(normalizedUrl) {
     hash ^= normalizedUrl.charCodeAt(index)
     hash = Math.imul(hash, 0x01000193) >>> 0
   }
-  return (hash & 0xff).toString(16).padStart(2, '0')
+
+  // Fold all 32 hash bits before selecting the bucket. Using only FNV-1a's
+  // low byte can cluster patterned URLs heavily and create oversized buckets.
+  const folded = hash ^ (hash >>> 8) ^ (hash >>> 16) ^ (hash >>> 24)
+  return (folded & 0xff).toString(16).padStart(2, '0')
 }
 
 const csv = await readFile(resolve(inputPath), 'utf8')
