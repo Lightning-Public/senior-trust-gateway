@@ -17,7 +17,7 @@ const authoritativeManifest = {
   dataDate: '20241231',
   bucketCount: 256,
   totalRecords: 131752,
-  buckets: { '46': 1 },
+  buckets: { c4: 1 },
 }
 
 afterEach(() => {
@@ -36,7 +36,7 @@ describe('URL normalization and bucketing', () => {
   })
 
   it('assigns a stable two-digit bucket to a normalized URL', () => {
-    expect(urlBucketKey('http://PHISHING-test.invalid:80/pay#step')).toBe('46')
+    expect(urlBucketKey('http://PHISHING-test.invalid:80/pay#step')).toBe('c4')
   })
 })
 
@@ -125,7 +125,7 @@ describe('BundledKisaSnapshotVerifier', () => {
       if (url.endsWith('/manifest.json')) {
         return { ok: true, json: async () => authoritativeManifest } as Response
       }
-      if (url.endsWith('/46.json')) {
+      if (url.endsWith('/c4.json')) {
         return {
           ok: true,
           json: async () => ({
@@ -133,7 +133,7 @@ describe('BundledKisaSnapshotVerifier', () => {
             authoritative: true,
             source: 'data.go.kr/15143094',
             dataDate: '20241231',
-            bucket: '46',
+            bucket: 'c4',
             records: [officialRecord],
           }),
         } as Response
@@ -148,7 +148,7 @@ describe('BundledKisaSnapshotVerifier', () => {
     expect(result.outcome).toBe('MATCH')
     expect(result.authoritative).toBe(true)
     expect(fetchMock).toHaveBeenCalledTimes(2)
-    expect(fetchMock.mock.calls[1]?.[0]).toContain('/46.json')
+    expect(fetchMock.mock.calls[1]?.[0]).toContain('/c4.json')
   })
 
   it('does not fetch a bucket when the authoritative manifest says it is empty', async () => {
