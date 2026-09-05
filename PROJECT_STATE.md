@@ -1,12 +1,19 @@
 # PROJECT_STATE
 
-Last updated: 2026-08-30
+Last updated: 2026-09-05
 
 ## Status
 
-**P0 — Trust Check Prototype active**
+**P0 merged / P0.1 Grounded Verification infrastructure ready**
 
-제품 기준선과 개발 하네스는 `main`에 병합되었다. 현재 Issue #5 / Draft PR #6에서 첫 실행 가능한 Trust Check 프로토타입을 개발·검증 중이다.
+제품 기준선과 P0 Trust Check 프로토타입은 `main`에 병합되었다. Issue #7 / PR #8에서 공식 근거 확인 레이어의 인프라를 구현·검증했다.
+
+## Repository
+
+- Canonical remote: `Lightning-Public/senior-trust-gateway`
+- Default branch: `main`
+- Current feature branch: `feat/p0-1-grounded-verification`
+- Current PR: #8
 
 ## Fixed direction
 
@@ -17,83 +24,79 @@ Last updated: 2026-08-30
 - Differentiator: 범용 AI 능력이 아니라 `신뢰 + 보호 + 권한관리 + 인간/가족 에스컬레이션`
 - Cost principle: 상시 고성능 Agent가 아니라 단계적 승격 구조
 - Trust invariant: **위험도(risk)와 실제 확인 수준(verification)을 분리한다.**
+- Official-data invariant: **공식 목록 미일치 != 안전**
 
-## First user problem
+## P0 — merged
 
-시니어가 다음과 같은 상황에서 누구를 믿어야 할지 판단하기 어렵다.
-
-- “이 문자 눌러도 돼?”
-- “은행 직원이라고 하는데 진짜야?”
-- “이 앱 설치해도 돼?”
-- “지원금을 준다는 연락이 진짜야?”
-- “이 요청대로 돈을 보내도 돼?”
-
-첫 제품은 모든 생활업무를 처리하는 대신 **위험한 디지털 행동 직전에 확인받는 경험**을 검증한다.
-
-## P0 implementation
-
-현재 브랜치: `feat/p0-trust-check-prototype`
-
-구현된 흐름:
+구현된 기본 흐름:
 
 `문자 입력 → 위험 신호 분석 → LOW/MEDIUM/HIGH → 확인 수준 표시 → 이유 → 다음 행동 → 필요 시 가족 확인`
 
-현재 기술 기준:
+기술 기준:
 
 - Vite + TypeScript 정적 웹
 - 기본 분석은 `RuleBasedRiskAnalyzer`
 - 기본 경로의 AI inference 비용 0
-- `RiskAnalyzer` 인터페이스로 향후 공식 데이터/AI 어댑터 교체 가능
 - 메시지 저장/로그인/금융 실행 없음
 - GitHub Actions에서 테스트 + production build 검증
 
-## Trust behavior
+P0의 `LOW`는 안전 확인 완료를 뜻하지 않는다. 발신자, 기관, 전화번호, URL 또는 주장 자체의 진위는 별도 verification으로 다룬다.
 
-P0에서 `LOW`는 **안전 확인 완료**를 뜻하지 않는다.
+## P0.1 — Grounded Verification
 
-현재 확인 수준은 `RULES_ONLY`이며 다음만 의미한다.
+목표:
 
-> 정의된 문장 위험 신호를 찾았는지 확인했다.
+`위험 신호 검사 → 공식 근거 확인 → 확인 수준 표시`
 
-발신자, 기관, 전화번호, URL 또는 주장 자체의 진위는 아직 공식 확인하지 않는다. 이 구분은 향후에도 제품 핵심 원칙으로 유지한다.
+첫 공식 근거 후보는 공공데이터포털 `한국인터넷진흥원_피싱사이트_20241231`이다.
 
-## Current coverage
+현재 구현:
 
-대표 시나리오:
+- `OfficialSourceVerifier` contract
+- URL extraction / normalization
+- `GroundedRiskAnalyzer`
+- authoritative exact match만 `OFFICIAL_SOURCE` + HIGH 승격
+- `NO_MATCH` / `UNAVAILABLE`은 안전으로 승격하지 않음
+- 보호나라 공식 확인방법 handoff
+- 공공데이터 서비스키를 정적 브라우저 번들에 넣지 않는 정책
+- build-time official CSV ingest
+- **256-way hash bucket snapshot** 생성
+- 작은 manifest + URL별 필요한 bucket만 lazy load
+- URL 없는 일반 메시지는 공식 데이터 요청 0회
+- manifest/bucket session cache
+- manifest 건수와 bucket 실제 건수/URL bucket 일치 무결성 검사
+- fixture tests + generator smoke test + production build CI
 
-1. 일반 일정 안내 — LOW
-2. 택배 외부 링크 — MEDIUM
-3. 수사기관 + 범죄 + 안전계좌 이체 — HIGH
-4. 인증번호 요구 — HIGH
-5. 지원금 + 긴급 링크 — MEDIUM
-6. 가족 새 번호 사칭 가능성 — MEDIUM
-7. 단순 경찰청 정보 안내 — 기관명만으로 HIGH 처리하지 않음
+## Why bucketed snapshot
 
-## CI
+공식 페이지 기준 데이터는 131,752행이다. 전체 JSON을 한 번에 모바일 브라우저로 로드하지 않고 최대 256개 버킷으로 분할한다.
 
-초기 P0 `Prototype CI`는 성공했다. 후속 trust-copy / risk-policy 수정 후 재실행 결과를 확인해야 한다.
+URL 하나를 확인할 때 일반적으로:
 
-## Still not decided
+`manifest → 해당 URL의 bucket 1개`
 
-- 실제 모바일 앱 / PWA / 전화 중심 인터페이스의 최종 형태
-- 인증 구조
-- 실제 가족 승인 채널
-- 모델 공급자
-- 서버/데이터 저장 방식
-- 사업모델 및 가격
+만 읽는다.
 
-## Next milestone
+따라서 실데이터 전체 크기가 커져도 사용자 한 번의 확인에 필요한 네트워크/메모리 비용은 작은 부분 집합으로 제한된다.
 
-**P0.1 — Grounded Verification**
+## Verification
 
-규칙 판정과 별개로 최소 한 종류의 공식 출처 확인을 연결해 다음 경험을 검증한다.
+- partitioned snapshot generator smoke test: pass
+- grounded verification policy tests: pass
+- production build: pass
+- latest code CI: Prototype CI run #32 success
 
-`위험 신호 검사 → 공식 근거 확인 가능 여부 → 확인 수준 표시`
+## Remaining P0.1 data/QA work
 
-후보는 KISA/보호나라 등 공식 보안정보 연계이며, 실제 제공 API/이용 조건을 확인한 뒤 결정한다.
+- 실제 KISA 공식 CSV 1회 ingest
+- real-data manifest 총 건수/버킷별 파일 크기 측정
+- Preview 배포
+- 대표 모바일 기기 UX/성능 QA
+
+공공데이터포털 페이지는 파일데이터가 로그인 없이 다운로드 가능하다고 안내하지만, 다운로드 URL이 동적으로 처리되어 현재 자동화 환경에서는 원문 CSV를 직접 확보하지 못했다.
 
 ## Next action
 
-1. PR #6 최신 커밋 CI 결과 확인
-2. CI 통과 시 모바일 실제 사용 QA를 위한 Preview 배포 방식 결정
-3. 공식 출처 어댑터 후보 조사 및 P0.1 Issue 분리
+1. Grounded Verification 인프라 PR을 `main`에 병합
+2. Issue #7에서 실제 KISA CSV ingest를 계속 추적
+3. Preview 배포 확보 후 P0/P0.1 모바일 QA 수행

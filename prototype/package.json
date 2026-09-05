@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:kisa-snapshot": "node scripts/build-kisa-snapshot.mjs",
+    "check:snapshot-script": "node --check scripts/build-kisa-snapshot.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.2",
