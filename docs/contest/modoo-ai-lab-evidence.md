@@ -9,6 +9,7 @@ Last updated: 2026-09-05
 - 제품 본체: Senior Trust Gateway
 - Phase 0 메인: Trust Check 80%
 - Phase 0 확장: Kiosk Safe Guidance 20%
+- Kiosk 대표 장면: **병원 접수 1개**
 
 `시니어 AI 생활매니저`는 고령자가 문자·키오스크·공공/생활 디지털 서비스에서 “이 상황을 믿어도 되는가, 지금 무엇을 해야 하는가”를 이해하도록 돕고, 위험한 행동은 AI의 확신과 관계없이 안전정책과 사람 확인으로 통제하는 서비스다.
 
@@ -20,48 +21,35 @@ Last updated: 2026-09-05
 
 핵심 안전 원칙:
 
-> **AI confidence ≠ user authorization**
+- `AI confidence != user authorization`
+- `Risk != Verification`
+- 공식 목록 미일치 != 안전
 
-## 2. 융합 아키텍처 기준
+## 2. 저장소·융합 기준
 
-2026-09-05 `main`에 병합된 PR #12 / merge `7553cfe9490ca1daec69cca03baafeaaa5495432`의 로드맵을 기준으로 한다.
+- Repository: `Lightning-Public/senior-trust-gateway`
+- Contest baseline: PR #10 / merge `f9129979bb9ab93f1f2021dbd90aadbb9409b8fe`
+- Phase 0 follow-up: Draft PR #14
+- Kiosk UX source: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
+- Roadmap: `docs/roadmap/aitestbed-kiosk-fusion.md`
+- aitestbed Vibe build plan: `docs/contest/aitestbed-vibe-build-plan.md`
 
-- **Senior Trust Gateway** = 위험등급·검증수준·권한정책·사람 에스컬레이션 본체
-- **Kiosk AI** = `Lightning-Public/kiosk_ar_assistant@3a7da8f`의 화면·음성·포인터 UX 원본
-- **aitestbed AI** = 공통 `AIProvider`를 통한 의도·문맥 이해와 시니어용 쉬운 설명
-- 모델/API 호출은 서버 측 경로 우선
-- 개인정보·문자 원문·키오스크 화면 정보는 최소화·마스킹
-- quota / timeout / 모델 장애 / 잘못된 JSON / 모델 거부 시 결정론적 fallback
+책임 경계:
 
-목표 구조:
+- Senior Trust Gateway = 위험등급·검증수준·권한정책·사람 에스컬레이션
+- Trust Check = 첫 핵심 기능
+- Kiosk Safe Guidance = 같은 신뢰정책을 보여주는 두 번째 생활 장면
+- `AIProvider` = 실제 호출 계약이 확인된 모델 공급자에 대한 공통 경계
 
-```text
-Trust Check UI ───────┐
-                      ├─► Senior Trust Orchestrator
-Kiosk Guidance UI ────┘      ├─ deterministic safety rules
-                             ├─ official-source verifier
-                             ├─ AIProvider
-                             │    └─ AitestbedProvider (server-side)
-                             └─ HumanEscalation
-```
+## 3. 공모전 평가 관점 대응
 
-## 3. 공모전 공식 요구와 대응
-
-공개 공식 자료에서 확인한 사항:
-
-- 주제: 모두의 AI 실험실 온라인 플랫폼을 활용한 개인·지역·사회 현안 해결 AI 서비스
-- 접수 마감: 2026-09-06 18:00 KST
-- 모두의 AI 실험실 지원 범주: 자연어 기반 바이브코딩, 생성형 AI 모델 이용 토큰, 민간 클라우드, 개발지원도구, 공공·민간 데이터/API
-- 로그인 진입: 정부 통합로그인 안내
-- 서면평가: **문제 정의 및 제안 필요성 / 창의성 및 AI 활용 적절성 / 실현 가능성 및 완성도**
-
-| 공식 평가 관점 | 시니어 AI 생활매니저 대응 |
+| 평가 관점 | 시니어 AI 생활매니저 대응 |
 | --- | --- |
-| 문제 정의 및 제안 필요성 | 고령자가 문자·키오스크 등 디지털 환경의 의미·위험·다음 행동을 판단하기 어려운 문제 해결 |
-| 창의성 및 AI 활용 적절성 | 규칙만으로 어려운 문맥·의도 이해와 쉬운 설명을 AI가 담당하고, 고위험 권한은 결정론적으로 분리 |
-| 실현 가능성 및 완성도 | Trust Check 동작 프로토타입 + Kiosk UX 원본 + 공통 AIProvider 경계 + fallback + 자동 테스트/CI |
+| 문제 정의 및 제안 필요성 | 고령자가 문자·키오스크 등 디지털 환경의 의미·위험·다음 행동을 판단하기 어려운 문제 |
+| 창의성 및 AI 활용 적절성 | AI의 문맥 이해·쉬운 설명과 결정론적 위험/권한 통제를 분리 |
+| 실현 가능성 및 완성도 | 동작 Trust Check + Kiosk 병원 접수 구조화 데모 + fallback 테스트/CI + aitestbed 바이브코딩 증빙 계획 |
 
-## 4. 실제 aitestbed 로그인·클라우드 화면 증거
+## 4. 실제 aitestbed 로그인·클라우드 화면 관찰
 
 사용자가 `aitestbed.kr`에 실제 로그인한 뒤 **클라우드 신청 화면**까지 진입했다.
 
@@ -71,41 +59,51 @@ Kiosk Guidance UI ────┘      ├─ deterministic safety rules
 - 추천 사양: **vCPU 2EA / Memory 4GB / Disk 50GB**
 - 추천 OS: **rocky-8.10-base**
 - 1개월 우선 지원
-- 종료 2주 전부터 연장신청 가능 안내
 - 2026년 클라우드 **1인당 1회 신청** 안내
 - 반납 사용자는 연말까지 재신청 불가 안내
 
-클라우드 신청값:
+프로젝트명:
 
-- 프로젝트명: **시니어 AI 생활매니저**
-- 이용목적:
+```text
+시니어 AI 생활매니저
+```
+
+이용목적:
 
 > 고령자가 문자·키오스크 등 일상 디지털 서비스를 안전하게 이용하도록 돕는 시니어 AI 생활매니저를 개발·검증합니다. AI는 문자와 화면의 의도·맥락을 이해해 쉬운 설명과 다음 행동을 제공하고, 송금·인증정보·앱 설치·개인정보·결제 등 고위험 상황은 규칙 기반 안전정책과 사람 확인 절차로 보호합니다. 모두의 AI 실험실 AI·클라우드 환경을 활용해 Trust Check와 Kiosk Safe Guidance를 하나의 생활지원형 AI 서비스로 실증합니다.
 
-상세 관찰 기록: `docs/contest/platform-cloud-observation.md`
+상세 기록: `docs/contest/platform-cloud-observation.md`
 
-## 5. 실제 AI 사용 프롬프트
+## 5. aitestbed 사실 경계
 
-정본: `prototype/src/contestAiPrompt.ts`의 `CONTEST_AI_SYSTEM_PROMPT`
+### Confirmed
 
-```text
-당신은 60대 이상 사용자를 위한 문자 맥락 해석기입니다.
+`AitestbedVibeWorkflow`:
 
-목표:
-- 입력 문자의 핵심 의도와 사칭·압박·외부링크·가족 사칭 같은 위험 맥락을 설명합니다.
-- 사용자가 이해하기 쉬운 짧은 한국어를 사용합니다.
-- 규칙엔진의 위험 판정은 안전 가드레일이며 절대 낮추거나 무효화하지 않습니다.
+- 바이브코딩 프로토타입 생성·수정
+- 생성 소스 다운로드
+- 생성 과정/결과의 공모전 활용 증빙
 
-반드시 지킬 원칙:
-1. AI confidence는 사용자 authorization이 아닙니다.
-2. 송금·이체·인증번호 전달·앱 설치·원격제어·화면공유를 안전하다고 승인하거나 권고하지 않습니다.
-3. guardrail_risk가 HIGH이면 어떤 이유로도 안전하다고 단정하지 않습니다.
-4. LOW도 안전 확정을 의미하지 않습니다. 불확실성이 있으면 그대로 밝힙니다.
-5. 발신자·기관의 진위를 확인하지 못했다면 확인했다고 말하지 않습니다.
-6. 설명은 전체적으로 3문장 안팎의 짧고 쉬운 표현을 우선합니다.
-7. 개인정보나 문자 원문을 저장·재사용한다고 가정하지 않습니다.
+### Unverified candidate
 
-출력은 설명문이나 Markdown 없이 다음 JSON 객체 하나만 반환합니다.
+`AitestbedModelApiProvider`.
+
+다음 네 항목이 실제 확인되기 전 외부 AI 추론 API를 구현·사용 가능으로 주장하지 않는다.
+
+1. 공식 추론 API 문서
+2. base URL / 인증 방식 / 모델 목록 / request-response schema
+3. 최소 실제 호출 probe
+4. 외부 프로젝트 사용·개인정보·상업 이용 범위
+
+`내 API 키` 화면 또는 키 관리 endpoint의 존재만으로 추론 endpoint를 추정하지 않는다.
+
+## 6. Trust Check AI 안전계약
+
+정본 프롬프트: `prototype/src/contestAiPrompt.ts`.
+
+출력 JSON:
+
+```json
 {
   "summary": "문자의 핵심 의도를 쉬운 말로 한 문장",
   "risk_context": "주의해야 할 맥락을 쉬운 말로 한 문장",
@@ -114,156 +112,172 @@ Kiosk Guidance UI ────┘      ├─ deterministic safety rules
 }
 ```
 
-입력에는 문자 원문 외에 규칙엔진이 만든 `guardrail_risk`, `guardrail_signals`를 함께 전달한다.
-
-## 6. AI와 규칙엔진 역할 분리
-
-```text
-문자 입력
-  → RuleBasedRiskAnalyzer
-  → LOW / MEDIUM / HIGH 가드레일
-  → AI 문맥 해석
-  → JSON 구조 검증
-  → SafeAiAssistedRiskAnalyzer
-  → 쉬운 설명 + 결정론적 최종 행동권고
-```
-
-AI가 담당:
-
-- 애매한 문자 핵심 의도
-- 사칭·압박·외부링크·가족사칭 맥락
-- 60대 이상 사용자가 이해하기 쉬운 설명
-- 불확실성 표시
-
-규칙엔진이 담당:
+규칙 안전판:
 
 - 송금·이체
-- 인증번호·비밀번호 등 인증정보
+- 인증번호·비밀번호
 - 앱 설치·원격제어·화면공유
 - 명확한 고위험 압박 패턴
-- 최종 위험등급과 행동권고 권한
 
-AI는 HIGH를 낮추거나 행동을 허가할 수 없다.
+AI가 담당하는 것은 애매한 의도·사칭 맥락·쉬운 설명·불확실성 표시다. AI는 HIGH를 낮추거나 행동을 허가할 수 없다.
 
-## 7. 입력·출력 검증 예시
+### 구현 재검증 결과
 
-아래 출력은 **플랫폼 실측이 아니라 코드/테스트 fixture**다. 실제 제출본에는 aitestbed 원본 출력으로 교체한다.
+PR #10에는 다음이 실제 구현되어 있다.
+
+- `contestAiPrompt.ts`
+- `aiAssistedRiskAnalyzer.ts`
+- `AiMessageInterpreter` / `AiInterpretation`
+- `SafeAiAssistedRiskAnalyzer`
+- malformed JSON / exception / timeout fallback
+- HIGH downgrade 방지 테스트
+
+그러나 현재 기본 `prototype/src/main.ts` 실행 경로는 `GroundedRiskAnalyzer`를 사용한다. 따라서 **AI 안전 레이어는 코드·테스트로 검증됐지만 확인된 실제 AIProvider가 없어 기본 UI 런타임에는 연결하지 않았다.**
+
+이 상태를 실제 aitestbed 추론 API 연동 완료로 표현하지 않는다.
+
+## 7. Trust Check 대표 입력
 
 ### A. 일반 일정 안내
 
-입력:
-
-```text
-내일 오후 2시에 주민센터 프로그램이 있습니다.
-```
-
-fixture:
-
 ```json
 {
-  "summary": "일정이나 안내 내용을 전달하는 문자로 보여요.",
-  "risk_context": "지금 문장만으로는 돈이나 개인정보를 요구하는 맥락이 뚜렷하지 않아요.",
-  "safe_next_action": "내용만 확인하고 추가 행동 요구가 생기면 다시 확인하세요.",
-  "uncertainty": "발신자 자체가 진짜인지는 이 분석만으로 확인할 수 없어요."
+  "message": "내일 오후 2시에 주민센터 프로그램이 있습니다.",
+  "guardrail_risk": "LOW",
+  "guardrail_signals": []
 }
 ```
 
-규칙 결과: `LOW` — 안전 확정 아님.
+기대: 쉬운 일정 설명 / 안전 확정 없음 / uncertainty 존재.
 
 ### B. 택배 외부 링크
 
-입력:
-
-```text
-배송지를 확인해 주세요 https://delivery.example/parcel
-```
-
-fixture:
-
 ```json
 {
-  "summary": "택배 확인을 위해 외부 링크를 누르게 하는 문자예요.",
-  "risk_context": "외부 링크는 실제 택배사 주소인지 별도 확인이 필요해요.",
-  "safe_next_action": "문자 속 링크 대신 택배사 공식 앱이나 홈페이지에서 직접 확인하세요.",
-  "uncertainty": "이 주소가 실제 택배사 주소인지는 현재 확인되지 않았어요."
+  "message": "배송지를 확인해 주세요 https://delivery.example/parcel",
+  "guardrail_risk": "MEDIUM",
+  "guardrail_signals": [
+    {"id":"external-link","label":"외부 링크 포함","level":"MEDIUM"}
+  ]
 }
 ```
 
-규칙 결과: `MEDIUM`.
+기대: 문자 링크를 바로 누르지 않고 공식 경로 확인.
 
 ### C. 검찰 사칭 + 안전계좌 이체
 
-입력:
-
-```text
-검찰입니다. 범죄 연루 확인을 위해 지금 안전계좌로 전액 이체하세요.
+```json
+{
+  "message": "검찰입니다. 범죄 연루 확인을 위해 지금 안전계좌로 전액 이체하세요.",
+  "guardrail_risk": "HIGH",
+  "guardrail_signals": [
+    {"id":"money-transfer","label":"송금·입금 요청","level":"HIGH"},
+    {"id":"authority-pressure","label":"수사기관·금융기관 사칭 및 압박 가능성","level":"HIGH"}
+  ]
+}
 ```
 
-AI가 안전하다고 답하더라도 규칙 결과는 `HIGH`이며 최종 정지 메시지와 행동 권고는 AI 출력으로 대체하지 않는다.
+AI 출력 내용과 관계없이 최종 결과는 HIGH 정지 정책을 유지한다.
 
-## 8. 자동 검증 결과
+현재 문서의 AI 예시는 fixture이며, 제출 증빙에서는 aitestbed 실제 실행 결과가 확보된 경우에만 실제 출력으로 교체한다.
 
-Draft PR #10의 prototype 코드에서 GitHub Actions `Prototype CI` run #53 성공.
+## 8. Kiosk Safe Guidance — 병원 접수
 
-- snapshot generator smoke test: PASS
-- Vitest: **3 test files / 31 tests passed**
-- `aiAssistedRiskAnalyzer.test.ts`: **8 tests passed**
-- HIGH 하향 금지: PASS
-- 잘못된 JSON fallback: PASS
-- 모델 장애 fallback: PASS
-- 모델 timeout fallback: PASS
+공모전 확장 장면은 **병원 접수**로 확정했다.
+
+선정 이유:
+
+- Kiosk 원본의 큰 안내·포인터·음성형 문구 개념을 가장 단순하게 재사용 가능
+- 결제/CV/OCR 없이도 단계 안내를 보여줄 수 있음
+- 개인정보 단계에서 Senior Trust Gateway의 HIGH/사람 연결 정책을 명확하게 증명 가능
+
+PR #14 구현 흐름:
+
+```text
+병원 진료 접수
+→ 접수 시작 위치 안내 (LOW)
+→ 예약 진료 선택 안내 (LOW)
+→ 주민등록번호 전체 입력 요청 예시 (HIGH)
+→ 생활매니저 자동 진행 중단
+→ 직원 도움 요청
+```
+
+구현:
+
+- `prototype/src/kioskHospitalScenario.ts`
+- `prototype/tests/kioskHospitalScenario.test.ts`
+- `prototype/src/main.ts`의 접힌 보조 장면
+
+이 데모는 사전 정의 화면 구조를 사용한다. **카메라/CV/OCR/image input 완료로 주장하지 않는다.** 실제 개인정보를 입력·저장하지 않고 HIGH 단계에서 안전 중단한다.
+
+## 9. aitestbed 바이브코딩 Phase 0
+
+실행 정본: `docs/contest/aitestbed-vibe-build-plan.md`.
+
+준비된 항목:
+
+- `시니어 AI 생활매니저` 1차 생성 프롬프트
+- Trust Check 80% + 병원 Kiosk 20% 구조
+- 외부 AI endpoint를 추정하지 않는 기술 제약
+- 생성 결과가 장황할 때의 수정 프롬프트
+- CV/OCR 과장 생성 시 제거 프롬프트
+- 다운로드 소스 비교/최소 포팅 기준
+
+실제 플랫폼에서 다음을 확보해야 한다.
+
+1. 프로젝트 생성/프로젝트명 화면
+2. 프롬프트가 보이는 화면
+3. 생성된 Trust Check 결과 화면
+4. 가능하면 병원 Kiosk 화면
+5. 생성 소스 다운로드 결과
+
+## 10. 자동 검증
+
+PR #10 최신 head 기준 Prototype CI run #63: **SUCCESS**.
+
+- 기존 snapshot generator tests: PASS
+- Trust Check / Grounded Verification tests: PASS
+- contest AI safety suite: PASS
 - `tsc --noEmit`: PASS
 - Vite production build: PASS
 
-## 9. Kiosk Safe Guidance 확장
-
-Kiosk 원본 기준: `Lightning-Public/kiosk_ar_assistant@3a7da8f`.
-
-공모전에서는 키오스크 전체를 별도 제품으로 제출하지 않는다. 생활매니저의 두 번째 생활장면으로 한 가지 시나리오만 보여준다.
-
-추천: **병원 접수** 또는 **민원서류 발급**.
-
-```text
-키오스크 화면/구조
-  → AI가 현재 단계 의미를 쉬운 말로 설명
-  → 화면·음성·포인터로 다음 행동 안내
-  → 개인정보·동의·결제 단계는 확인/사람 연결
-```
-
-실제 계정에서 image input 지원이 확인되지 않으면 CV/OCR 완료를 주장하지 않고 사전 정의 화면 구조 또는 OCR 텍스트 입력을 사용한다.
-
-## 10. 증빙 캡처 경로
-
-실제 화면을 확보한 뒤 저장한다.
-
-- `docs/contest/evidence/01-cloud-project.png` — 클라우드 프로젝트 신청/상태
-- `docs/contest/evidence/02-prompt-model-settings.png` — 정확한 모델명 + 프롬프트/설정
-- `docs/contest/evidence/03-trust-check-result.png` — 개인정보 없는 입력 + 실제 JSON 출력
-- `docs/contest/evidence/04-kiosk-guidance.png` — 가능하면 Kiosk 확장 화면
-- `docs/contest/evidence/05-preview-or-deploy.png` — 실제 기능이 존재할 때만
+PR #14에서는 추가로 병원 Kiosk HIGH 안전중단 테스트와 동적 결과 HTML escape 하드닝을 검증한다. 최종 CI 결과는 PR #14 완료 시 이 문서에 기록한다.
 
 ## 11. 개인정보·보안
 
 - 실제 문자 원문을 저장소에 커밋하지 않는다.
 - 캡처에는 전화번호, 이름, 인증번호, 실주소 등 개인정보를 사용하지 않는다.
 - API 키/토큰을 Git·클라이언트 번들·로그에 남기지 않는다.
-- 서버 측 secret 또는 승인된 aitestbed 실행 경로가 실제 제공되는지 확인한 뒤 사용한다.
+- 실제 AIProvider는 공식 호출 계약이 확인된 경우에만 server-side 경계로 연결한다.
+- HIGH 위험을 AI가 낮추지 못하게 한다.
 - 공식 목록 미일치 != 안전.
-- KISA/보호나라 API·연동은 실제 이용 방법을 확인하기 전에는 완료로 주장하지 않는다.
+- 병원 Kiosk 데모는 개인정보 입력을 수행하지 않는다.
 
-## 12. 현재 확인 필요 항목 — BLOCKER
+## 12. 증빙 캡처 경로
 
-현재 실제 로그인으로 클라우드 신청 화면까지는 확인했다. 다음 항목은 실제 화면에서 확인 후 갱신한다.
+실제 화면 확보 후 저장한다.
 
-- [ ] 클라우드 신청 완료/승인대기 상태
-- [ ] 정확한 AI 모델 표시명
-- [ ] AI API/key/token 발급·할당 방식과 승인 상태
-- [ ] 모델 한도/quota
-- [ ] image input capability
-- [ ] 위 정본 프롬프트 실제 실행
-- [ ] 최소 입력 3개 aitestbed 원본 JSON 출력
+```text
+docs/contest/evidence/01-cloud-project.png
+docs/contest/evidence/02-vibe-prompt.png
+docs/contest/evidence/03-vibe-trust-check-result.png
+docs/contest/evidence/04-kiosk-hospital-guidance.png
+docs/contest/evidence/05-source-download.png
+```
+
+파일에 실제 개인정보나 API key가 보이면 저장하지 않는다.
+
+## 13. 현재 BLOCKER
+
+- [ ] 클라우드 신청 완료/승인 상태
+- [ ] aitestbed 바이브코딩 프로젝트 실제 생성
 - [ ] 플랫폼 화면 캡처 최소 3개
+- [ ] 생성 소스 다운로드
+- [ ] 생성 소스와 현재 TypeScript prototype 비교
+- [ ] 필요한 UI 최소 포팅
+- [ ] 실제 화면에 모델 표시명이 있으면 정확한 문자열 기록
+- [ ] 외부 AI 추론 API 공식 문서/호출 probe 여부 확인
 - [ ] 미리보기/배포 기능 확인
-- [ ] API/SDK 직접 연결 가능 여부
+- [ ] 최종 제출 PDF/PPT/PPTX 정리
 
-완료 기준: **플랫폼 사용 증거 최소 3개 + 실제 모델명 + 실제 프롬프트/출력 + HIGH를 AI가 낮출 수 없다는 검증**.
+현재 Phase 0 완료 기준은 **aitestbed 바이브코딩 실제 사용 증거 + 생성 프롬프트/결과 + 다운로드 소스 + 병원 Kiosk 확장 장면 + 안전 invariant 테스트**다.
