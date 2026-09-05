@@ -107,7 +107,7 @@ describe('contest safety scenarios', () => {
     expect(result.aiContext?.detail).toContain('valid JSON')
   })
 
-  it('모델 장애나 지연도 규칙엔진 fallback으로 처리한다', async () => {
+  it('모델 장애도 규칙엔진 fallback으로 처리한다', async () => {
     const failingInterpreter: AiMessageInterpreter = {
       async interpret(_message: string, _guardrail: Pick<RiskAnalysis, 'level' | 'signals'>) {
         throw new Error('model unavailable')
@@ -120,5 +120,20 @@ describe('contest safety scenarios', () => {
     expect(result.level).toBe('MEDIUM')
     expect(result.aiContext?.status).toBe('FALLBACK')
     expect(result.aiContext?.detail).toContain('model unavailable')
+  })
+
+  it('모델 응답 지연도 timeout 후 규칙엔진 fallback으로 처리한다', async () => {
+    const slowInterpreter: AiMessageInterpreter = {
+      async interpret(): Promise<AiInterpretation> {
+        return new Promise<AiInterpretation>(() => {})
+      },
+    }
+    const analyzer = createAnalyzer(slowInterpreter, 5)
+
+    const result = await analyzer.analyze('인증번호를 알려주세요.')
+
+    expect(result.level).toBe('HIGH')
+    expect(result.aiContext?.status).toBe('FALLBACK')
+    expect(result.aiContext?.detail).toContain('timeout')
   })
 })
