@@ -102,26 +102,66 @@ Last updated: 2026-09-06
 - 실제 개인정보 입력/저장 없음
 - CV/OCR 완료 주장 없음
 
-## Contest UI/UX pass — 생활매니저 정체성 보정
+## Contest UI/UX — 생활매니저 정보구조
 
 기능 추가 없이 UI 정보구조와 디자인을 제품 기획에 맞게 재구성했다.
 
-첫 화면 구조:
+기본 제품 흐름:
 
 1. `시니어 AI 생활매니저` 서비스 정체성
-2. `어려운 디지털 생활, 혼자 하지 마세요.` 핵심 메시지
-3. 생활 도움 영역을 한눈에 표시
-   - 문자·카톡 이해 — 지금 사용
-   - 병원 접수 도움 — 지금 시연
+2. 생활 도움 전체를 인지
+3. 현재 사용할 수 있는 기능을 우선 실행
+4. 위험한 순간에는 긴급 행동을 최우선 노출
+5. 향후 생활지원 확장 방향 인지
+
+### Latest product-design pass — onboarding + priority home
+
+사용자가 서비스를 처음부터 정확히 이해하고 기억하도록 다음 UI 구조를 추가했다.
+
+#### 첫 진입 온보딩
+
+현재 prototype에는 실제 로그인 기능이 없으므로 로그인 UI를 가장하지 않는다. 대신 **첫 진입 시 2단계 온보딩**을 제공하고, 향후 로그인 구현 시 로그인 직후 동일 컴포넌트를 연결할 수 있게 했다.
+
+1. `어려운 디지털 생활을 옆에서 같이 봐드려요`
+   - 문자·카톡 → 병원 접수 → 생활 도움
+2. `위험한 순간에는 먼저 멈추겠습니다`
+   - 쉽게 이해 → 위험 확인 → 다음 행동 → 사람 확인
+
+- 첫 확인 후 브라우저 localStorage에 안내 확인 상태만 저장
+- 개인정보/계정정보 저장 없음
+- 메인 상단 `처음 안내` 버튼으로 다시 볼 수 있음
+
+#### 메인 우선순위
+
+1. **긴급 도움** — 링크·송금·인증번호는 잠깐 멈추기 → Trust Check 바로 이동
+2. **빠른 도움** — 현재 실제 구현된 기능을 가장 크게 노출
+   - 문자·카톡 같이 보기
+   - 병원 접수 도움
+3. **생활 도움 확장**
    - 예약·일정 챙기기 — 확장 방향
    - 행정·생활 지원 — 확장 방향
    - 가족·사람 연결 — 공통 원칙
-4. 공통 흐름 `쉽게 이해 → 위험 확인 → 다음 행동 → 사람 확인`
-5. Trust Check 실제 사용
-6. Hospital Kiosk 실제 시연
-7. 향후 생활지원 확장 방향
 
-중요: 기능 카드는 기술 기능 목록이 아니라 **사용자가 어떤 생활 순간에 도움받는지**를 설명한다. 구현 상태를 배지로 구분해 미구현 기능을 완료처럼 보이지 않게 한다.
+즐겨찾기 저장 기능은 새 제품 기능이므로 이번 공모전 UI 패스에서는 구현하지 않았다. 대신 향후 즐겨찾기/사용빈도 기반 정렬이 들어갈 자리를 `빠른 도움` 영역으로 구조화했다.
+
+#### 브랜드 요소
+
+별도 이미지 의존 없이 CSS 기반 작은 `동행 마크`를 추가했다.
+
+- 둥근 말풍선/동행자 형태
+- 두 눈과 미소로 부담 없는 안내자 인상
+- 작은 노란 포인트로 기억점 형성
+- 앱 헤더, 온보딩, 제품 방향 영역에 반복 노출
+- 과한 캐릭터보다 시니어 서비스의 신뢰성을 유지하는 소형 브랜드 요소
+
+브라우저 title도 `AI 안심매니저`에서 **`시니어 AI 생활매니저`**로 수정했다.
+
+변경 파일:
+
+- `prototype/src/main.ts`
+- `prototype/index.html`
+- `prototype/src/product-design.css`
+- 기존 `prototype/src/styles.css` 안전/기본 UI 스타일 유지
 
 Trust Check 결과 순서:
 
@@ -133,30 +173,22 @@ Trust Check 결과 순서:
 
 HIGH는 별도 `지금 멈추세요` 안전중단 UI와 사람 확인 행동을 가장 강하게 표시한다.
 
-변경 파일:
-
-- `prototype/src/main.ts`
-- `prototype/src/styles.css`
-- `docs/contest/contest-harness.md`
-- `docs/contest/modoo-ai-lab-evidence.md`
-- `PROJECT_STATE.md`
-
 ## Verification
 
 ### Previous validated baseline
 
 - Prototype CI run #70: SUCCESS
 - UI 1차 재구성 Prototype CI run #89: SUCCESS
+- Product identity UI Prototype CI run #98: SUCCESS
 
-### Current product-identity UI
+### Onboarding / priority home design
 
-PR #14 current head `c962d7fe305d265f2d981a828173422e069332cf` 기준 Prototype CI run #97: **SUCCESS**.
+PR #14 code head `918951b18fcc5feb553a5710ecf7f64859ec01a5` 기준 Prototype CI run #105: **SUCCESS**.
 
 - install dependencies: PASS
 - snapshot generator: PASS
 - risk policy tests: PASS
 - production build: PASS
-- 이 세션 재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
 
 안전정책/규칙엔진은 변경하지 않았다.
 
@@ -164,12 +196,10 @@ PR #14 current head `c962d7fe305d265f2d981a828173422e069332cf` 기준 Prototype 
 
 - root `vercel.json`: `cd prototype && npm install --no-audit --no-fund && npm run build`
 - output: `prototype/dist`
-- 저장소 공개 전환 후, 기존 무료 Hobby team `redsunjin's projects`에 Git 연동 정식 project `senior-trust-gateway`를 Import했다. Pro Trial/결제는 시작하지 않았다.
-- production URL: `https://senior-trust-gateway.vercel.app` — `main` baseline `READY`.
-- 개인정보가 없는 fixture로 정식 URL의 초기 Trust Check와 LOW/MEDIUM/HIGH를 실제 브라우저로 확인했다.
-- Draft PR #14 Preview URL: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app`. Vercel 로그인 보호는 해제됐다.
-- 위 Preview의 모바일 viewport `390 × 844`에서 current UI head를 실제 브라우저로 검수했다: 생활매니저 첫 화면, LOW/MEDIUM/HIGH, Hospital Kiosk 접수 → 예약 진료 → 민감정보 HIGH 중단 → 직원 확인 대기까지 통과했다. 실제 개인정보를 자동 진행·입력·저장하지 않는다.
-- favicon 404 한 건만 있으며 기능 흐름에는 영향이 없다.
+- production URL: `https://senior-trust-gateway.vercel.app` — `main` baseline `READY`
+- Draft PR #14 Preview branch alias: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app`
+- 이전 product-identity UI는 모바일 viewport `390 × 844`에서 Trust Check와 Hospital Kiosk 전체 흐름 QA를 통과했다.
+- **온보딩/우선순위 홈 추가 후 current head는 실제 모바일 브라우저에서 다시 최종 QA해야 한다.** 이전 화면 QA를 새 UI의 최종 증빙으로 재사용하지 않는다.
 
 ## aitestbed role
 
@@ -198,10 +228,11 @@ aitestbed는 현재 MVP를 대신 만드는 주체가 아니다.
 - [x] AI context 안전계약/fallback 테스트
 - [x] Hospital Kiosk 단일 시나리오 구현
 - [x] Product Boundary를 생활매니저 기준으로 정정
-- [x] 생활 도움 전체가 보이는 UI 정보구조 반영
-- [x] Hospital Kiosk를 두 번째 대표 생활 장면으로 적극 노출
-- [x] current product-identity UI CI test/build
-- [x] current UI head 실제 모바일 화면 QA (공개 Vercel Preview)
+- [x] 첫 진입 2단계 온보딩
+- [x] 긴급 도움 / 빠른 도움 / 확장 영역 우선순위 홈
+- [x] 작은 동행 브랜드 마크
+- [x] onboarding/current UI CI test/build
+- [ ] onboarding/current UI 실제 모바일 화면 QA
 - [ ] 제출용 MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 제출 PDF/PPT/PPTX
@@ -216,4 +247,4 @@ aitestbed는 현재 MVP를 대신 만드는 주체가 아니다.
 
 ## Next action
 
-**MVP 화면을 선별해 캡처하고 제출문서와 현재 구현을 1:1로 매핑한다.**
+**Draft PR #14 Preview에서 첫 진입 온보딩 → 메인 긴급/빠른 도움 → Trust Check → Hospital Kiosk 흐름을 390×844 모바일 기준으로 다시 검수하고 제출용 화면을 선별한다.**
