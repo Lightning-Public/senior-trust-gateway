@@ -68,22 +68,4 @@ cd prototype
 node scripts/build-kisa-snapshot.mjs /path/to/official-kisa.csv public/data/kisa-phishing
 ```
 
-## 저장소 구조
-
-```text
-.
-├─ AGENTS.md
-├─ PROJECT_STATE.md
-├─ docs/
-│  ├─ architecture/
-│  ├─ handoffs/
-│  └─ product/
-├─ prototype/
-│  ├─ src/
-│  ├─ tests/
-│  ├─ scripts/
-│  └─ public/data/kisa-phishing/
-└─ .agent/prompts/
-```
-
 현재 진행상태는 [`PROJECT_STATE.md`](PROJECT_STATE.md)를 기준으로 확인합니다.
