@@ -30,3 +30,16 @@ export function extractHttpUrls(message: string): string[] {
 
   return [...new Set(normalized)]
 }
+
+export function urlBucketKey(rawUrl: string): string | null {
+  const normalized = normalizeHttpUrl(rawUrl)
+  if (!normalized) return null
+
+  let hash = 0x811c9dc5
+  for (let index = 0; index < normalized.length; index += 1) {
+    hash ^= normalized.charCodeAt(index)
+    hash = Math.imul(hash, 0x01000193) >>> 0
+  }
+
+  return (hash & 0xff).toString(16).padStart(2, '0')
+}
