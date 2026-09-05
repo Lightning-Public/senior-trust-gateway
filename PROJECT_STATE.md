@@ -14,8 +14,6 @@ Last updated: 2026-09-06
 
 현재 공모전 작업의 최상위 정본은 [`docs/contest/contest-harness.md`](docs/contest/contest-harness.md)다.
 
-장기 제품 방향이나 플랫폼 실험이 이 목표보다 앞서면 안 된다.
-
 ## MVP definition
 
 MVP 정본은 `Lightning-Public/senior-trust-gateway`의 실행 가능한 prototype이다.
@@ -88,11 +86,9 @@ MVP 정본은 `Lightning-Public/senior-trust-gateway`의 실행 가능한 protot
 
 중요: **AI context layer는 코드·테스트로 준비돼 있지만 확인된 실제 AIProvider가 없어 기본 UI 런타임에 외부 AI 호출을 연결하지 않았다.**
 
-실제 AI API 연동 완료로 표현하지 않는다.
-
 ### Hospital Kiosk Safe Guidance
 
-PR #14에서 병원 접수 한 장면을 구조화 데모로 구현했다.
+공모전 확장 장면은 병원 접수 한 장면만 유지한다.
 
 - 접수 시작 안내
 - 예약 진료 선택
@@ -102,30 +98,57 @@ PR #14에서 병원 접수 한 장면을 구조화 데모로 구현했다.
 - 실제 개인정보 입력/저장 없음
 - CV/OCR 완료 주장 없음
 
+## Contest UI/UX completion pass — 2026-09-06
+
+기능 추가 없이 공모전 제출 화면의 제품 정체성과 시니어 사용성을 재구성했다.
+
+- 첫 화면 서비스명을 **시니어 AI 생활매니저**로 명확화
+- 핵심 메시지: **위험한 행동 전에 먼저 멈추고, 쉽게 설명하고, 안전한 다음 행동과 사람 확인을 안내**
+- Trust Check를 첫 번째이자 가장 강한 행동으로 유지
+- 붙여넣기 입력과 확인 버튼을 모바일 기준으로 크게 구성
+- 결과 정보 순서를 다음으로 통일
+  1. 무슨 뜻인가요?
+  2. 위험 확인
+  3. 지금 이렇게 하세요
+  4. 확실하지 않은 점
+  5. 필요하면 사람에게 확인
+- HIGH 결과에 별도 `지금 멈추세요` 안전중단 카드와 사람 확인 행동을 가장 강하게 표시
+- Hospital Kiosk를 접힌 기술 메뉴가 아니라 **두 번째 생활 장면**으로 자연스럽게 연결
+- 큰 글자, 큰 버튼, 적은 선택지, 높은 대비, 충분한 여백, 색상+텍스트 병행 적용
+- 안전정책/규칙엔진/AI 경계는 변경하지 않음
+
+변경 파일:
+
+- `prototype/src/main.ts`
+- `prototype/src/styles.css`
+
 ## Verification
 
-PR #14 prototype 기준 Prototype CI run #70: **SUCCESS**.
+### Previous validated baseline
 
-- snapshot generator: PASS
-- Vitest: **5 files / 35 tests passed**
-- Grounded Verification: 14 PASS
-- contest AI safety: 8 PASS
-- rule-based analyzer: 9 PASS
-- KISA 131,752-row distribution guard: 1 PASS
-- hospital Kiosk safety: 3 PASS
+Prototype CI run #70: **SUCCESS**
+
+- Vitest: 5 files / 35 tests passed
 - `tsc --noEmit && vite build`: PASS
 
-run #70 이후 prototype 코드는 변경하지 않았고 현재 하네스/제출 문서만 정리 중이다.
+### Current UI commit validation
 
-## Deployment and browser QA — 2026-09-06 KST
+PR #14 current UI head `12fe8cc7b5edceb2ca0b8a6756b24a91dc3ebffd` 기준 Prototype CI run #89: **SUCCESS**.
 
-- Vercel 설정 확인: root `vercel.json`의 `buildCommand`는 `cd prototype && npm install --no-audit --no-fund && npm run build`, `outputDirectory`는 `prototype/dist`다.
-- 실제 Vercel temporary deployment가 `READY` 상태로 생성됐다: `https://temporary-rushing-indigo-rde96e8.vercel.app`.
-- 이 temporary deployment는 Vercel CLI 기준 60분 뒤 만료되며, team claim 전에는 Git 연동된 정식 project가 아니다.
-- `redsunjins-projects` team에서 GitHub repository import를 시작했고, GitHub Mobile 재인증 뒤 `Lightning-Public/senior-trust-gateway`가 Import 목록에 표시됐다.
-- Vercel 화면은 이 저장소를 private GitHub organization repository로 판단하며, Hobby team에서는 import를 허용하지 않는다. 정식 import에는 기존 Pro team으로 전환하거나 Vercel Pro Trial/Pro 플랜을 선택해야 한다. 이는 구독/플랜 변경이므로 사용자 선택 전에는 진행하지 않는다.
-- 실제 배포 URL을 브라우저로 검수했다. 초기 화면, Trust Check LOW/MEDIUM/HIGH, Hospital Kiosk 안내, 민감정보 HIGH 중단과 직원 확인 대기까지 모두 의도대로 표시됐다.
-- 이 세션 재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
+- dependency install: PASS
+- snapshot generator: PASS
+- risk policy tests: PASS
+- production build: PASS
+
+이번 ChatGPT 원격 세션에서는 로컬 실행 환경/브라우저를 직접 열 수 없어 새 UI 커밋의 실제 모바일 화면 QA는 아직 별도 확인이 필요하다. 이전 prototype은 local/Vercel temporary deployment에서 실제 브라우저 QA가 통과했지만, 그 결과를 새 UI 커밋의 화면 QA로 재사용하지 않는다.
+
+## Deployment status
+
+- root `vercel.json`: `cd prototype && npm install --no-audit --no-fund && npm run build`
+- output: `prototype/dist`
+- 과거 temporary deployment에서 사용자 흐름 QA 완료
+- temporary URL은 만료형이며 현재 UI head의 영구 배포 URL은 아직 없음
+- private organization repository의 정식 Vercel import는 Hobby 제한으로 Pro team/Pro Trial 선택이 필요함
 
 ## aitestbed role
 
@@ -139,36 +162,11 @@ aitestbed는 **현재 MVP를 대신 만드는 주체가 아니다.**
 - `rocky-8.10-base`
 - `AitestbedVibeWorkflow`: 바이브코딩 생성·수정·소스 다운로드·공모전 증빙
 
-### Current use
-
-- 플랫폼 활용 증빙 확보
-- 바이브코딩 사용 이력 확보
-- 생성 결과가 있으면 UI 비교 참고
-- 필요한 UI만 최소 포팅
-
 ### Unverified candidate
 
 `AitestbedModelApiProvider`
 
-다음이 확인되기 전에는 구현하지 않는다.
-
-1. 공식 AI 추론 API 문서
-2. base URL / 인증 / 모델 / request-response schema
-3. 최소 실제 호출 probe
-4. 외부 프로젝트 사용·개인정보·상업 이용 범위
-
-## Contest harness priority
-
-현재 작업 순서:
-
-1. **실행 가능한 MVP의 제출 관점 최종 점검**
-2. **MVP 화면/사용자 흐름 캡처**
-3. **제출문서와 현재 코드 1:1 매핑**
-4. test/build/CI 상태 유지
-5. aitestbed 실제 활용 증빙 확보
-6. 최종 PDF/PPT/PPTX 완성
-
-aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된다.
+공식 AI 추론 API 문서, 호출 계약, 실제 probe가 확인되기 전에는 구현하지 않는다.
 
 ## Remaining contest work
 
@@ -178,8 +176,9 @@ aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된�
 - [x] HIGH 안전정책
 - [x] AI context 안전계약/fallback 테스트
 - [x] Hospital Kiosk 단일 시나리오 구현
-- [x] test/build/CI
-- [x] 실제 MVP 화면/사용 흐름 최종 QA (local browser)
+- [x] 공모전용 시니어 AI 생활매니저 UI/UX 재구성
+- [x] current UI head CI test/build
+- [ ] current UI head 실제 모바일 화면 QA
 - [ ] 제출용 MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 제출 PDF/PPT/PPTX
@@ -191,12 +190,7 @@ aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된�
 - [ ] 신청 완료/승인 상태 확인
 - [ ] 플랫폼 활용 화면 최소 3개 확보
 - [ ] 바이브코딩 생성 결과/다운로드 증빙 확보
-- [ ] 실제 모델/API 관련 정보가 화면에 존재하면 정확한 사실만 기록
-
-실제 외부 AIProvider 연동은 **공모전 MVP를 깨지 않으면서 공식 계약이 확인된 경우에만** 진행한다.
 
 ## Next action
 
-**Vercel Pro Trial 또는 기존 Pro team 사용 여부를 결정한 뒤, `Lightning-Public/senior-trust-gateway`를 정식 import한다.**
-
-그 다음 MVP 화면을 캡처하고 제출문서 작성을 진행한다.
+**현재 UI head를 실제 모바일 브라우저에서 검수하고 제출용 화면 캡처를 확보한다.**
