@@ -4,99 +4,124 @@ Last updated: 2026-09-05
 
 ## Status
 
-**P0 merged / P0.1 Grounded Verification infrastructure merged**
+**P0 / P0.1 merged / aitestbed + Kiosk fusion roadmap merged / contest hardening in Draft PR #10**
 
-제품 기준선, P0 Trust Check, P0.1 Grounded Verification 인프라는 `main`에 병합되었다. 현재 개발 게이트는 Issue #7의 실제 KISA 공식 데이터 적재와 Preview/모바일 QA다.
+2026-09-06 18:00 KST 마감 `모두의 AI 실험실 AI 서비스 경진대회` 제출 후보는 **시니어 AI 생활매니저 — 안심부터 시작하는 시니어 디지털 동행**이다.
+
+제품 본체는 Senior Trust Gateway의 신뢰·위험·검증·권한정책이며, 공모전 구현 범위는 **Trust Check 80% + Kiosk Safe Guidance 확장 20%**로 제한한다.
+
+사용자는 `aitestbed.kr`에 실제 로그인해 클라우드 신청 화면까지 진입했다. 실제 화면에서 다음을 확인했다.
+
+- 추천 자원: vCPU 2 / Memory 4GB / Disk 50GB
+- OS: `rocky-8.10-base`
+- 1개월 우선 지원
+- 2026년 클라우드 1인 1회 신청 제한
+
+정확한 모델 표시명, 외부 AI 추론 API 호출 계약, 승인 상태, 실제 모델 출력은 아직 확인하지 않았으므로 추정하지 않는다.
 
 ## Repository
 
 - Canonical remote: `Lightning-Public/senior-trust-gateway`
 - Default branch: `main`
+- Work branch: `feat/modoo-ai-lab-contest`
+- Draft PR: #10
+- Latest main synchronized: `e1e111a8e310b42de5333886d17023c432e7f21c` (PR #13 포함)
+- Sync merge commit: `6b348dc4138ebcde43668dc8127369c0bb890e8e`
+- Development handoff: `docs/handoffs/contest-dev-session-2026-09-05.md`
 - P0 merge: PR #6
 - P0.1 infrastructure merge: PR #8
-- Active execution issue: #7 `Grounded Verification — real KISA data & device QA`
+- KISA bucket balance fix: `3b6088c4f52e3a5b1a1ec0e7f396871af8dbf7ab`
+- aitestbed + Kiosk fusion roadmap: PR #12 / merge `7553cfe9490ca1daec69cca03baafeaaa5495432`
+- aitestbed API fact-boundary clarification: PR #13 / merge `e1e111a8e310b42de5333886d17023c432e7f21c`
+- Kiosk UX reference: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
 
 ## Fixed direction
 
-- Working name: **Senior Trust Gateway**
-- Product entry point: **AI 안심매니저**
-- Long-term direction: 신뢰를 확보한 뒤 생활매니저로 확장
+- Contest service: **시니어 AI 생활매니저**
+- Subtitle: **안심부터 시작하는 시니어 디지털 동행**
 - Product sequence: **Protect → Trust → Delegate**
-- Differentiator: 범용 AI 능력이 아니라 `신뢰 + 보호 + 권한관리 + 인간/가족 에스컬레이션`
-- Cost principle: 상시 고성능 Agent가 아니라 단계적 승격 구조
-- Trust invariant: **위험도(risk)와 실제 확인 수준(verification)을 분리한다.**
+- Senior Trust Gateway = 위험·검증·권한정책 본체
+- Trust Check = 첫 핵심 기능
+- Kiosk Safe Guidance = 두 번째 생활장면
+- AI authorization invariant: **AI confidence != user authorization**
+- Trust invariant: **Risk != Verification**
 - Official-data invariant: **공식 목록 미일치 != 안전**
 
-## P0 — Trust Check
-
-기본 흐름:
-
-`문자 입력 → 위험 신호 분석 → LOW/MEDIUM/HIGH → 확인 수준 표시 → 이유 → 다음 행동 → 필요 시 가족 확인`
+## P0 / P0.1 implementation
 
 - Vite + TypeScript 정적 웹
-- 기본 분석은 `RuleBasedRiskAnalyzer`
-- 기본 경로의 AI inference 비용 0
-- 메시지 저장/로그인/금융 실행 없음
-- `LOW`는 안전 확인 완료를 뜻하지 않음
+- `RuleBasedRiskAnalyzer`
+- `OfficialSourceVerifier` / `GroundedRiskAnalyzer`
+- authoritative exact match만 공식 근거로 승격
+- build-time KISA CSV ingest + 256-way hash bucket snapshot
+- 최신 main의 folded 32-bit hash bucket selector와 distribution regression test를 기준으로 유지
 
-## P0.1 — Grounded Verification
+## Contest AI context layer — PR #10
 
-구현된 인프라:
+- `AiMessageInterpreter` / `AiInterpretation`
+- JSON: `summary`, `risk_context`, `safe_next_action`, `uncertainty`
+- `CONTEST_AI_SYSTEM_PROMPT`
+- `JsonAiMessageInterpreter`
+- `SafeAiAssistedRiskAnalyzer`
+- 모델 exception / timeout / malformed JSON → 규칙엔진 fallback
+- HIGH는 AI 출력으로 하향 또는 승인 불가
+- sync code 기준 Prototype CI run #61: **SUCCESS**
 
-- `OfficialSourceVerifier`
-- URL extraction / normalization
-- `GroundedRiskAnalyzer`
-- authoritative exact match만 `OFFICIAL_SOURCE` + HIGH 승격
-- `NO_MATCH` / `UNAVAILABLE`은 안전으로 승격하지 않음
-- 보호나라 공식 확인방법 handoff
-- 공공데이터 서비스키를 정적 브라우저 번들에 넣지 않는 정책
-- trusted build-time official CSV ingest
-- **256-way hash bucket snapshot**
-- 작은 manifest + 필요한 bucket만 lazy load
-- URL 없는 일반 메시지는 공식 데이터 요청 0회
-- manifest/bucket session cache
-- manifest/bucket 건수와 URL bucket 무결성 검사
-- generator smoke test + policy tests + production build CI
+## aitestbed fact boundary
 
-## Official data freshness
+### Confirmed
 
-2026-09-05 재확인 기준, 공공데이터포털 상세 페이지에서 직접 확인되는 파일은 여전히 `한국인터넷진흥원_피싱사이트_20241231`이며 131,752행이다. 페이지는 연간 갱신과 차기 등록 예정일 2026-04-23을 표시하지만, 현재 검색 가능한 공식 상세 페이지에서 더 최신 2025/2026 파일은 확인하지 못했다.
+- `AitestbedVibeWorkflow`: 바이브코딩 프로토타입 생성·수정·소스 다운로드·공모전 증빙
+- 로그인 후 클라우드 신청 화면과 위 자원/OS/지원조건
 
-따라서 특정 `20241231` 파일명을 운영 로직에 고정하지 않는다. 실제 ingest 시점에 공식 포털에서 확인 가능한 최신 파일을 사용하고, 생성 manifest의 `dataDate`로 데이터 기준일을 기록한다.
+### Unverified candidate
 
-## Verification
+- `AitestbedModelApiProvider`
 
-- P0.1 snapshot generator smoke test: pass
-- grounded verification policy tests: pass
-- production build: pass
-- latest code CI before merge: Prototype CI run #32 success
-- P0.1 merge commit: `c0197e99aa6647a073a93b691510658d77c19c0c`
+외부 프로젝트가 호출할 AI 추론 API는 다음 채택 게이트를 모두 통과하기 전 구현 완료로 주장하지 않는다.
 
-## Roadmap decision — aitestbed + Kiosk AI
+1. 공식 AI 추론 API 문서 확인
+2. base URL / 인증 header / 모델 목록 / request-response schema 기록
+3. 최소 호출 probe 성공
+4. 외부 프로젝트 사용·개인정보·상업 이용 범위 확인
 
-2026-09-05 기준 다음 융합 방향을 채택했다.
+로그인 전용 `내 API 키` 화면이나 키 관리 endpoint의 존재만으로 외부 추론 API를 증명하지 않는다. 확인 전에는 mock 또는 다른 승인된 AIProvider를 사용한다.
 
-- Senior Trust Gateway를 신뢰·보호·권한관리 본체로 유지한다.
-- `Lightning-Public/kiosk_ar_assistant`를 Kiosk Safe Guidance의 UX 원본으로 연결한다.
-- 공개 확인된 aitestbed 바이브코딩은 프로토타입 생성·소스 다운로드·공모전 증빙에 사용한다.
-- 외부 프로젝트용 aitestbed AI 추론 API는 공개 문서에서 확인되지 않았으므로, 공식 호출 문서와 실제 probe 전까지 `unverified candidate`로만 둔다.
-- 규칙엔진은 결제·인증정보·민감정보 등 고위험 행동을 계속 통제하며 AI가 `HIGH`를 낮추지 못하게 한다.
-- 단기 범위는 Trust Check 80% + Kiosk 확장 시나리오 20%다.
+## Roadmap
 
-상세 단계, 저장소 책임 경계, aitestbed 공급자 구조와 사실 경계는 [`docs/roadmap/aitestbed-kiosk-fusion.md`](docs/roadmap/aitestbed-kiosk-fusion.md)를 기준으로 한다.
+정본: [`docs/roadmap/aitestbed-kiosk-fusion.md`](docs/roadmap/aitestbed-kiosk-fusion.md)
 
-## Remaining work
+- Phase 0: 공모전 증빙 — aitestbed 바이브코딩 사용·생성 결과·소스 다운로드 + Kiosk 확장 한 장
+- Phase 1: Text Trust Assistant — AIProvider 계약, mock/fallback, 검증된 provider만 연결
+- Phase 2: Kiosk Structured Guidance — 한 가지 공공 키오스크 시나리오
+- Phase 3: Vision/OCR — 실제 image input capability 확인 후에만
+- Phase 4: 공공 프로젝트 공통 AIProvider 계층 후보
 
-- 실제 최신 KISA 공식 CSV 1회 확보/ingest
-- real-data `totalRecords` / 버킷 분포 / 총 파일 크기 / 최대 버킷 크기 측정
-- Preview 배포
-- 대표 모바일 기기 UX/성능 QA
-- 공식 match / miss / unavailable UX 실기기 확인
-- aitestbed 로그인 후 외부 AI 추론 API 문서·base URL·인증·schema·이용범위 확인
-- 공통 `AIProvider` 계약과 mock/안전 fallback 구현
-- 실제 호출 probe 전에는 `AitestbedModelApiProvider` 미구현 유지
-- `kiosk_ar_assistant@3a7da8f` 재현 빌드 및 선택적 포팅 범위 확정
+## Contest evidence
+
+- `docs/contest/modoo-ai-lab-evidence.md`
+- `docs/contest/ai-use-one-page.md`
+- `docs/contest/platform-run-sheet.md`
+- `docs/contest/platform-cloud-observation.md`
+- `docs/handoffs/contest-dev-session-2026-09-05.md`
+
+## Remaining contest work
+
+- [x] aitestbed 로그인
+- [x] 클라우드 신청 화면 진입 및 사양 확인
+- [x] 최신 main과 공모전 branch Git 동기화
+- [x] 개발 세션 handoff 문서 생성
+- [ ] 클라우드 신청 완료/승인 상태 확인
+- [ ] 바이브코딩 프로젝트 `시니어 AI 생활매니저` 생성
+- [ ] 프로젝트 생성 / 프롬프트 / 생성 결과 화면 캡처 3개 이상
+- [ ] 생성 소스 다운로드 및 저장소와 포팅 범위 기록
+- [ ] 화면에 실제 모델 표시명이 있으면 정확한 문자열 기록
+- [ ] 외부 AI 추론 API 문서 및 호출 probe 여부 확인
+- [ ] Kiosk 확장 장면 1개를 제출 자료에 포함
+- [ ] 최종 제출 PDF/PPT/PPTX 정리
 
 ## Next action
 
-공모전 단기 경로에서는 **aitestbed 바이브코딩 실제 사용·소스 다운로드 증빙 → Kiosk 확장 화면 한 장 → `AIProvider` 계약·fallback 설계** 순서로 진행한다. 외부 추론 API는 공식 문서와 실제 probe가 확보된 경우에만 연결한다. P0.1 KISA 실데이터 적재와 Preview/모바일 QA는 병행 가능한 별도 작업으로 유지한다.
+**클라우드 신청 완료 상태 확인 → aitestbed 바이브코딩 프로젝트 생성 → 실제 프롬프트/생성 결과/소스 다운로드 증빙 → Kiosk 확장 한 장 → 제출자료 완성**
+
+외부 AI 추론 API는 공식 문서와 실제 probe가 확보된 경우에만 별도 adapter 구현으로 진행한다.
