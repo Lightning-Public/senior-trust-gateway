@@ -211,19 +211,14 @@ UI 코드 head `12fe8cc7b5edceb2ca0b8a6756b24a91dc3ebffd` 기준 Prototype CI ru
 
 ## 7. MVP 배포 및 브라우저 QA
 
-기존 UI 기준으로 local browser와 Vercel temporary deployment에서 다음 흐름을 실제 확인한 이력이 있다.
-
-- 초기 Trust Check
-- LOW/MEDIUM/HIGH
-- Hospital Kiosk 접수
-- 민감정보 HIGH 안전중단
-- 직원 도움 안내
-
-과거 temporary URL은 만료형이다.
-
-**2026-09-06 UI 재구성 이후의 새 화면은 CI test/build까지 통과했으나, 이 ChatGPT 원격 세션에서는 브라우저 실행 환경을 사용할 수 없어 current UI head의 실제 모바일 화면 QA를 완료했다고 주장하지 않는다.**
-
-따라서 제출 캡처 전에 current UI head를 모바일 viewport에서 다시 확인해야 한다.
+- root `vercel.json`은 `cd prototype && npm install --no-audit --no-fund && npm run build` 후 `prototype/dist`를 배포하도록 설정돼 있다.
+- 저장소 공개 전환 후, 기존 무료 Hobby team `redsunjin's projects`에 Git 연동 정식 Vercel project를 Import했다. Pro Trial/결제는 시작하지 않았다.
+- 정식 production URL: `https://senior-trust-gateway.vercel.app` (`READY`, `main` 배포).
+- 개인정보가 없는 fixture로 정식 URL에서 초기 Trust Check와 LOW/MEDIUM/HIGH를 실제 브라우저로 다시 확인했다.
+  - LOW: 안전 확정이 아님과 확인 한계 표시
+  - MEDIUM: 링크 대신 공식 경로 확인 안내
+  - HIGH: 행동 중단과 가족/공식 대표번호 확인 안내
+- `main`에는 current UI head의 Hospital Kiosk Safe Guidance가 아직 포함되지 않는다. Draft PR #14는 Git 연동 Preview로 배포해 Trust Check와 키오스크 전체 흐름을 새 화면 기준으로 재검수한다.
 
 ## 8. 제출용 MVP 캡처
 
@@ -248,15 +243,16 @@ current UI head 기준 필수 후보:
 
 - [x] 공모전용 시니어 AI 생활매니저 UI/UX 재구성
 - [x] current UI code test/build CI
-- [ ] current UI head 실제 모바일 화면 QA
+- [x] 무료 Vercel team project import 및 정식 URL Trust Check QA
+- [ ] Draft PR #14 current UI head 실제 모바일 화면 QA
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX
 
 ### 배포
 
-- [ ] current UI head 영구 또는 제출 시점 접근 가능한 URL 확보
-- [ ] 해당 URL에서 최종 모바일 QA
+- [x] 무료 Vercel team의 Git 연동 정식 production URL 확보
+- [ ] Draft PR #14 Preview URL 및 해당 URL의 최종 모바일 QA
 
 ### 플랫폼 증빙
 

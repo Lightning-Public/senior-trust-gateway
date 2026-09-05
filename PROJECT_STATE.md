@@ -140,15 +140,16 @@ PR #14 current UI head `12fe8cc7b5edceb2ca0b8a6756b24a91dc3ebffd` 기준 Prototy
 - risk policy tests: PASS
 - production build: PASS
 
-이번 ChatGPT 원격 세션에서는 로컬 실행 환경/브라우저를 직접 열 수 없어 새 UI 커밋의 실제 모바일 화면 QA는 아직 별도 확인이 필요하다. 이전 prototype은 local/Vercel temporary deployment에서 실제 브라우저 QA가 통과했지만, 그 결과를 새 UI 커밋의 화면 QA로 재사용하지 않는다.
+이전 prototype의 실제 브라우저 QA는 완료됐지만, UI 재구성 커밋의 실제 화면 QA는 새 Vercel Preview에서 별도로 다시 수행한다.
 
 ## Deployment status
 
 - root `vercel.json`: `cd prototype && npm install --no-audit --no-fund && npm run build`
 - output: `prototype/dist`
-- 과거 temporary deployment에서 사용자 흐름 QA 완료
-- temporary URL은 만료형이며 현재 UI head의 영구 배포 URL은 아직 없음
-- private organization repository의 정식 Vercel import는 Hobby 제한으로 Pro team/Pro Trial 선택이 필요함
+- 저장소 공개 전환 후, 기존 무료 Hobby team `redsunjin's projects`에 Git 연동 정식 project `senior-trust-gateway`를 Import했다. Pro Trial/결제는 시작하지 않았다.
+- 정식 production URL: `https://senior-trust-gateway.vercel.app` — `main` 배포 `READY`.
+- 정식 URL의 실제 브라우저에서 초기 화면 및 Trust Check LOW/MEDIUM/HIGH를 확인했다. LOW는 안전 확정이 아님을 표시하고, MEDIUM은 공식 경로 확인을 안내하며, HIGH는 행동 중단과 사람/공식 대표번호 확인을 안내한다.
+- production은 `main` baseline이다. current UI head의 Hospital Kiosk Safe Guidance를 포함한 전체 흐름은 Git 연동 Draft PR #14 Preview에서 검수한다.
 
 ## aitestbed role
 
@@ -193,4 +194,4 @@ aitestbed는 **현재 MVP를 대신 만드는 주체가 아니다.**
 
 ## Next action
 
-**현재 UI head를 실제 모바일 브라우저에서 검수하고 제출용 화면 캡처를 확보한다.**
+**Git 연동 Draft PR #14 Preview에서 current UI head의 Trust Check와 Hospital Kiosk 안전중단을 실제 모바일 브라우저로 검수하고 제출용 화면 캡처를 확보한다.**
