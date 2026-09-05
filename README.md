@@ -14,12 +14,59 @@
 
 ## 핵심 원칙
 
+- `Risk != Verification`
+- 공식 목록에서 찾지 못했다는 사실은 안전을 의미하지 않는다.
 - AI가 확실하지 않은 내용을 확정적으로 말하지 않는다.
 - 저위험 업무는 자동화하되, 위험이 커질수록 사용자 확인 또는 신뢰원 승인을 요구한다.
 - 결제, 계약, 민감정보 제공 등 고위험 행동은 기본적으로 AI 단독 실행 대상이 아니다.
-- 상시 고비용 에이전트보다 규칙·정형 워크플로·저비용 모델을 먼저 사용한다.
+- 상시 고비용 에이전트보다 규칙·정형 워크플로·공식 데이터·저비용 모델을 먼저 사용한다.
 - 외부 공식 서비스의 기능을 중복 구축하기보다 검증된 연계 수단을 사용한다.
 - 시니어가 이해하기 쉬운 언어와 흐름을 우선한다.
+
+## 현재 구현
+
+### P0 — Trust Check
+
+문자/카톡 내용을 입력하면 다음 흐름으로 안내합니다.
+
+`입력 → 위험 신호 → LOW/MEDIUM/HIGH → 확인 수준 → 이유 → 다음 행동 → 필요 시 가족 확인`
+
+기본 위험분석은 API 없이 동작하는 TypeScript rule engine입니다.
+
+### P0.1 — Grounded Verification
+
+공식 KISA 피싱 URL 데이터를 연결할 수 있는 검증 레이어를 구성했습니다.
+
+- authoritative exact match만 `OFFICIAL_SOURCE`로 승격
+- `NO_MATCH` / `UNAVAILABLE`은 안전으로 승격하지 않음
+- 공공데이터 서비스키를 정적 브라우저 번들에 넣지 않음
+- 공식 CSV는 build-time에 최대 256개 해시 버킷으로 분할
+- URL 검사 시 필요한 버킷만 lazy-load
+- manifest와 bucket 파일의 건수/버킷 무결성 검사
+
+실제 공식 CSV가 적재되기 전 기본 배포는 `authoritative: false` placeholder manifest를 사용하므로 공식 판정을 내리지 않습니다.
+
+## Local run
+
+```bash
+cd prototype
+npm install
+npm run dev
+```
+
+테스트/빌드:
+
+```bash
+npm run test
+npm run build
+```
+
+공식 KISA CSV를 partitioned snapshot으로 변환:
+
+```bash
+cd prototype
+node scripts/build-kisa-snapshot.mjs /path/to/official-kisa.csv public/data/kisa-phishing
+```
 
 ## 저장소 구조
 
@@ -28,18 +75,15 @@
 ├─ AGENTS.md
 ├─ PROJECT_STATE.md
 ├─ docs/
-│  ├─ architecture/system-architecture.md
-│  ├─ handoffs/README.md
+│  ├─ architecture/
+│  ├─ handoffs/
 │  └─ product/
-│     ├─ product-brief.md
-│     ├─ trust-model.md
-│     └─ ecosystem-map.md
-├─ .agent/prompts/README.md
-└─ prototype/README.md
+├─ prototype/
+│  ├─ src/
+│  ├─ tests/
+│  ├─ scripts/
+│  └─ public/data/kisa-phishing/
+└─ .agent/prompts/
 ```
-
-## 현재 단계
-
-제품 기준선과 개발 하네스를 구축하는 단계입니다. 첫 프로토타입은 **의심 문자/링크 확인 + 위험도 설명 + 가족 신뢰원 에스컬레이션** 경험을 검증하는 것을 우선합니다.
 
 현재 진행상태는 [`PROJECT_STATE.md`](PROJECT_STATE.md)를 기준으로 확인합니다.
