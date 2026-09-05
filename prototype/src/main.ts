@@ -114,13 +114,13 @@ app.innerHTML = `
           <p class="scene-kicker">빠른 도움</p>
           <h2 id="quick-help-title">지금 바로 할 수 있어요</h2>
         </div>
-        <span class="scope-label">현재 MVP</span>
+        <span class="scope-label">바로 이용 가능</span>
       </div>
 
       <div class="priority-grid">
         <a class="priority-card priority-card-primary" href="#trust-check">
           <span class="priority-icon" aria-hidden="true">💬</span>
-          <span class="status-chip status-live">가장 많이 쓰는 도움</span>
+          <span class="status-chip status-live">빠른 확인</span>
           <strong>문자·카톡 같이 보기</strong>
           <small>뜻 · 위험 · 지금 할 행동 확인</small>
           <b>바로 확인하기 →</b>
@@ -128,10 +128,10 @@ app.innerHTML = `
 
         <a class="priority-card" href="#hospital-help">
           <span class="priority-icon" aria-hidden="true">🏥</span>
-          <span class="status-chip status-live">현재 시연 가능</span>
+          <span class="status-chip status-live">이용 가능</span>
           <strong>병원 접수 도움</strong>
           <small>화면 위치 안내 · 민감정보 안전중단</small>
-          <b>접수 연습하기 →</b>
+          <b>병원 접수 도움받기 →</b>
         </a>
       </div>
     </section>
@@ -147,23 +147,23 @@ app.innerHTML = `
       <div class="help-grid">
         <article class="help-card help-card-live">
           <div class="help-icon" aria-hidden="true">💬</div>
-          <div><span class="status-chip status-live">지금 사용</span><h3>문자·카톡 이해</h3><p>어려운 내용을 쉽게 풀고 안전한 다음 행동을 알려드려요.</p></div>
+          <div><span class="status-chip status-live">지금 이용</span><h3>문자·카톡 이해</h3><p>어려운 내용을 쉽게 풀고 안전한 다음 행동을 알려드려요.</p></div>
         </article>
         <article class="help-card help-card-live">
           <div class="help-icon" aria-hidden="true">🏥</div>
-          <div><span class="status-chip status-live">지금 시연</span><h3>병원 접수 도움</h3><p>어디를 눌러야 하는지 안내하고 위험한 단계에서는 멈춰요.</p></div>
+          <div><span class="status-chip status-live">지금 이용</span><h3>병원 접수 도움</h3><p>어디를 눌러야 하는지 안내하고 위험한 단계에서는 멈춰요.</p></div>
         </article>
         <article class="help-card">
           <div class="help-icon" aria-hidden="true">📅</div>
-          <div><span class="status-chip status-next">확장 방향</span><h3>예약·일정 챙기기</h3><p>병원 예약이나 중요한 생활 일정을 놓치지 않도록 돕는 방향입니다.</p></div>
+          <div><span class="status-chip status-next">준비 중</span><h3>예약·일정 챙기기</h3><p>병원 예약이나 중요한 생활 일정을 놓치지 않도록 돕는 기능을 준비하고 있어요.</p></div>
         </article>
         <article class="help-card">
           <div class="help-icon" aria-hidden="true">🏛️</div>
-          <div><span class="status-chip status-next">확장 방향</span><h3>행정·생활 지원</h3><p>복잡한 공공·생활 절차도 다음 행동을 쉽게 안내하는 방향입니다.</p></div>
+          <div><span class="status-chip status-next">준비 중</span><h3>행정·생활 지원</h3><p>복잡한 공공·생활 절차를 쉽게 따라갈 수 있도록 준비하고 있어요.</p></div>
         </article>
         <article class="help-card help-card-wide">
           <div class="help-icon" aria-hidden="true">👨‍👩‍👧</div>
-          <div><span class="status-chip status-policy">공통 원칙</span><h3>필요하면 가족·사람에게 연결</h3><p>혼자 결정하기 어려운 순간에는 AI가 대신 결정하지 않고 사람 확인으로 넘깁니다.</p></div>
+          <div><span class="status-chip status-policy">안전 원칙</span><h3>필요하면 가족·사람에게 연결</h3><p>혼자 결정하기 어려운 순간에는 AI가 대신 결정하지 않고 사람 확인으로 넘깁니다.</p></div>
         </article>
       </div>
     </section>
@@ -200,7 +200,7 @@ app.innerHTML = `
       </div>
 
       <div class="kiosk-demo">
-        <div class="kiosk-context"><span class="status-chip status-live">실제 MVP 시연</span><strong>병원 접수 → 예약 진료 → 민감정보 단계 → 안전 중단 → 직원 도움</strong></div>
+        <div class="kiosk-context"><span class="status-chip status-live">병원 접수 도움</span><strong>병원 접수 → 예약 진료 → 민감정보 단계 → 안전 중단 → 직원 도움</strong></div>
         <div class="kiosk-screen" aria-label="병원 키오스크 구조화 화면 데모">
           <div class="kiosk-screen-topline"><span>병원 접수 화면</span><span id="kiosk-risk" class="kiosk-risk">LOW</span></div>
           <h2 id="kiosk-screen-title"></h2>
@@ -210,15 +210,15 @@ app.innerHTML = `
         <div class="kiosk-guide"><p class="kiosk-guide-label">생활매니저가 알려드려요</p><h3 id="kiosk-guide-title"></h3><p id="kiosk-guide-text"></p></div>
         <button id="kiosk-action" type="button" class="secondary kiosk-action"></button>
         <p id="kiosk-safety-note" class="kiosk-safety-note"></p>
-        <p class="scene-note">공모전 MVP는 병원 접수 한 장면만 실제 시연합니다. 카메라·OCR·실제 개인정보 입력 기능은 구현 완료로 주장하지 않습니다.</p>
+        <p class="scene-note">현재는 병원 접수를 단계별로 안내합니다. 개인정보는 대신 입력하거나 저장하지 않습니다.</p>
       </div>
     </section>
 
-    <section class="future-note" aria-label="생활매니저 확장 방향">
+    <section class="future-note" aria-label="생활매니저가 함께할 생활 영역">
       <div class="future-brand">${brandMark()}<span>시니어 AI 생활매니저</span></div>
       <p class="scene-kicker">다음 생활 장면으로</p>
       <h2>안심에서 시작해, 생활 도움으로 넓어집니다</h2>
-      <p>현재 MVP는 문자 도움과 병원 접수로 같은 원칙을 검증합니다. 이후 예약·일정, 행정·생활지원까지 연결해 <strong>디지털 생활에서 막히는 순간을 계속 줄이는 것</strong>이 제품 방향입니다.</p>
+      <p>지금은 문자 도움과 병원 접수부터 시작합니다. 앞으로 예약·일정, 행정·생활지원까지 이어져 <strong>디지털 생활에서 막히는 순간을 계속 줄이는 것</strong>이 생활매니저의 방향입니다.</p>
     </section>
 
     <footer><strong>생활매니저의 안전 원칙</strong><p>AI가 사용자를 대신 승인하거나 판단하지 않습니다. 위험 신호와 공식 확인 수준을 따로 보고, 공식 목록에서 찾지 못했다는 이유만으로 안전하다고 판단하지 않습니다.</p></footer>
@@ -301,7 +301,7 @@ function renderResult(analysis: RiskAnalysis) {
     <div class="result-section next-action"><p class="result-order">3</p><div><h3>지금 이렇게 하세요</h3><p>${escapeHtml(analysis.recommendation)}</p></div></div>
     <div class="result-section uncertainty-section"><p class="result-order">4</p><div><h3>확실하지 않은 점</h3><strong>${escapeHtml(analysis.verification.label)}</strong><p>${escapeHtml(analysis.verification.detail)}</p>${officialChecks}</div></div>
     <div class="result-section human-section"><p class="result-order">5</p><div><h3>필요하면 사람에게 확인하세요</h3><p>${showFamilyCheck ? '조금이라도 불안하면 혼자 진행하지 말고 가족이나 공식 기관 대표번호로 확인하세요.' : '조금이라도 이상하거나 불안하면 혼자 결정하지 말고 가족이나 공식 기관에 다시 확인하세요.'}</p></div></div>
-    ${showFamilyCheck ? `<button type="button" id="ask-family" class="${analysis.level === 'HIGH' ? 'danger-action' : 'secondary'}">${familyButtonCopy}</button><p id="family-status" class="family-status" hidden>확인 요청 문구를 준비할 수 있습니다. 현재 프로토타입은 실제 메시지를 전송하지 않습니다.</p>` : ''}
+    ${showFamilyCheck ? `<button type="button" id="ask-family" class="${analysis.level === 'HIGH' ? 'danger-action' : 'secondary'}">${familyButtonCopy}</button><p id="family-status" class="family-status" hidden>확인 요청 문구를 준비할 수 있어요. 메시지는 직접 보내주세요.</p>` : ''}
     <a class="text-action" href="${KISA_SMISHING_GUIDE}" target="_blank" rel="noopener noreferrer">보호나라 스미싱 확인방법 보기</a>
   `
 
