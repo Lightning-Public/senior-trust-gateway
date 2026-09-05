@@ -7,7 +7,7 @@
 검증할 흐름:
 
 ```text
-문자/링크/이미지 입력
+문자/링크 입력
 → “무슨 내용인지” 쉬운 설명
 → 위험 신호 분석
 → 공식 확인 가능한 정보 확인
@@ -26,6 +26,8 @@
 
 ## Implementation status
 
-Not started.
-
-기술 스택은 P0 Issue에서 결정한다.
+- Trust Check LOW/MEDIUM/HIGH 흐름 구현
+- KISA 공개 피싱 URL 스냅샷 검증 인프라 구현
+- Hospital Kiosk Safe Guidance 단일 시나리오 구현
+- 외부 AI 모델은 안전 계약과 fallback만 구현했으며 기본 UI 런타임에는 아직 연결하지 않음
+- 카메라/CV/OCR/이미지 입력과 실제 사람 호출은 구현하지 않음
