@@ -44,27 +44,86 @@ app.innerHTML = `
   <main class="shell">
     <header class="hero">
       <p class="eyebrow">시니어 AI 생활매니저</p>
-      <h1>위험한 행동 전에<br>먼저 멈춰드려요.</h1>
-      <p class="intro">문자나 디지털 화면이 어렵거나 불안할 때, <strong>무슨 뜻인지 쉽게 설명하고 위험을 확인한 뒤 지금 할 행동</strong>을 알려드려요. 필요하면 사람에게 확인하도록 안내합니다.</p>
-      <div class="manager-flow" aria-label="생활매니저가 돕는 순서">
-        <span>① 쉽게 이해</span>
-        <span>② 위험 확인</span>
-        <span>③ 다음 행동</span>
-        <span>④ 필요하면 사람 확인</span>
-      </div>
+      <h1>어려운 디지털 생활,<br>혼자 하지 마세요.</h1>
+      <p class="intro">문자를 이해하는 일부터 병원 접수처럼 낯선 화면을 쓰는 일까지, <strong>상황을 쉽게 설명하고 지금 할 일을 알려드리는 생활 동행</strong>입니다. 위험한 순간에는 먼저 멈추고 사람 확인을 안내합니다.</p>
+      <p class="hero-promise">안심은 생활매니저가 지켜야 할 원칙이고, 목표는 <strong>일상 속 디지털 생활을 더 쉽게 만드는 것</strong>입니다.</p>
     </header>
 
-    <section class="scene-heading">
-      <p class="scene-kicker">가장 먼저 하는 일</p>
-      <h2>받은 문자, 안심하고 확인하세요</h2>
-      <p>판단을 대신하지 않습니다. 위험한 행동을 하기 전에 한 번 더 확인하도록 돕습니다.</p>
+    <section class="help-overview" aria-labelledby="help-overview-title">
+      <div class="section-title-row">
+        <div>
+          <p class="scene-kicker">생활매니저가 함께하는 순간</p>
+          <h2 id="help-overview-title">이런 일을 도움받을 수 있어요</h2>
+        </div>
+        <span class="scope-label">공모전 MVP</span>
+      </div>
+
+      <div class="help-grid">
+        <article class="help-card help-card-live">
+          <div class="help-icon" aria-hidden="true">💬</div>
+          <div>
+            <span class="status-chip status-live">지금 사용</span>
+            <h3>문자·카톡 이해</h3>
+            <p>무슨 뜻인지 쉽게 풀고, 위험 신호와 지금 할 행동을 알려드려요.</p>
+          </div>
+        </article>
+
+        <article class="help-card help-card-live">
+          <div class="help-icon" aria-hidden="true">🏥</div>
+          <div>
+            <span class="status-chip status-live">지금 시연</span>
+            <h3>병원 접수 도움</h3>
+            <p>어디를 눌러야 하는지 안내하고, 민감정보 단계에서는 멈춰 직원 확인을 도와요.</p>
+          </div>
+        </article>
+
+        <article class="help-card">
+          <div class="help-icon" aria-hidden="true">📅</div>
+          <div>
+            <span class="status-chip status-next">확장 방향</span>
+            <h3>예약·일정 챙기기</h3>
+            <p>병원 예약이나 중요한 생활 일정을 놓치지 않도록 함께 확인하는 방향으로 확장합니다.</p>
+          </div>
+        </article>
+
+        <article class="help-card">
+          <div class="help-icon" aria-hidden="true">🏛️</div>
+          <div>
+            <span class="status-chip status-next">확장 방향</span>
+            <h3>행정·생활 지원</h3>
+            <p>복잡한 공공·생활 절차도 무엇을 해야 하는지 쉽게 안내하는 생활 도움으로 이어갑니다.</p>
+          </div>
+        </article>
+
+        <article class="help-card help-card-wide">
+          <div class="help-icon" aria-hidden="true">👨‍👩‍👧</div>
+          <div>
+            <span class="status-chip status-policy">공통 원칙</span>
+            <h3>필요하면 가족·사람에게 연결</h3>
+            <p>혼자 결정하기 어려운 순간에는 AI가 대신 결정하지 않고 가족, 직원, 공식 기관 확인으로 넘깁니다.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div class="manager-flow" aria-label="생활매니저가 돕는 순서">
+      <span><b>1</b> 쉽게 이해</span>
+      <span><b>2</b> 위험 확인</span>
+      <span><b>3</b> 다음 행동</span>
+      <span><b>4</b> 필요하면 사람 확인</span>
+    </div>
+
+    <section class="scene-heading primary-scene-heading">
+      <p class="scene-kicker">오늘 바로 써보기 · 1</p>
+      <h2>받은 문자나 카톡부터 같이 볼까요?</h2>
+      <p>링크를 누르거나 답장하기 전에 내용을 붙여 넣어 주세요. 생활매니저가 뜻과 위험, 다음 행동을 순서대로 알려드립니다.</p>
     </section>
 
     <form id="check-form" class="check-card">
-      <label for="message">받은 문자나 카톡을 그대로 붙여 넣어 주세요</label>
-      <p class="field-help">링크를 누르거나 답장하기 전에 먼저 확인하세요.</p>
+      <label for="message">받은 내용을 그대로 붙여 넣어 주세요</label>
+      <p class="field-help">개인정보나 인증번호는 직접 입력하지 않아도 됩니다.</p>
       <textarea id="message" rows="7" placeholder="예: 은행 직원입니다. 본인 확인을 위해 인증번호를 알려주세요."></textarea>
-      <button class="primary" type="submit">이 내용 안심 확인하기</button>
+      <button class="primary" type="submit">생활매니저에게 물어보기</button>
     </form>
 
     <details class="samples">
@@ -78,12 +137,16 @@ app.innerHTML = `
 
     <section class="life-scene">
       <div class="scene-heading scene-heading-compact">
-        <p class="scene-kicker">두 번째 생활 장면</p>
-        <h2>병원 키오스크에서도 같은 방식으로 도와드려요</h2>
-        <p>어디를 눌러야 하는지 알려주고, 민감정보 단계에서는 자동으로 진행하지 않고 멈춘 뒤 직원 확인을 안내합니다.</p>
+        <p class="scene-kicker">오늘 바로 써보기 · 2</p>
+        <h2>병원 접수도 생활매니저가 옆에서 알려드려요</h2>
+        <p>문자만 검사하는 도구가 아닙니다. 같은 생활매니저가 병원 키오스크에서도 화면을 이해시키고 다음 행동을 안내하며, 위험한 단계에서는 사람에게 넘깁니다.</p>
       </div>
 
       <div class="kiosk-demo">
+        <div class="kiosk-context">
+          <span class="status-chip status-live">실제 MVP 시연</span>
+          <strong>병원 접수 → 예약 진료 → 민감정보 단계 → 안전 중단 → 직원 도움</strong>
+        </div>
         <div class="kiosk-screen" aria-label="병원 키오스크 구조화 화면 데모">
           <div class="kiosk-screen-topline">
             <span>병원 접수 화면</span>
@@ -103,12 +166,18 @@ app.innerHTML = `
         </div>
         <button id="kiosk-action" type="button" class="secondary kiosk-action"></button>
         <p id="kiosk-safety-note" class="kiosk-safety-note"></p>
-        <p class="scene-note">공모전 MVP는 병원 접수 한 장면만 다룹니다. 카메라·OCR·실제 개인정보 입력 기능은 사용하지 않습니다.</p>
+        <p class="scene-note">공모전 MVP는 병원 접수 한 장면만 실제 시연합니다. 카메라·OCR·실제 개인정보 입력 기능은 구현 완료로 주장하지 않습니다.</p>
       </div>
     </section>
 
+    <section class="future-note" aria-label="생활매니저 확장 방향">
+      <p class="scene-kicker">다음 생활 장면으로</p>
+      <h2>안심에서 시작해, 생활 도움으로 넓어집니다</h2>
+      <p>현재 MVP는 문자 도움과 병원 접수로 같은 원칙을 검증합니다. 이후 예약·일정, 행정·생활지원까지 연결해 <strong>시니어가 디지털 생활에서 막히는 순간을 계속 줄이는 것</strong>이 제품 방향입니다.</p>
+    </section>
+
     <footer>
-      <strong>생활매니저의 원칙</strong>
+      <strong>생활매니저의 안전 원칙</strong>
       <p>AI가 사용자를 대신 승인하거나 판단하지 않습니다. 위험 신호와 공식 확인 수준을 따로 보고, 공식 목록에서 찾지 못했다는 이유만으로 안전하다고 판단하지 않습니다.</p>
     </footer>
   </main>
