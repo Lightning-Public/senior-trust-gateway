@@ -2,177 +2,191 @@
 
 Last updated: 2026-09-05
 
-## Status
+## Active objective
 
-**P0 / P0.1 merged / contest baseline merged via PR #10 / Phase 0 submission hardening in Draft PR #14**
+**2026 모두의 AI 실험실 AI 서비스 경진대회 제출용 MVP와 제출문서/증빙을 완성한다.**
 
-2026-09-06 18:00 KST 마감 `모두의 AI 실험실 AI 서비스 경진대회` 제출 후보는 **시니어 AI 생활매니저 — 안심부터 시작하는 시니어 디지털 동행**이다.
+마감: **2026-09-06 18:00 KST**
 
-공모전 구현 범위는 **Trust Check 80% + Kiosk Safe Guidance 20%**로 유지한다. 두 앱을 합치는 것이 아니라 하나의 생활매니저가 서로 다른 디지털 생활 장면에서 다음 흐름을 제공한다.
+서비스:
 
-`이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`
+> **시니어 AI 생활매니저 — 안심부터 시작하는 시니어 디지털 동행**
+
+현재 공모전 작업의 최상위 정본은 [`docs/contest/contest-harness.md`](docs/contest/contest-harness.md)다.
+
+장기 제품 방향이나 플랫폼 실험이 이 목표보다 앞서면 안 된다.
+
+## MVP definition
+
+MVP 정본은 `Lightning-Public/senior-trust-gateway`의 실행 가능한 prototype이다.
+
+### Trust Check — 80%
+
+```text
+문자/디지털 요청 입력
+→ 의미 이해
+→ LOW/MEDIUM/HIGH 위험 확인
+→ 쉬운 다음 행동
+→ 필요 시 가족/사람 확인
+```
+
+### Hospital Kiosk Safe Guidance — 20%
+
+```text
+진료 접수
+→ 예약 진료 선택
+→ 민감정보 단계
+→ HIGH 안전 중단
+→ 직원 도움 안내
+```
+
+두 기능은 별도 앱이 아니다.
+
+공통 제품 흐름:
+
+> `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`
 
 ## Repository
 
 - Canonical remote: `Lightning-Public/senior-trust-gateway`
 - Default branch: `main`
-- Contest baseline merge: PR #10 / `f9129979bb9ab93f1f2021dbd90aadbb9409b8fe`
-- Follow-up work branch: `feat/modoo-ai-lab-contest`
-- Active Draft PR: #14 `feat: complete contest kiosk and aitestbed vibe prep`
-- Development handoff: `docs/handoffs/contest-dev-session-2026-09-05.md`
-- Kiosk UX reference: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
+- Contest baseline: PR #10 merged / `f9129979bb9ab93f1f2021dbd90aadbb9409b8fe`
+- Active follow-up branch: `feat/modoo-ai-lab-contest`
+- Active Draft PR: #14
+- Kiosk UX provenance: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
 
-## Fixed direction
+## Product / safety invariants
 
-- Contest service: **시니어 AI 생활매니저**
-- Subtitle: **안심부터 시작하는 시니어 디지털 동행**
-- Product sequence: **Protect → Trust → Delegate**
 - Senior Trust Gateway = 위험·검증·권한정책 본체
 - Trust Check = 첫 핵심 기능
-- Kiosk Safe Guidance = 두 번째 생활장면
-- Kiosk Phase 0 scenario = **병원 접수 1개만**
-- AI authorization invariant: **AI confidence != user authorization**
-- Trust invariant: **Risk != Verification**
-- Official-data invariant: **공식 목록 미일치 != 안전**
+- Hospital Kiosk Safe Guidance = 두 번째 생활장면
+- 장기 방향 = `Protect → Trust → Delegate`
+- `AI confidence != user authorization`
+- `Risk != Verification`
+- 공식 목록 미일치 != 안전
+- 규칙엔진 HIGH는 AI가 낮추거나 승인할 수 없음
 
-## P0 / P0.1 implementation
+## Implemented MVP foundation
+
+### Trust Check
 
 - Vite + TypeScript 정적 웹
 - `RuleBasedRiskAnalyzer`
 - `OfficialSourceVerifier` / `GroundedRiskAnalyzer`
-- authoritative exact match만 공식 근거로 승격
-- build-time KISA CSV ingest + 256-way hash bucket snapshot
-- folded 32-bit hash bucket selector + distribution regression test
+- LOW / MEDIUM / HIGH
+- 쉬운 이유/다음 행동
+- KISA snapshot 검증 인프라
+- HIGH fail-safe
 
-## Contest AI context layer — merged in PR #10
-
-구현됨:
+### AI context safety layer
 
 - `AiMessageInterpreter` / `AiInterpretation`
 - JSON contract: `summary`, `risk_context`, `safe_next_action`, `uncertainty`
-- `CONTEST_AI_SYSTEM_PROMPT`
-- `JsonAiMessageInterpreter`
 - `SafeAiAssistedRiskAnalyzer`
-- 모델 exception / timeout / malformed JSON → 규칙엔진 fallback
-- HIGH는 AI 출력으로 하향 또는 승인 불가
+- malformed JSON / exception / timeout fallback
+- HIGH 하향 금지 테스트
 
-### Runtime fact boundary
+중요: **AI context layer는 코드·테스트로 준비돼 있지만 확인된 실제 AIProvider가 없어 기본 UI 런타임에 외부 AI 호출을 연결하지 않았다.**
 
-현재 기본 `prototype/src/main.ts` 실행 경로는 `GroundedRiskAnalyzer`를 사용한다. 즉 **AI 안전 레이어는 코드·테스트로 검증됐지만 확인된 실제 AIProvider가 없어 기본 UI 런타임에는 연결하지 않았다.**
+실제 AI API 연동 완료로 표현하지 않는다.
 
-이 상태를 실제 AI 호출 완료로 표현하지 않는다. aitestbed 또는 다른 provider는 공식 호출 계약과 최소 probe를 확인한 뒤에만 연결한다.
+### Hospital Kiosk Safe Guidance
 
-## Kiosk Safe Guidance — PR #14
+PR #14에서 병원 접수 한 장면을 구조화 데모로 구현했다.
 
-병원 접수 한 장면을 구조화 데모로 구현했다.
-
-```text
-진료 접수
-→ 예약 진료 선택
-→ 본인 확인 정보 입력 화면
-→ 민감정보 단계 HIGH
-→ 자동 진행 중단
-→ 직원 도움 요청
-```
-
-구현 파일:
-
-- `prototype/src/kioskHospitalScenario.ts`
-- `prototype/tests/kioskHospitalScenario.test.ts`
-- `prototype/src/main.ts`의 접힌 보조 장면
-
-원칙:
-
-- `kiosk_ar_assistant@3a7da8f`의 큰 안내·포인터·음성형 문구 개념만 참조
-- 카메라/CV/OCR 구현 완료로 주장하지 않음
-- 개인정보를 대신 입력·저장하지 않음
-- HIGH 단계는 사람 확인으로 안전 중단
-
-## aitestbed fact boundary
-
-### Confirmed
-
-- `AitestbedVibeWorkflow`: 바이브코딩 프로토타입 생성·수정·소스 다운로드·공모전 증빙
-- 사용자가 `aitestbed.kr` 로그인 후 클라우드 신청 화면 진입
-- 추천 자원: vCPU 2 / Memory 4GB / Disk 50GB
-- OS: `rocky-8.10-base`
-- 1개월 우선 지원
-- 2026년 클라우드 1인 1회 신청 제한
-
-### Unverified candidate
-
-- `AitestbedModelApiProvider`
-
-외부 AI 추론 API는 다음 게이트를 모두 통과하기 전 구현·사용 가능으로 주장하지 않는다.
-
-1. 공식 AI 추론 API 문서
-2. base URL / 인증 방식 / 모델 목록 / request-response schema
-3. 최소 실제 호출 probe
-4. 외부 프로젝트 사용·개인정보·상업 이용 범위
-
-로그인 전용 `내 API 키` 화면이나 키 관리 endpoint만으로 추론 API를 추정하지 않는다.
-
-## aitestbed Vibe Phase 0 plan — PR #14
-
-정본: `docs/contest/aitestbed-vibe-build-plan.md`
-
-준비됨:
-
-- `시니어 AI 생활매니저` 1차 생성 프롬프트
-- Trust Check 80% + 병원 Kiosk 20% 화면 구조
-- API endpoint/CV/OCR를 추정하지 않는 생성 제약
-- 생성 후 수정 프롬프트
-- 다운로드 소스와 현재 TypeScript prototype 비교 기준
-- 최소 포팅/비포팅 기준
-- 캡처해야 할 플랫폼 증빙 목록
-
-## Contest evidence
-
-- `docs/contest/modoo-ai-lab-evidence.md`
-- `docs/contest/ai-use-one-page.md`
-- `docs/contest/platform-run-sheet.md`
-- `docs/contest/platform-cloud-observation.md`
-- `docs/contest/aitestbed-vibe-build-plan.md`
-- `docs/handoffs/contest-dev-session-2026-09-05.md`
+- 접수 시작 안내
+- 예약 진료 선택
+- 민감정보 단계 HIGH
+- 자동 진행 중단
+- 직원 도움 안내
+- 실제 개인정보 입력/저장 없음
+- CV/OCR 완료 주장 없음
 
 ## Verification
 
-PR #10 head 기준 Prototype CI run #63: **SUCCESS**.
+PR #14 prototype 기준 Prototype CI run #70: **SUCCESS**.
 
-PR #14 code 기준 Prototype CI run #70: **SUCCESS**.
-
-- snapshot generator smoke test: PASS
+- snapshot generator: PASS
 - Vitest: **5 files / 35 tests passed**
-- Grounded Verification: 14 tests PASS
-- contest AI safety: 8 tests PASS
-- rule-based analyzer: 9 tests PASS
-- KISA 131,752-row bucket distribution guard: 1 test PASS
-- hospital Kiosk safety: 3 tests PASS
+- Grounded Verification: 14 PASS
+- contest AI safety: 8 PASS
+- rule-based analyzer: 9 PASS
+- KISA 131,752-row distribution guard: 1 PASS
+- hospital Kiosk safety: 3 PASS
 - `tsc --noEmit && vite build`: PASS
-- production bundle: JS 18.06 kB / gzip 7.33 kB, CSS 4.57 kB / gzip 1.53 kB
 
-run #70 이후 변경은 위 검증 결과를 기록하는 문서 현행화뿐이며 prototype 코드는 변경하지 않았다.
+run #70 이후 prototype 코드는 변경하지 않았고 현재 하네스/제출 문서만 정리 중이다.
+
+## aitestbed role
+
+aitestbed는 **현재 MVP를 대신 만드는 주체가 아니다.**
+
+### Confirmed
+
+- 사용자 로그인
+- 클라우드 신청 화면 진입
+- vCPU 2 / Memory 4GB / Disk 50GB
+- `rocky-8.10-base`
+- `AitestbedVibeWorkflow`: 바이브코딩 생성·수정·소스 다운로드·공모전 증빙
+
+### Current use
+
+- 플랫폼 활용 증빙 확보
+- 바이브코딩 사용 이력 확보
+- 생성 결과가 있으면 UI 비교 참고
+- 필요한 UI만 최소 포팅
+
+### Unverified candidate
+
+`AitestbedModelApiProvider`
+
+다음이 확인되기 전에는 구현하지 않는다.
+
+1. 공식 AI 추론 API 문서
+2. base URL / 인증 / 모델 / request-response schema
+3. 최소 실제 호출 probe
+4. 외부 프로젝트 사용·개인정보·상업 이용 범위
+
+## Contest harness priority
+
+현재 작업 순서:
+
+1. **실행 가능한 MVP의 제출 관점 최종 점검**
+2. **MVP 화면/사용자 흐름 캡처**
+3. **제출문서와 현재 코드 1:1 매핑**
+4. test/build/CI 상태 유지
+5. aitestbed 실제 활용 증빙 확보
+6. 최종 PDF/PPT/PPTX 완성
+
+aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된다.
 
 ## Remaining contest work
 
+### MVP / submission
+
+- [x] Trust Check 기본 실행 흐름
+- [x] HIGH 안전정책
+- [x] AI context 안전계약/fallback 테스트
+- [x] Hospital Kiosk 단일 시나리오 구현
+- [x] test/build/CI
+- [ ] 실제 MVP 화면/사용 흐름 최종 QA
+- [ ] 제출용 MVP 화면 캡처
+- [ ] 제출문서와 구현 기능 1:1 매핑
+- [ ] 최종 제출 PDF/PPT/PPTX
+
+### Platform evidence
+
 - [x] aitestbed 로그인
-- [x] 클라우드 신청 화면 진입 및 사양 확인
-- [x] Trust Check + AI safety contract 구현/테스트
-- [x] Kiosk 시나리오를 병원 접수 1개로 고정
-- [x] 병원 Kiosk 구조화 안전 데모 구현/테스트
-- [x] aitestbed 바이브코딩 생성 프롬프트/소스 비교 계획 준비
-- [x] PR #14 prototype test/build/CI
-- [ ] 클라우드 신청 완료/승인 상태 확인
-- [ ] aitestbed 바이브코딩 프로젝트 `시니어 AI 생활매니저` 생성
-- [ ] 프로젝트/프롬프트/생성 결과 화면 캡처 3개 이상
-- [ ] 생성 소스 다운로드
-- [ ] 생성 소스와 현재 TypeScript prototype 비교 후 필요한 UI만 최소 포팅
-- [ ] 실제 모델 표시명이 있으면 정확한 문자열 기록
-- [ ] 외부 AI 추론 API 문서 및 호출 probe 여부 확인
-- [ ] 최종 제출 PDF/PPT/PPTX 정리
+- [x] 클라우드 신청 화면 및 사양 확인
+- [ ] 신청 완료/승인 상태 확인
+- [ ] 플랫폼 활용 화면 최소 3개 확보
+- [ ] 바이브코딩 생성 결과/다운로드 증빙 확보
+- [ ] 실제 모델/API 관련 정보가 화면에 존재하면 정확한 사실만 기록
+
+실제 외부 AIProvider 연동은 **공모전 MVP를 깨지 않으면서 공식 계약이 확인된 경우에만** 진행한다.
 
 ## Next action
 
-**`docs/contest/aitestbed-vibe-build-plan.md`의 1차 프롬프트로 aitestbed 바이브코딩 프로젝트를 생성하고, 생성 결과 화면과 다운로드 소스를 확보한다.**
+**현재 prototype을 공모전 제출 MVP로 직접 검토해 `초기 화면 → Trust Check → Hospital Kiosk → HIGH 안전중단` 사용자 흐름에서 제출 전에 수정해야 할 치명적 빈칸을 1개씩 제거한다.**
 
-소스가 확보되면 현재 TypeScript prototype과 diff를 비교해 제출 완성도에 필요한 UI만 포팅한다. 외부 AI 추론 API는 공식 계약과 실제 probe가 확인된 경우에만 adapter 작업으로 진행한다.
+그 다음 MVP 화면을 캡처하고 제출문서 작성을 진행한다.
