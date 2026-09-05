@@ -1,6 +1,6 @@
 # 모두의 AI 실험실 경진대회 증빙 기록
 
-Last updated: 2026-09-05
+Last updated: 2026-09-06
 
 ## 0. 증빙 기준
 
@@ -172,7 +172,33 @@ runbook:
 - [ ] 바이브코딩 실제 입력/생성 결과
 - [ ] 가능하면 소스 다운로드 증거
 
-## 8. 제출용 MVP 캡처
+## 8. MVP 배포 및 실제 브라우저 QA — 2026-09-06 KST
+
+### Vercel 상태
+
+- 저장소 root `vercel.json`을 확인했다.
+  - `buildCommand`: `cd prototype && npm install --no-audit --no-fund && npm run build`
+  - `outputDirectory`: `prototype/dist`
+- Vercel team에 아직 프로젝트가 없어서 GitHub repository import를 시작했다.
+- 계정 passkey 2단계 인증 대기로 인해 project import와 preview deployment는 아직 생성되지 않았다.
+- 실제 접속 가능한 Vercel URL: **없음 (인증 대기)**
+
+### Local actual-browser QA
+
+개인정보가 없는 fixture로 실제 브라우저에서 아래를 확인했다.
+
+- 초기 Trust Check 화면 표시
+- 일반 일정 안내 → LOW, 안전 확정이 아님과 확인 한계 표시
+- 택배 외부 링크 → MEDIUM, 링크 대신 공식 경로 확인 안내
+- 검찰 사칭·안전계좌 이체 → HIGH, 행동 중단 및 가족/공식 대표번호 확인 안내
+- Hospital Kiosk: 접수 시작 → 예약 진료 → 민감정보 입력 단계 HIGH → 직원 도움 요청 → 안전 확인 대기
+- 민감정보를 자동 진행·입력·저장하지 않음
+
+재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
+
+배포 URL이 생성되면 동일 흐름을 해당 URL에서 다시 확인하고 이 섹션을 URL/배포 상태로 갱신한다.
+
+## 9. 제출용 MVP 캡처
 
 aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**을 제출 증빙으로 확보한다.
 
@@ -183,7 +209,7 @@ aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**�
 3. Hospital Kiosk 안내
 4. 민감정보 HIGH 안전중단 + 직원 도움 안내
 
-## 9. 개인정보·보안
+## 10. 개인정보·보안
 
 - 실제 문자 원문 저장 금지
 - 실제 전화번호/주민등록번호/인증번호 사용 금지
@@ -191,11 +217,12 @@ aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**�
 - AI가 HIGH를 낮추는 표현 금지
 - 공식 목록 미일치를 안전으로 표현 금지
 
-## 10. 현재 제출 BLOCKER
+## 11. 현재 제출 BLOCKER
 
 ### MVP/문서
 
-- [ ] 실제 MVP 사용자 흐름 최종 QA
+- [x] 실제 MVP 사용자 흐름 최종 QA (local browser)
+- [ ] Vercel preview URL에서 동일 흐름 QA (passkey 인증 대기)
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX

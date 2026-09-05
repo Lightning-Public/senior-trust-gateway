@@ -1,6 +1,6 @@
 # PROJECT_STATE
 
-Last updated: 2026-09-05
+Last updated: 2026-09-06
 
 ## Active objective
 
@@ -117,6 +117,14 @@ PR #14 prototype 기준 Prototype CI run #70: **SUCCESS**.
 
 run #70 이후 prototype 코드는 변경하지 않았고 현재 하네스/제출 문서만 정리 중이다.
 
+## Deployment and browser QA — 2026-09-06 KST
+
+- Vercel 설정 확인: root `vercel.json`의 `buildCommand`는 `cd prototype && npm install --no-audit --no-fund && npm run build`, `outputDirectory`는 `prototype/dist`다.
+- Vercel team에는 아직 프로젝트가 없으며, GitHub repository import를 시작했다.
+- 현재 Vercel 계정의 passkey 2단계 인증이 완료되지 않아 project import와 preview deployment가 생성되지 않았다. 따라서 실제 배포 URL은 **없음**이며, 인증을 우회하지 않는다.
+- 실제 브라우저로 local MVP를 검수했다. 초기 화면, Trust Check LOW/MEDIUM/HIGH, Hospital Kiosk 안내, 민감정보 HIGH 중단과 직원 확인 대기까지 모두 의도대로 표시됐다.
+- 이 세션 재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
+
 ## aitestbed role
 
 aitestbed는 **현재 MVP를 대신 만드는 주체가 아니다.**
@@ -169,7 +177,7 @@ aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된�
 - [x] AI context 안전계약/fallback 테스트
 - [x] Hospital Kiosk 단일 시나리오 구현
 - [x] test/build/CI
-- [ ] 실제 MVP 화면/사용 흐름 최종 QA
+- [x] 실제 MVP 화면/사용 흐름 최종 QA (local browser)
 - [ ] 제출용 MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 제출 PDF/PPT/PPTX
@@ -187,6 +195,6 @@ aitestbed 생성·추가 플랫폼 기능 탐색이 1~3보다 앞서면 안 된�
 
 ## Next action
 
-**현재 prototype을 공모전 제출 MVP로 직접 검토해 `초기 화면 → Trust Check → Hospital Kiosk → HIGH 안전중단` 사용자 흐름에서 제출 전에 수정해야 할 치명적 빈칸을 1개씩 제거한다.**
+**Vercel passkey 2단계 인증을 완료해 `Lightning-Public/senior-trust-gateway`를 import하고, preview URL에서 같은 QA를 다시 실행한다.**
 
 그 다음 MVP 화면을 캡처하고 제출문서 작성을 진행한다.
