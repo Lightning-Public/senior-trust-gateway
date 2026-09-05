@@ -1,11 +1,13 @@
 import './styles.css'
 import { GroundedRiskAnalyzer } from './groundedRiskAnalyzer'
-import { loadBundledKisaVerifier } from './kisaSnapshotLoader'
+import { BundledKisaSnapshotVerifier } from './kisaSnapshotLoader'
 import { RuleBasedRiskAnalyzer } from './ruleBasedAnalyzer'
 import type { OfficialCheckResult, RiskAnalysis, RiskLevel } from './types'
 
-const analyzerPromise = loadBundledKisaVerifier()
-  .then((officialVerifier) => new GroundedRiskAnalyzer(new RuleBasedRiskAnalyzer(), officialVerifier))
+const analyzer = new GroundedRiskAnalyzer(
+  new RuleBasedRiskAnalyzer(),
+  new BundledKisaSnapshotVerifier(),
+)
 
 const KISA_SMISHING_GUIDE = 'https://www.boho.or.kr/kr/subPage.do?menuNo=205116'
 
@@ -149,6 +151,5 @@ form.addEventListener('submit', async (event) => {
     return
   }
 
-  const analyzer = await analyzerPromise
   renderResult(await analyzer.analyze(message))
 })
