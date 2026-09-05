@@ -50,27 +50,39 @@ Senior Trust Gateway를 신뢰·보호·권한관리 본체로 유지하고, Kio
 
 ### aitestbed.kr
 
-공개 화면에서 다음 신청 항목이 확인된다.
+2026-09-05 공개 사이트와 프런트엔드에서 다음은 확인된다.
 
-- 바이브코딩
-- 클라우드
-- 개발지원도구
-- API / 데이터
-- 승인형 AI API 키와 사용량/포인트 관리
+- 바이브코딩, 클라우드, 개발지원도구 신청
+- 로그인 전용 `내 API 키` 화면과 키 신청/승인/발급/포인트 상태
+- AI 모델 API 사용한도의 양도·재판매를 제한하는 약관 문구
+- 바이브코딩 프로젝트의 소스 코드 다운로드
 
-실제 계정에 제공되는 모델, 호출 규격, 이미지 입력, 한도와 승인 상태는 로그인 후 확인한 값만 사용한다. 공개 프런트엔드에 보이는 모델 후보를 계정 가용성으로 간주하지 않는다.
+그러나 **외부 프로젝트가 호출할 AI 추론 API**의 base URL, 인증 방식, request/response schema, SDK 또는 호출 예시는 공개 문서에서 확인하지 못했다. 로그인 전용 키 관리 endpoint(`/api/v1/keys/*`)의 존재는 외부 추론 endpoint를 증명하지 않는다.
 
-제공받은 계정·API 한도를 제3자에게 양도하거나 재판매하지 않는다. 유료 서비스 운영은 운영기관 사전 승인 조건을 확인한다.
+또한 공식 FAQ의 `API 데이터 연계`는 디지털융합플랫폼에서 발급한 **공공데이터 API 키**를 바이브코딩 채팅창에 붙여 넣는 절차다. 이를 AI 모델 API 제공 근거로 사용하지 않는다.
+
+공개 FAQ 기준 웹 바이브코딩은 공공 실험용 서버이며 외부 데이터를 읽는 예외적 경로만 허용하고, 내부 데이터를 외부로 내보내는 아웃바운드 기능은 제공하지 않는다. 이미지·영상·음성의 개발자 수준 운영은 생성 소스를 내려받아 별도 개발환경에서 후속 개발하도록 안내한다.
+
+따라서 현재 상태는 다음과 같다.
+
+- `AitestbedVibeWorkflow`: **confirmed** — 프롬프트 기반 프로토타입 생성·수정·다운로드·공모전 증빙
+- `AitestbedModelApiProvider`: **unverified candidate** — 로그인 후 공식 호출 문서와 실제 probe가 확인될 때만 구현
+
+실제 계정에 제공되는 모델, 호출 규격, 이미지 입력, 한도와 승인 상태는 로그인 후 확인한 값만 사용한다. 제공받은 계정·한도를 제3자에게 양도하거나 재판매하지 않고, 유료 서비스 운영은 운영기관 사전 승인 조건을 확인한다.
 
 ## 4. 목표 아키텍처
 
 ```text
+AitestbedVibeWorkflow (confirmed)
+  └─ prompt evidence → prototype/code download → local repository
+
 Trust Check UI ───────┐
                       ├─► Senior Trust Orchestrator
 Kiosk Guidance UI ────┘      ├─ deterministic safety rules
                              ├─ official-source verifier
                              ├─ AIProvider interface
-                             │    └─ AitestbedProvider (server-side)
+                             │    ├─ Local/approved provider
+                             │    └─ AitestbedModelApiProvider (candidate)
                              └─ HumanEscalation interface
 ```
 
@@ -78,15 +90,16 @@ Kiosk Guidance UI ────┘      ├─ deterministic safety rules
 
 - 규칙엔진: 송금·결제·인증번호·민감정보·원격제어 등 고위험 행동 차단
 - 공식 데이터: 확인 가능한 범위와 기준일을 포함한 근거 제공
-- aitestbed AI: 의도·문맥 해석, 복잡한 문구 요약, 시니어용 쉬운 설명 생성
+- aitestbed 바이브코딩: 프로토타입 생성·수정·소스 다운로드와 공모전 활용 증빙
+- AIProvider: 실제 호출 계약이 확인된 모델 공급자로 의도·문맥 해석과 쉬운 설명 생성
 - Kiosk UI: 다음 버튼·행동을 크게 보여주고 음성으로 안내
 - 사람/신뢰원: 불확실하거나 고위험인 경우 최종 확인
 
 AI 모델의 확신은 사용자 권한이나 안전 판정을 대신하지 않는다. AI는 규칙엔진의 `HIGH`를 낮출 수 없다.
 
-## 5. aitestbed 공통 공급 레이어
+## 5. API 확인 후 공통 공급 레이어
 
-프로젝트마다 API 호출 코드를 복제하지 않고 `AIProvider` 계약을 둔다.
+프로젝트마다 API 호출 코드를 복제하지 않고 `AIProvider` 계약을 둔다. 단, aitestbed의 외부 추론 API 사용 가능성이 검증되기 전에는 provider 구현을 시작하지 않고 mock/다른 승인 공급자를 사용한다.
 
 ```ts
 interface AIProvider {
@@ -104,10 +117,18 @@ interface AIProvider {
 - `rateLimitKnown`
 - `commercialUseStatus`
 
+provider 채택 게이트:
+
+1. 로그인 후 공식 AI 추론 API 문서 확인
+2. base URL, 인증 header, 모델 목록, 요청·응답 schema 기록
+3. 최소 호출 probe 성공
+4. 외부 프로젝트 사용·개인정보·상업 이용 범위 확인
+5. 위 네 조건을 충족하지 못하면 `AitestbedModelApiProvider`를 미구현 상태로 유지
+
 보안 원칙:
 
 - API 키는 브라우저 번들·Git·로그에 넣지 않는다.
-- 서버 측 proxy 또는 승인된 aitestbed 클라우드 실행 경로에서만 호출한다.
+- 문서로 확인된 server-side 호출 경로에서만 사용한다.
 - 원문 메시지와 키오스크 화면의 개인정보를 최소화·마스킹한다.
 - timeout, quota 초과, 잘못된 JSON, 모델 거부 시 규칙 기반 fallback을 사용한다.
 - 프로젝트별 프롬프트·출력 schema·감사 로그는 분리한다.
@@ -116,21 +137,22 @@ interface AIProvider {
 
 ### Phase 0 — 공모전 증빙
 
-1. aitestbed에서 바이브코딩/API 사용 신청 상태를 확인한다.
-2. `AI 안심동행` 프로젝트를 만들고 실제 모델 표시명과 기능을 기록한다.
-3. Trust Check의 애매한 문자 설명 기능 한 개를 구현한다.
-4. 사용 프롬프트, 입력·출력, 프로젝트 화면을 개인정보 없이 캡처한다.
-5. 규칙엔진이 `HIGH`를 유지하고 모델 실패 시 fallback하는 것을 증명한다.
+1. aitestbed 바이브코딩 신청·이용 상태를 확인한다.
+2. `AI 안심동행` 프로젝트를 만들고 실제 프롬프트와 생성 결과를 기록한다.
+3. 생성 소스를 다운로드해 로컬 저장소와의 차이·포팅 범위를 정리한다.
+4. 프로젝트·프롬프트·실행 결과 화면을 개인정보 없이 캡처한다.
+5. 외부 추론 API가 확인되지 않으면 `실시간 AI 호출 구현`으로 주장하지 않는다.
 
-완료 기준: 플랫폼 사용 증거 3개 이상과 실제 프롬프트·출력 한 세트가 있다.
+완료 기준: 플랫폼 사용 증거 3개 이상, 실제 프롬프트·생성 결과·다운로드 소스가 있다.
 
 ### Phase 1 — Text Trust Assistant
 
-- AI가 문자 의도와 사칭 맥락을 구조화한다.
-- 출력은 `summary`, `riskContext`, `safeNextAction`, `uncertainty`로 제한한다.
+- 먼저 `AIProvider` 계약과 mock/fallback을 구현한다.
+- aitestbed 외부 추론 API가 provider 채택 게이트를 통과하면 adapter를 추가한다.
+- AI는 문자 의도와 사칭 맥락을 구조화하고, 출력은 `summary`, `riskContext`, `safeNextAction`, `uncertainty`로 제한한다.
 - 규칙엔진 결과와 충돌하면 더 안전한 결과를 채택한다.
 
-완료 기준: 대표 6개 시나리오와 모델 장애 시나리오가 테스트된다.
+완료 기준: 실제 provider 출처와 호출 증거가 기록되고, 대표 6개 시나리오와 모델 장애 시나리오가 테스트된다.
 
 ### Phase 2 — Kiosk Structured Guidance
 
@@ -143,7 +165,7 @@ interface AIProvider {
 
 ### Phase 3 — Vision/OCR 후보
 
-- aitestbed 계정에서 image input 지원이 확인된 경우에만 진행한다.
+- 실제 사용 가능한 provider에서 image input 호출 문서와 probe가 확인된 경우에만 진행한다.
 - 화면 이미지에서 텍스트·후보 버튼을 추출하되, 사용자에게 누르라고 지시하기 전에 화면 상태와 목표를 재확인한다.
 - 미지원이면 OCR 텍스트 입력 또는 사전 정의 화면 구조를 유지한다.
 
@@ -151,7 +173,7 @@ interface AIProvider {
 
 ### Phase 4 — 공공 프로젝트 공통화
 
-검증된 `AitestbedProvider`를 다음 프로젝트가 재사용할 수 있게 분리한다.
+검증된 `AIProvider` adapter를 다음 프로젝트가 재사용할 수 있게 분리한다. aitestbed adapter는 외부 추론 API가 provider 채택 게이트를 통과한 경우에만 포함한다.
 
 - Senior Trust Gateway: 의심 문자 이해·쉬운 설명
 - Kiosk AI: 화면 문구 이해·다음 행동 안내
@@ -164,10 +186,10 @@ interface AIProvider {
 
 ### 지금 한다
 
-- Trust Check AI 설명 한 기능
-- aitestbed 실제 사용 증빙
+- aitestbed 바이브코딩 실제 사용·소스 다운로드 증빙
 - Kiosk 확장 화면 한 장과 결합 구조
-- 안전 fallback과 사실 경계
+- `AIProvider` 계약과 mock/fallback 설계
+- 외부 AI 추론 API 지원 여부의 사실 경계
 
 ### 지금 하지 않는다
 

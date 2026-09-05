@@ -50,7 +50,7 @@
 
 - [`AI 안심동행 — aitestbed + Kiosk AI 융합 로드맵`](docs/roadmap/aitestbed-kiosk-fusion.md)
   - `kiosk_ar_assistant`의 시니어용 화면·음성·포인터 UX를 Trust Gateway의 위험·검증·권한정책과 연결합니다.
-  - aitestbed AI는 문맥 이해와 쉬운 설명에 사용하고, 규칙엔진은 고위험 행동을 통제합니다.
+  - 공개 확인된 aitestbed 바이브코딩은 프로토타입·소스 다운로드·공모전 증빙에 사용합니다. 외부 AI 추론 API는 공식 호출 문서와 실제 probe가 확인되기 전까지 candidate로만 둡니다.
   - 단기 제출 범위는 Trust Check 80% + Kiosk 확장 시나리오 20%로 제한합니다.
 
 ## Local run
