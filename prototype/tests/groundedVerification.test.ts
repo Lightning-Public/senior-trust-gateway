@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { GroundedRiskAnalyzer } from '../src/groundedRiskAnalyzer'
+import { BundledKisaSnapshotVerifier } from '../src/kisaSnapshotLoader'
 import { KisaPhishingSnapshotVerifier } from '../src/officialVerification'
 import { RuleBasedRiskAnalyzer } from '../src/ruleBasedAnalyzer'
 import { extractHttpUrls, normalizeHttpUrl } from '../src/urlTools'
@@ -8,6 +9,10 @@ const officialRecord = {
   url: 'http://phishing-test.invalid/pay',
   detectedDate: '20241231',
 }
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('URL normalization', () => {
   it('extracts unique HTTP URLs and removes fragments/trailing punctuation', () => {
@@ -49,6 +54,39 @@ describe('KisaPhishingSnapshotVerifier', () => {
     expect(result.outcome).toBe('MATCH')
     expect(result.authoritative).toBe(false)
     expect(result.detail).toContain('실제 공식 판정으로 사용하지 않습니다')
+  })
+})
+
+describe('BundledKisaSnapshotVerifier', () => {
+  it('does not fetch the large snapshot when the message has no URL', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    const verifier = new BundledKisaSnapshotVerifier()
+    const result = await verifier.verify('내일 오전 10시에 병원 예약입니다.')
+
+    expect(result.outcome).toBe('NO_URL')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('loads the snapshot only once after a URL check is needed', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        kind: 'KISA_PHISHING_SNAPSHOT',
+        authoritative: false,
+        source: 'placeholder',
+        dataDate: '2024-12-31',
+        records: [],
+      }),
+    } as Response)
+    vi.stubGlobal('fetch', fetchMock)
+
+    const verifier = new BundledKisaSnapshotVerifier()
+    await verifier.verify('확인 https://one-test.invalid')
+    await verifier.verify('확인 https://two-test.invalid')
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
 
