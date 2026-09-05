@@ -1,0 +1,9 @@
+{
+  "kind": "KISA_PHISHING_BUCKET_INDEX",
+  "authoritative": false,
+  "source": "placeholder",
+  "dataDate": "2024-12-31",
+  "bucketCount": 256,
+  "totalRecords": 0,
+  "buckets": {}
+}
