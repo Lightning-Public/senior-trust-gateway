@@ -150,7 +150,12 @@ HIGH는 별도 `지금 멈추세요` 안전중단 UI와 사람 확인 행동을 
 
 ### Current product-identity UI
 
-생활매니저 정체성 보정 커밋 이후 current-head CI를 다시 확인한다.
+PR #14 current head `c962d7fe305d265f2d981a828173422e069332cf` 기준 Prototype CI run #97: **SUCCESS**.
+
+- install dependencies: PASS
+- snapshot generator: PASS
+- risk policy tests: PASS
+- production build: PASS
 
 안전정책/규칙엔진은 변경하지 않았다.
 
@@ -158,8 +163,9 @@ HIGH는 별도 `지금 멈추세요` 안전중단 UI와 사람 확인 행동을 
 
 - root `vercel.json`: `cd prototype && npm install --no-audit --no-fund && npm run build`
 - output: `prototype/dist`
-- 정식 production URL: `https://senior-trust-gateway.vercel.app` — main baseline
-- Draft PR #14 Preview에서 current UI head를 모바일 기준으로 별도 검수해야 함
+- 저장소 문서상 production URL은 `https://senior-trust-gateway.vercel.app` — main baseline
+- 현재 연결된 Vercel connector에서는 `redsunjin's projects` team의 project 목록이 비어 있어 Draft PR #14 Preview URL을 이 세션에서 직접 확인하지 못했다.
+- 따라서 current UI head의 실제 모바일 화면 QA는 아직 제출 증빙으로 확정하지 않는다.
 
 ## aitestbed role
 
@@ -190,7 +196,7 @@ aitestbed는 현재 MVP를 대신 만드는 주체가 아니다.
 - [x] Product Boundary를 생활매니저 기준으로 정정
 - [x] 생활 도움 전체가 보이는 UI 정보구조 반영
 - [x] Hospital Kiosk를 두 번째 대표 생활 장면으로 적극 노출
-- [ ] current product-identity UI CI test/build 확인
+- [x] current product-identity UI CI test/build
 - [ ] current UI head 실제 모바일 화면 QA
 - [ ] 제출용 MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
@@ -206,4 +212,4 @@ aitestbed는 현재 MVP를 대신 만드는 주체가 아니다.
 
 ## Next action
 
-**current head CI를 확인한 뒤 Draft PR #14 Preview에서 첫 화면의 생활매니저 정체성과 Trust Check → Hospital Kiosk 연결을 실제 모바일 브라우저로 검수한다.**
+**Draft PR #14 Preview URL을 확보한 뒤 첫 화면의 생활매니저 정체성과 Trust Check → Hospital Kiosk 연결을 실제 모바일 브라우저로 검수하고 제출 캡처를 확보한다.**
