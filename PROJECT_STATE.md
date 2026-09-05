@@ -64,7 +64,7 @@ Last updated: 2026-09-05
 
 ## Kiosk Safe Guidance — PR #14
 
-병원 접수 한 장면을 구조화 데모로 구현한다.
+병원 접수 한 장면을 구조화 데모로 구현했다.
 
 ```text
 진료 접수
@@ -139,14 +139,19 @@ Last updated: 2026-09-05
 
 PR #10 head 기준 Prototype CI run #63: **SUCCESS**.
 
-PR #14 변경 후에는 다음을 다시 통과해야 한다.
+PR #14 code 기준 Prototype CI run #70: **SUCCESS**.
 
-- snapshot generator smoke test
-- 기존 Trust Check / Grounded Verification tests
-- AI safety tests
-- hospital Kiosk policy tests
-- `tsc --noEmit`
-- Vite production build
+- snapshot generator smoke test: PASS
+- Vitest: **5 files / 35 tests passed**
+- Grounded Verification: 14 tests PASS
+- contest AI safety: 8 tests PASS
+- rule-based analyzer: 9 tests PASS
+- KISA 131,752-row bucket distribution guard: 1 test PASS
+- hospital Kiosk safety: 3 tests PASS
+- `tsc --noEmit && vite build`: PASS
+- production bundle: JS 18.06 kB / gzip 7.33 kB, CSS 4.57 kB / gzip 1.53 kB
+
+run #70 이후 변경은 위 검증 결과를 기록하는 문서 현행화뿐이며 prototype 코드는 변경하지 않았다.
 
 ## Remaining contest work
 
@@ -154,8 +159,9 @@ PR #14 변경 후에는 다음을 다시 통과해야 한다.
 - [x] 클라우드 신청 화면 진입 및 사양 확인
 - [x] Trust Check + AI safety contract 구현/테스트
 - [x] Kiosk 시나리오를 병원 접수 1개로 고정
-- [x] 병원 Kiosk 구조화 안전 데모 구현
+- [x] 병원 Kiosk 구조화 안전 데모 구현/테스트
 - [x] aitestbed 바이브코딩 생성 프롬프트/소스 비교 계획 준비
+- [x] PR #14 prototype test/build/CI
 - [ ] 클라우드 신청 완료/승인 상태 확인
 - [ ] aitestbed 바이브코딩 프로젝트 `시니어 AI 생활매니저` 생성
 - [ ] 프로젝트/프롬프트/생성 결과 화면 캡처 3개 이상
