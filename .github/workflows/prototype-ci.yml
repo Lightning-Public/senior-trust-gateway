@@ -32,8 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Check snapshot generator
-        run: npm run check:snapshot-script
+      - name: Test snapshot generator
+        run: |
+          npm run check:snapshot-script
+          rm -rf .tmp-kisa-snapshot
+          node scripts/build-kisa-snapshot.mjs tests/fixtures/kisa-sample.csv .tmp-kisa-snapshot
+          node --input-type=module -e "import { readFile, readdir } from 'node:fs/promises'; const dir='.tmp-kisa-snapshot'; const manifest=JSON.parse(await readFile(dir+'/manifest.json','utf8')); if(manifest.kind!=='KISA_PHISHING_BUCKET_INDEX'||manifest.totalRecords!==2||manifest.bucketCount!==256||Object.keys(manifest.buckets).length<1) process.exit(1); const files=await readdir(dir); if(!files.some((name)=>/^[0-9a-f]{2}\\.json$/.test(name))) process.exit(1);"
 
       - name: Test risk policy
         run: npm run test
