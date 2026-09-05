@@ -91,6 +91,56 @@ Last updated: 2026-09-06
 - 구현 상태를 `지금 사용 / 지금 시연 / 확장 방향 / 공통 원칙`으로 명시해 미구현 기능을 과장하지 않음
 - Trust Check와 Hospital Kiosk를 같은 생활매니저의 두 대표 장면으로 연결
 
+### 온보딩 / 메인 우선순위 디자인 — 2026-09-06
+
+서비스를 처음 접하는 사용자가 제품 목적을 짧게 이해하고 메인 화면에서 바로 행동할 수 있도록 추가 UI/UX 패스를 적용했다.
+
+#### 첫 진입 2단계 온보딩
+
+현재 prototype에는 실제 로그인 기능이 없으므로 로그인 UI를 가장하지 않는다. 첫 진입 시 동일한 온보딩을 보여주며, 향후 로그인 구현 시 로그인 직후 연결 가능한 구조다.
+
+1. **어려운 디지털 생활을 옆에서 같이 봐드려요**
+   - 문자·카톡 → 병원 접수 → 생활 도움
+2. **위험한 순간에는 먼저 멈추겠습니다**
+   - 쉽게 이해 → 위험 확인 → 다음 행동 → 사람 확인
+
+- 안내 확인 여부만 브라우저 localStorage에 저장
+- 계정/개인정보 저장 없음
+- 메인 `처음 안내` 버튼으로 다시 확인 가능
+
+#### 메인 우선순위
+
+1. **긴급 도움**
+   - `링크·송금·인증번호는 잠깐 멈추세요`
+   - 바로 Trust Check로 이동
+2. **빠른 도움 — 현재 구현 기능**
+   - 문자·카톡 같이 보기
+   - 병원 접수 도움
+3. **생활 도움 확장**
+   - 예약·일정 챙기기 — 확장 방향
+   - 행정·생활 지원 — 확장 방향
+   - 가족·사람 연결 — 공통 원칙
+
+즐겨찾기 저장/개인화는 새 기능이므로 이번 MVP에는 추가하지 않았다. 이후 즐겨찾기·사용빈도 기반 정렬을 수용할 위치를 `빠른 도움` 영역으로 먼저 설계했다.
+
+#### 브랜드 각인 요소
+
+CSS 기반 작은 `동행 마크`를 앱 헤더·온보딩·제품 방향 영역에 반복 사용한다.
+
+- 둥근 말풍선/동행자 실루엣
+- 단순한 눈과 미소
+- 작은 포인트
+- 과한 캐릭터보다 신뢰를 유지하는 소형 브랜드 앵커
+
+브라우저 title도 `AI 안심매니저`에서 `시니어 AI 생활매니저`로 수정했다.
+
+상세 근거:
+
+- `docs/contest/product-design-evidence.md`
+- `prototype/src/main.ts`
+- `prototype/index.html`
+- `prototype/src/product-design.css`
+
 Trust Check 결과 정보 순서:
 
 1. **무슨 뜻인가요?**
@@ -115,11 +165,6 @@ HIGH에서는 별도의 강한 안전중단 UI를 먼저 표시한다.
 - 위험도 색상 + 텍스트 병행
 - 설명보다 지금 할 행동 우선
 - 모바일 우선 구성
-
-변경 근거:
-
-- `prototype/src/main.ts`
-- `prototype/src/styles.css`
 
 ### AI context safety contract
 
@@ -154,9 +199,7 @@ HIGH에서는 별도의 강한 안전중단 UI를 먼저 표시한다.
 → 직원 도움 안내
 ```
 
-기존 기능 범위는 그대로 유지했다.
-
-UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저가 옆에서 화면을 이해시키고 행동을 안내하는 실제 생활 장면**으로 적극 노출한다. 이를 통해 제품이 문자 위험 검사 하나에 한정되지 않음을 보여준다.
+UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저가 옆에서 화면을 이해시키고 행동을 안내하는 실제 생활 장면**으로 적극 노출한다.
 
 구현 근거:
 
@@ -168,11 +211,18 @@ UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저
 
 ## 3. 자동 검증
 
-기존 검증 기준선 Prototype CI run #70: **SUCCESS**.
+- Prototype CI run #70: SUCCESS
+- UI 1차 재구성 run #89: SUCCESS
+- Product identity UI run #98: SUCCESS
+- Onboarding / priority home code run #105: **SUCCESS**
+- PROJECT_STATE 현행화 후 run #106: **SUCCESS**
 
-공모전 UI 1차 재구성 head 기준 Prototype CI run #89: **SUCCESS**.
+run #105 / #106 공통:
 
-현재 생활매니저 정체성 보정 UI는 별도 current-head CI를 다시 통과해야 한다.
+- install dependencies: PASS
+- snapshot generator: PASS
+- risk policy tests: PASS
+- production build: PASS
 
 안전정책/규칙엔진을 변경하지 않고 UI 계층과 문구/레이아웃만 변경했다.
 
@@ -181,9 +231,9 @@ UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저
 | 평가 관점 | 대응 |
 | --- | --- |
 | 문제 정의 및 제안 필요성 | 고령자가 문자·키오스크·생활 디지털 절차에서 의미와 다음 행동을 판단하기 어려운 문제 |
-| 서비스 정체성 | `시니어 AI 생활매니저`가 여러 생활 장면을 돕는다는 점을 첫 화면에서 설명 |
+| 서비스 정체성 | 온보딩과 메인 홈에서 `시니어 AI 생활매니저`가 여러 생활 장면을 돕는다는 점을 설명 |
 | 창의성 및 AI 활용 적절성 | AI 문맥 설명과 결정론적 위험/권한 통제를 분리 |
-| 사용자 완성도 | 큰 글자·큰 행동·적은 선택지·행동 우선 구조 |
+| 사용자 완성도 | 큰 글자·큰 행동·적은 선택지·긴급/빠른 도움 우선 구조 |
 | 확장성 | 문자 → 병원 접수 → 예약/일정 → 행정·생활지원으로 이어지는 제품 방향을 구현 상태와 분리해 제시 |
 | 실현 가능성 | 실행 가능한 Trust Check + Hospital Kiosk 안전 흐름 + fallback 테스트 + CI |
 
@@ -219,31 +269,20 @@ UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저
 
 ## 7. MVP 배포 및 브라우저 QA
 
-- root `vercel.json`은 `cd prototype && npm install --no-audit --no-fund && npm run build` 후 `prototype/dist`를 배포하도록 설정돼 있다.
-- 저장소 공개 전환 후, 기존 무료 Hobby team `redsunjin's projects`에 Git 연동 정식 Vercel project를 Import했다. Pro Trial/결제는 시작하지 않았다.
-- 정식 production URL: `https://senior-trust-gateway.vercel.app` (`READY`, `main` 배포).
-- 개인정보가 없는 fixture로 정식 URL의 초기 Trust Check와 LOW/MEDIUM/HIGH를 실제 브라우저로 확인했다.
-  - LOW: 안전 확정이 아님과 확인 한계 표시
-  - MEDIUM: 링크 대신 공식 경로 확인 안내
-  - HIGH: 행동 중단과 가족/공식 대표번호 확인 안내
-- Draft PR #14 공개 Preview URL: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app` (`READY`). Vercel 로그인 보호를 해제해 심사자가 바로 열 수 있다.
-- 개인정보가 없는 fixture로 위 Preview의 모바일 viewport `390 × 844`에서 current product-identity UI를 실제 브라우저로 검수했다.
-  - 첫 화면: `시니어 AI 생활매니저`, 문자·카톡 이해와 병원 접수 도움을 MVP 장면으로 표시하고 예약·일정/행정·생활 지원은 확장 방향으로 구분
-  - LOW: 안전 확정이 아님과 확인 한계 표시
-  - MEDIUM: 외부 링크를 위험 신호로 표시하고 공식 경로 확인 안내
-  - HIGH: `지금 멈추세요`, 송금·사칭 압박 위험, 사람/공식 대표번호 확인 안내
-  - Hospital Kiosk: 접수 시작 → 예약 진료 → 주민등록번호 입력 요청 단계 `HIGH · 멈춤` → 직원 도움 요청 → `안전 확인 대기`
-  - 민감정보를 자동 진행·입력·저장하지 않음
-- favicon 404 한 건은 기능 흐름과 무관하다.
+- production URL: `https://senior-trust-gateway.vercel.app` (`main` baseline)
+- Draft PR #14 Preview branch alias: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app`
+- 이전 product-identity UI는 모바일 viewport `390 × 844`에서 Trust Check와 Hospital Kiosk 전체 흐름 QA를 통과했다.
+- **온보딩/우선순위 홈 추가 이후 current head는 제출 캡처 전에 다시 실제 모바일 QA한다.** 이전 QA를 새 UI 최종 증빙으로 재사용하지 않는다.
 
 ## 8. 제출용 MVP 캡처
 
 current UI head 기준 필수 후보:
 
-1. 첫 화면 — `시니어 AI 생활매니저` + 생활 도움 영역 + 구현 상태 구분
-2. Trust Check 입력/결과 또는 HIGH `지금 멈추세요`
-3. Hospital Kiosk 두 번째 생활 장면
-4. 민감정보 HIGH 안전중단 + 직원 도움 안내
+1. 온보딩 — 생활매니저의 생활 도움 설명
+2. 메인 — 긴급 도움 + 빠른 도움 2개 + 브랜드 마크
+3. Trust Check HIGH — `지금 멈추세요` + 사람 확인
+4. Hospital Kiosk — 두 번째 생활 장면
+5. 민감정보 HIGH 안전중단 + 직원 도움 안내
 
 ## 9. 개인정보·보안
 
@@ -260,8 +299,10 @@ current UI head 기준 필수 후보:
 - [x] Product Boundary를 `생활매니저 제품 / 안심 공통원칙`으로 정정
 - [x] 생활 도움 전체가 보이는 UI 정보구조 반영
 - [x] Hospital Kiosk를 두 번째 대표 생활 장면으로 적극 노출
-- [x] current head CI test/build
-- [x] Draft PR #14 current UI head 실제 모바일 화면 QA
+- [x] 첫 진입 온보딩 + 메인 긴급/빠른 도움 구조
+- [x] 작은 브랜드 동행 마크
+- [x] current code CI test/build
+- [ ] onboarding/current UI 실제 모바일 화면 QA
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX
