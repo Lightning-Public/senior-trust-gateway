@@ -17,9 +17,10 @@
 ```
 
 - 명확한 고위험 신호는 결정론적 규칙엔진이 통제합니다.
-- AI는 애매한 의도·사칭 맥락과 시니어용 쉬운 설명을 담당합니다.
+- AI 안전 레이어는 애매한 의도·사칭 맥락과 쉬운 설명을 위한 계약/테스트가 구현돼 있습니다.
 - `AI confidence != user authorization`: AI는 HIGH 위험을 낮추거나 고위험 행동을 승인할 수 없습니다.
 - 모델 장애·지연·잘못된 JSON은 규칙엔진 결과로 fallback합니다.
+- 실제 AIProvider 호출 계약이 아직 확인되지 않아 기본 UI 런타임은 현재 `GroundedRiskAnalyzer`를 사용합니다.
 
 ## P0.1 — Grounded Verification
 
@@ -32,20 +33,33 @@
 
 ## Kiosk Safe Guidance
 
-두 번째 생활장면은 `Lightning-Public/kiosk_ar_assistant@3a7da8f`의 화면·음성·포인터 UX를 활용한 키오스크 안내입니다.
+두 번째 생활장면은 `Lightning-Public/kiosk_ar_assistant@3a7da8f`의 큰 안내·음성형 문구·포인터 UX 개념을 활용합니다.
 
-공모전 제출은 **Trust Check 80% + Kiosk 확장 20%**로 제한하고, 키오스크 전체 CV/OCR 통합보다 한 가지 대표 장면에서 다음 공통 흐름을 보여줍니다.
+공모전 Phase 0은 **병원 접수 한 장면만** 구현합니다.
 
 ```text
-이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결
+접수 시작 안내
+→ 예약 진료 선택
+→ 민감정보 입력 화면
+→ HIGH 안전중단
+→ 직원 도움 요청
 ```
+
+- Trust Check 80% + Kiosk 확장 20% 비중을 유지합니다.
+- 키오스크 전체 CV/OCR 통합은 하지 않습니다.
+- 개인정보를 대신 입력하거나 저장하지 않습니다.
+- 동일한 흐름 `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`을 문자와 키오스크에 적용합니다.
 
 ## 모두의 AI 실험실 사용 경계
 
 - `AitestbedVibeWorkflow`: **confirmed** — 바이브코딩 프로토타입 생성·수정·소스 다운로드·공모전 증빙에 사용합니다.
 - `AitestbedModelApiProvider`: **unverified candidate** — 외부 AI 추론 API의 공식 호출 문서와 실제 probe가 확인된 경우에만 구현합니다.
 - 로그인 전용 API 키 관리 화면의 존재만으로 외부 AI 추론 endpoint를 주장하지 않습니다.
-- 실제 AIProvider는 호출 계약이 확인된 공급자만 연결하며 API 키·개인정보는 브라우저 번들/Git/로그에 남기지 않습니다.
+- API 키·개인정보는 브라우저 번들/Git/로그에 남기지 않습니다.
+
+aitestbed 생성 실행 문서:
+
+- [`aitestbed 바이브코딩 프로토타입 생성 계획`](docs/contest/aitestbed-vibe-build-plan.md)
 
 ## Roadmap
 
@@ -61,6 +75,7 @@
 - [`AI 활용 필요성·플랫폼 활용·안전 설계`](docs/contest/ai-use-one-page.md)
 - [`플랫폼 실증 Run Sheet`](docs/contest/platform-run-sheet.md)
 - [`클라우드 신청 화면 관찰 기록`](docs/contest/platform-cloud-observation.md)
+- [`aitestbed 바이브코딩 생성 계획`](docs/contest/aitestbed-vibe-build-plan.md)
 
 ## Local run
 
