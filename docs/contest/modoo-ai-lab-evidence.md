@@ -193,7 +193,33 @@ AI가 어떤 설명을 반환하더라도 규칙엔진 결과는 `HIGH`이며 �
 6. 잘못된 JSON → 규칙엔진 fallback
 7. 모델 장애 → 규칙엔진 fallback
 
-## 8. 화면 캡처 증빙 경로
+## 8. 테스트 / production build 결과
+
+Draft PR #10의 코드 변경 head `fad0d42848a8eb1ea0b3540e12f83bef5aba53b8`에서 GitHub Actions `Prototype CI` run #47을 실행했고 성공했다.
+
+실행 명령:
+
+```bash
+cd prototype
+npm install --no-audit --no-fund
+npm run check:snapshot-script
+node scripts/build-kisa-snapshot.mjs tests/fixtures/kisa-sample.csv .tmp-kisa-snapshot
+npm run test
+npm run build
+```
+
+결과:
+
+- snapshot generator smoke test: PASS
+- Vitest: **3 test files / 30 tests passed**
+- 신규 `aiAssistedRiskAnalyzer.test.ts`: **7 tests passed**
+- TypeScript `tsc --noEmit`: PASS
+- Vite production build: PASS
+- CI job `test-build`: SUCCESS
+
+최신 branch commit은 이후 `PROJECT_STATE.md` 및 본 증빙 문서만 현행화했으며 prototype 코드에는 추가 변경이 없다.
+
+## 9. 화면 캡처 증빙 경로
 
 실제 로그인 후 다음 파일명을 사용한다. 현재는 **실제 파일이 없으며 증빙 완료로 계산하지 않는다.**
 
@@ -205,21 +231,21 @@ AI가 어떤 설명을 반환하더라도 규칙엔진 결과는 `HIGH`이며 �
 
 - `docs/contest/evidence/04-preview-or-deploy.png` — 플랫폼에서 실제로 확인된 경우에만 미리보기/배포 화면
 
-## 9. 개인정보·보안
+## 10. 개인정보·보안
 
 - 실제 문자 원문을 저장소에 커밋하지 않는다.
 - 플랫폼 실행 캡처에는 전화번호, 이름, 인증번호, 실주소 등 개인정보를 사용하지 않는다.
 - API 키/토큰은 저장소, 클라이언트 번들, 로그에 기록하지 않는다.
 - 실제 플랫폼 연동 시 키가 필요한 경우 서버 측 secret 또는 플랫폼 secret 저장소가 **실제로 제공되는지 확인한 뒤** 사용한다.
 
-## 10. 공식 데이터 연계 상태
+## 11. 공식 데이터 연계 상태
 
 KISA/보호나라 관련 공식 공개 데이터 검증 인프라는 별도로 존재하지만, 현재 모두의 AI 실험실 연계나 실시간 KISA API 연동 완료를 주장하지 않는다.
 
 - 실제 공개 API 존재/약관/인증 방식이 확인되지 않은 기능은 `candidate` 또는 후속 단계로 유지
 - 공식 목록 미일치도 안전 판정으로 사용하지 않음
 
-## 11. 현재 blocker / 제출 전 수동 완료 체크
+## 12. 현재 blocker / 제출 전 수동 완료 체크
 
 - [ ] `aitestbed.kr` 로그인
 - [ ] `AI 안심매니저` 프로젝트 실제 생성
