@@ -220,8 +220,13 @@ UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저
 ## 7. MVP 배포 및 브라우저 QA
 
 - root `vercel.json`은 `cd prototype && npm install --no-audit --no-fund && npm run build` 후 `prototype/dist`를 배포하도록 설정돼 있다.
-- 정식 production URL: `https://senior-trust-gateway.vercel.app` (`main` 배포).
-- production은 main baseline이며, 생활매니저 정체성 보정 UI는 Draft PR #14 Preview에서 다시 모바일 검수한다.
+- 저장소 공개 전환 후, 기존 무료 Hobby team `redsunjin's projects`에 Git 연동 정식 Vercel project를 Import했다. Pro Trial/결제는 시작하지 않았다.
+- 정식 production URL: `https://senior-trust-gateway.vercel.app` (`READY`, `main` 배포).
+- 개인정보가 없는 fixture로 정식 URL의 초기 Trust Check와 LOW/MEDIUM/HIGH를 실제 브라우저로 확인했다.
+  - LOW: 안전 확정이 아님과 확인 한계 표시
+  - MEDIUM: 링크 대신 공식 경로 확인 안내
+  - HIGH: 행동 중단과 가족/공식 대표번호 확인 안내
+- Draft PR #14 Preview의 Vercel 로그인 보호는 해제됐다. current product-identity UI와 Hospital Kiosk 전체 흐름은 해당 Preview에서 새 화면 기준으로 다시 검수한다.
 
 ## 8. 제출용 MVP 캡처
 

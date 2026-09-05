@@ -163,9 +163,11 @@ PR #14 current head `c962d7fe305d265f2d981a828173422e069332cf` 기준 Prototype 
 
 - root `vercel.json`: `cd prototype && npm install --no-audit --no-fund && npm run build`
 - output: `prototype/dist`
-- 저장소 문서상 production URL은 `https://senior-trust-gateway.vercel.app` — main baseline
-- 현재 연결된 Vercel connector에서는 `redsunjin's projects` team의 project 목록이 비어 있어 Draft PR #14 Preview URL을 이 세션에서 직접 확인하지 못했다.
-- 따라서 current UI head의 실제 모바일 화면 QA는 아직 제출 증빙으로 확정하지 않는다.
+- 저장소 공개 전환 후, 기존 무료 Hobby team `redsunjin's projects`에 Git 연동 정식 project `senior-trust-gateway`를 Import했다. Pro Trial/결제는 시작하지 않았다.
+- production URL: `https://senior-trust-gateway.vercel.app` — `main` baseline `READY`.
+- 개인정보가 없는 fixture로 정식 URL의 초기 Trust Check와 LOW/MEDIUM/HIGH를 실제 브라우저로 확인했다.
+- Draft PR #14 Preview URL: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app`. Vercel 로그인 보호는 해제됐다.
+- current UI head의 실제 모바일 화면 QA는 이 Preview에서 새 화면 기준으로 다시 수행한다.
 
 ## aitestbed role
 
