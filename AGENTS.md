@@ -2,6 +2,20 @@
 
 이 문서는 Senior Trust Gateway 저장소에서 사람과 AI 에이전트가 따라야 할 작업 기준입니다.
 
+## 0. Active objective gate
+
+현재 `PROJECT_STATE.md`에 공모전 제출이 active objective로 선언돼 있으면, 개발 세션은 장기 제품 확장보다 **공모전 제출 가능한 MVP와 제출 증빙 완성**을 우선한다.
+
+2026 모두의 AI 실험실 AI 서비스 경진대회 작업 중에는 반드시 먼저 읽는다.
+
+1. `docs/contest/contest-harness.md`
+2. `PROJECT_STATE.md`
+3. 실행 코드와 테스트
+
+공모전 하네스의 Scope Gate를 통과하지 못하는 작업은 구현하지 않고 이후 backlog로 넘긴다.
+
+특히 aitestbed는 MVP를 대신 만드는 주체가 아니다. 이 저장소의 실행 가능한 MVP가 정본이며, aitestbed는 플랫폼 활용 증빙·검증·필요한 최소 UI 참고에 사용한다.
+
 ## 1. Product invariant
 
 제품의 핵심은 범용 AI 비서가 아니라 **시니어와 외부 디지털 서비스 사이의 신뢰·보호·권한관리 레이어**다.
@@ -22,6 +36,9 @@
   - `HIGH`: 돈, 계약, 신원, 계정, 민감정보, 의심스러운 상대방과 연결되는 행동 → 신뢰원 또는 사람 검토 우선.
 - 고위험 요청의 기본 정책은 `fail safe`다. 확신이 부족하면 실행하지 않고 에스컬레이션한다.
 - 의료·법률·금융 판단을 AI가 전문가 판단처럼 단정하지 않는다.
+- `AI confidence != user authorization`을 유지한다.
+- `Risk != Verification`을 유지한다.
+- 공식 목록 미일치는 안전 판정이 아니다.
 
 ## 3. Cost-aware orchestration
 
@@ -43,8 +60,10 @@
 - 최초 빈 저장소 생성을 위한 seed 커밋은 예외다.
 - 작은 PR을 선호하고 제품 결정과 코드 변경을 분리해서 설명한다.
 - 새로운 중요한 제품/보안/권한 결정은 문서 또는 Issue/PR에 기록한다.
-- 구현 전에 `PROJECT_STATE.md`와 관련 제품 문서를 확인한다.
+- 구현 전에 `PROJECT_STATE.md`와 현재 active objective 문서를 확인한다.
 - 작업 종료 전 `PROJECT_STATE.md`가 실제 상태와 맞는지 확인한다.
+- 한 세션에서 여러 제품 방향을 동시에 확장하지 않는다.
+- 현재 active objective의 완료 기준에서 가장 큰 빈칸 1개를 우선 해결한다.
 
 ## 5. Prototype policy
 
@@ -54,17 +73,29 @@
 
 첫 UX는 메뉴 수를 늘리지 않는다. 가능한 입력은 말하기, 문자/사진 보여주기, 간단한 확인 버튼 중심으로 설계한다.
 
+공모전 MVP에서는 현재 확정된 두 장면만 다룬다.
+
+- Trust Check — 메인
+- Hospital Kiosk Safe Guidance — 확장
+
+새 생활장면은 공모전 제출 이후로 미룬다.
+
 ## 6. Source discipline
 
 보안, 공공서비스, 개인정보, 금융, 의료 등 신뢰가 중요한 영역은 공식 기관·공식 문서·공식 API를 우선한다. 외부 서비스 연계 가능성을 문서화할 때 실제 API/약관 검증 전에는 `candidate`로 표시한다.
+
+확인되지 않은 aitestbed 외부 추론 API, image input, CV/OCR, 배포 기능을 추정해 구현하거나 완료로 주장하지 않는다.
 
 ## 7. Definition of done
 
 변경은 다음 조건을 만족해야 완료로 본다.
 
+- 현재 active objective에 직접 기여한다.
 - 사용자 가치가 설명된다.
 - 위험도와 권한 경계가 정의된다.
 - 실패/불확실 상황의 처리 방식이 있다.
 - 필요 이상으로 고비용 AI를 사용하지 않는다.
 - 테스트 또는 검증 방법이 기록된다.
 - 프로젝트 상태 문서가 필요 시 갱신된다.
+
+공모전 세션은 추가로 `docs/contest/contest-harness.md`의 MVP 제출 완료 기준을 따른다.

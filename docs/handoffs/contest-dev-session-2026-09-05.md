@@ -1,120 +1,140 @@
 # Contest Development Session Handoff — 2026-09-05
 
-## Goal
+## Mission
 
-`Lightning-Public/senior-trust-gateway`를 2026 모두의 AI 실험실 AI 서비스 경진대회 제출 후보로 완성한다. 마감은 2026-09-06 18:00 KST다.
+`Lightning-Public/senior-trust-gateway`의 **실행 가능한 MVP와 제출 증빙을 완성해 2026 모두의 AI 실험실 AI 서비스 경진대회에 제출**한다.
 
-공모전 서비스명:
+마감: **2026-09-06 18:00 KST**
+
+서비스:
 
 > **시니어 AI 생활매니저 — 안심부터 시작하는 시니어 디지털 동행**
 
-현재 제출 범위는 **Trust Check 80% + Kiosk Safe Guidance 20%**다. 문자 피싱 판별 앱이나 키오스크 앱 두 개를 병렬로 만드는 것이 아니라, 하나의 생활매니저가 서로 다른 디지털 생활 장면에서 `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`을 제공한다.
+## 반드시 먼저 읽기
 
-## Git baseline
-
-- Repository: `Lightning-Public/senior-trust-gateway`
-- Work branch: `feat/modoo-ai-lab-contest`
-- Draft PR: #10
-- Latest main synchronized: `e1e111a8e310b42de5333886d17023c432e7f21c` (PR #13 포함)
-- Sync merge commit on work branch: `6b348dc4138ebcde43668dc8127369c0bb890e8e`
-- CI after sync: Prototype CI run #61 — SUCCESS
-- Kiosk reference: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
-
-## Read first — canonical sources
-
-아래 문서를 먼저 읽고 현재 사실과 결정은 이 문서를 우선한다.
-
-1. `AGENTS.md`
+1. `docs/contest/contest-harness.md`
 2. `PROJECT_STATE.md`
-3. `README.md`
-4. `docs/roadmap/aitestbed-kiosk-fusion.md`
+3. `AGENTS.md`
+4. 실행 코드와 테스트
 5. `docs/contest/modoo-ai-lab-evidence.md`
 6. `docs/contest/platform-run-sheet.md`
-7. `docs/contest/platform-cloud-observation.md`
-8. `docs/contest/ai-use-one-page.md`
 
-필요 시 Kiosk 저장소 `Lightning-Public/kiosk_ar_assistant@3a7da8f`를 읽되 전체 코드를 복사하거나 저장소를 합치지 말고 필요한 UX 자산만 선택적으로 포팅한다.
+하위 로드맵이 위 정본과 충돌하면 위 순서를 따른다.
 
-## Product / architecture invariants
+## MVP 정본
 
-- Senior Trust Gateway = 위험·검증·권한정책 본체
-- Trust Check = 첫 핵심 기능
-- Kiosk Safe Guidance = 두 번째 생활장면
-- 장기 방향 = `Protect → Trust → Delegate`
-- `Risk != Verification`
-- 공식 목록 미일치 != 안전
-- `AI confidence != user authorization`
-- 송금·인증정보·앱 설치·원격제어 등 HIGH를 AI가 낮추거나 승인할 수 없음
-- 모델 장애·timeout·quota·잘못된 JSON은 deterministic rule fallback
-- 문자 원문·개인정보·API 키/토큰을 Git·클라이언트 번들·로그에 저장하지 않음
+MVP는 **이 저장소의 실행 가능한 prototype**이다.
 
-## aitestbed fact boundary — 매우 중요
+### Trust Check — 80%
 
-현재 확인된 것과 추정 영역을 섞지 않는다.
+```text
+문자/디지털 요청 입력
+→ 의미 이해
+→ 위험 확인
+→ 쉬운 다음 행동
+→ 필요 시 가족/사람 확인
+```
+
+### Hospital Kiosk Safe Guidance — 20%
+
+```text
+진료 접수
+→ 예약 진료 선택
+→ 민감정보 단계
+→ HIGH 안전 중단
+→ 직원 도움 안내
+```
+
+두 개의 별도 앱을 만들지 않는다.
+
+공통 흐름:
+
+> `이해 → 위험 확인 → 쉬운 다음 행동 → 필요 시 사람 연결`
+
+## 현재 Git 상태
+
+- Repository: `Lightning-Public/senior-trust-gateway`
+- Main: 공모전 baseline PR #10 병합 완료
+- Follow-up branch: `feat/modoo-ai-lab-contest`
+- Active Draft PR: #14
+- Kiosk provenance: `Lightning-Public/kiosk_ar_assistant@3a7da8f`
+- Latest validated prototype CI: run #70 — SUCCESS
+- 5 test files / 35 tests passed
+
+## 현재 구현 상태
+
+### 구현됨
+
+- Trust Check 규칙 기반 LOW/MEDIUM/HIGH
+- Grounded Verification 경계
+- AI context contract와 안전 fallback
+- AI가 HIGH를 낮출 수 없는 테스트
+- Hospital Kiosk 구조화 안전 데모
+- Kiosk 민감정보 HIGH 중단 + 직원 도움 안내
+- production build / CI
+
+### 중요한 런타임 사실
+
+AI context layer는 코드·테스트로 준비돼 있지만 **확인된 실제 AIProvider가 없어 기본 UI 실행 경로에 외부 AI 호출을 연결하지 않았다.**
+
+이를 실제 AI API 연동 완료로 표현하지 않는다.
+
+## aitestbed의 역할
+
+aitestbed는 MVP를 대신 만드는 주체가 아니다.
 
 ### Confirmed
 
-- 사용자가 `aitestbed.kr`에 실제 로그인함
-- 클라우드 신청 화면 진입 확인
-- 추천 자원: vCPU 2 / Memory 4GB / Disk 50GB
-- OS: `rocky-8.10-base`
-- 1개월 우선 지원
-- 2026년 클라우드 1인 1회 신청 제한
-- 공개 확인된 `AitestbedVibeWorkflow`: 바이브코딩 프로토타입 생성·수정·소스 다운로드·공모전 증빙
+- 로그인 및 클라우드 신청 화면 확인
+- 바이브코딩 생성·수정·소스 다운로드 활용 가능
+- 플랫폼 사용 증빙 확보 가능
 
-### Unverified candidate
+### 활용 원칙
 
-`AitestbedModelApiProvider`는 아직 구현 대상으로 확정하지 않는다.
+- 현재 MVP를 먼저 정본으로 유지한다.
+- aitestbed에서 생성한 결과가 있으면 UI/증빙 참고용으로 비교한다.
+- 생성 소스 전체로 현재 저장소를 교체하지 않는다.
+- 필요한 UI만 최소 포팅한다.
 
-외부 프로젝트용 AI 추론 API는 아래 네 조건을 실제로 확인하기 전까지 구현 완료 또는 사용 가능으로 주장하지 않는다.
+### Unverified
 
-1. 공식 추론 API 문서
-2. base URL / 인증 header / 모델 목록 / request-response schema
-3. 최소 실제 호출 probe 성공
-4. 외부 프로젝트·개인정보·상업 이용 범위
+`AitestbedModelApiProvider`
 
-로그인 전용 `내 API 키` 화면/키 관리 endpoint의 존재만으로 외부 AI 추론 endpoint를 추정하지 않는다. 확인 전에는 mock 또는 다른 승인된 `AIProvider` 경계를 유지한다.
+공식 추론 API 문서 + 호출 계약 + 실제 probe + 이용 범위가 확인되기 전에는 구현하지 않는다.
 
-## Current implementation
+## 세션 실행 순서
 
-PR #10에는 이미 다음이 있다.
+1. 현재 MVP를 실제 제출 관점에서 실행·검토한다.
+2. 제출 완료 기준에서 가장 큰 빈칸 **1개**만 고른다.
+3. 최소 코드/문서 변경으로 빈칸을 메운다.
+4. test/build/CI를 확인한다.
+5. `PROJECT_STATE.md`와 제출 증빙을 현행화한다.
+6. 다음 빈칸 1개로 이동한다.
 
-- `prototype/src/contestAiPrompt.ts`
-- `prototype/src/aiAssistedRiskAnalyzer.ts`
-- `prototype/src/types.ts`
-- `prototype/tests/aiAssistedRiskAnalyzer.test.ts`
-- JSON contract: `summary`, `risk_context`, `safe_next_action`, `uncertainty`
-- HIGH downgrade 방지
-- exception / malformed JSON / timeout fallback 테스트
-- 최신 main의 KISA bucket distribution 개선 코드도 sync 완료
+## 현재 우선 빈칸
 
-## Immediate execution order
+1. 실제 MVP 화면/사용 흐름 최종 확인
+2. 공모전 제출 설명과 현재 코드 1:1 매핑
+3. MVP 화면 캡처
+4. aitestbed 실제 활용 증빙
+5. 최종 제출 PDF/PPT/PPTX
 
-1. 먼저 현재 branch와 문서를 읽고 구현 상태를 재확인한다.
-2. 사용자가 aitestbed 화면에서 제공하는 실제 관찰값을 `docs/contest/*`에 사실 그대로 반영한다.
-3. 공모전 Phase 0에서 aitestbed 바이브코딩 프로젝트 `시니어 AI 생활매니저`를 만들기 위한 프롬프트/구조를 준비한다.
-4. 실제 생성 결과와 다운로드 소스가 확보되면 현재 TypeScript prototype과 diff를 비교하고 **최소 포팅**만 한다.
-5. Kiosk는 한 장면만 선택한다. 병원 접수 / 복지 신청 / 민원 발급 중 가장 완성도 높은 한 가지를 택해 Kiosk UX가 동일 신뢰정책으로 확장됨을 보여준다.
-6. 실제 외부 AI API 계약이 확인되면 그때 `AIProvider` 뒤에 adapter를 추가한다. 확인되지 않으면 구현하지 않는다.
-7. 변경 후 반드시 `npm run test`와 `npm run build`를 실행하고 CI를 확인한다.
-8. 제출 증빙 3개 이상, 프롬프트/생성 결과, Kiosk 확장 화면, 미구현/추정 항목을 문서화한다.
+## 금지
 
-## Do not do
+- aitestbed에서 새 제품을 다시 설계
+- 새로운 앱/대시보드/관리자 기능 추가
+- Kiosk 시나리오 추가
+- 두 저장소 전면 통합
+- 확인되지 않은 외부 AI endpoint 구현
+- CV/OCR/image input 구현
+- 장기 Life OS 기능 개발
+- 공모전과 직접 관계없는 리팩터링
 
-- 공모전 직전 두 저장소 전면 통합
-- 여러 키오스크 업종 동시 구현
-- 확인되지 않은 CV/OCR/image input/API 기능을 완료로 주장
-- aitestbed 외부 모델 endpoint를 추정해 하드코딩
-- 규칙엔진 HIGH를 AI 응답으로 하향
-- 실사용 개인정보를 테스트/캡처에 사용
+## 완료 보고
 
-## Definition of done for this development session
-
-- 최신 GitHub 정본과 구현 상태가 일치
-- 사용자가 제공한 aitestbed 실제 화면 관찰값이 증빙 문서에 반영
-- Phase 0 제출에 필요한 최소 구현/포팅만 수행
-- Trust Check 안전 invariant 유지 테스트 통과
-- Kiosk 확장 시나리오 1개가 제출자료에서 설명 가능
-- 실제 확인되지 않은 aitestbed 기능은 명시적 blocker/candidate
-- test/build/CI 결과 기록
-- `PROJECT_STATE.md` 현행화
+1. 무엇을 변경했는지
+2. 변경 파일
+3. test/build/CI 결과
+4. 공모전 완료 기준에서 채워진 것
+5. 실제 플랫폼 확인 blocker
+6. 다음 작업 1개
