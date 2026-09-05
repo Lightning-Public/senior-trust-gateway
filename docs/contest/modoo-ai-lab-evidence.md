@@ -192,10 +192,11 @@ AI가 어떤 설명을 반환하더라도 규칙엔진 결과는 `HIGH`이며 �
 5. 가족 새 번호 사칭 가능성 → MEDIUM 확인 필요
 6. 잘못된 JSON → 규칙엔진 fallback
 7. 모델 장애 → 규칙엔진 fallback
+8. 모델 응답 지연 → timeout 후 규칙엔진 fallback
 
 ## 8. 테스트 / production build 결과
 
-Draft PR #10의 코드 변경 head `fad0d42848a8eb1ea0b3540e12f83bef5aba53b8`에서 GitHub Actions `Prototype CI` run #47을 실행했고 성공했다.
+Draft PR #10의 최신 prototype 코드 head `8c93156fbc029e912d76b04ae7e5907f34bf8f9b`에서 GitHub Actions `Prototype CI` run #53을 실행했고 성공했다.
 
 실행 명령:
 
@@ -211,13 +212,13 @@ npm run build
 결과:
 
 - snapshot generator smoke test: PASS
-- Vitest: **3 test files / 30 tests passed**
-- 신규 `aiAssistedRiskAnalyzer.test.ts`: **7 tests passed**
+- Vitest: **3 test files / 31 tests passed**
+- 신규 `aiAssistedRiskAnalyzer.test.ts`: **8 tests passed**
 - TypeScript `tsc --noEmit`: PASS
 - Vite production build: PASS
 - CI job `test-build`: SUCCESS
 
-최신 branch commit은 이후 `PROJECT_STATE.md` 및 본 증빙 문서만 현행화했으며 prototype 코드에는 추가 변경이 없다.
+이후 문서 현행화만 수행하는 경우 prototype 코드가 바뀌지 않는 한 run #53을 최신 코드 검증 근거로 사용한다.
 
 ## 9. 화면 캡처 증빙 경로
 
