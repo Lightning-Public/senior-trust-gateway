@@ -182,7 +182,8 @@ runbook:
 - 실제 Vercel temporary deployment가 `READY` 상태로 생성됐다.
 - 실제 접속 URL: `https://temporary-rushing-indigo-rde96e8.vercel.app`
 - 이 URL은 anonymous temporary deployment로 60분 뒤 만료된다. team claim 및 Git 연동된 정식 project import는 별도 단계다.
-- `redsunjins-projects` team에서 GitHub repository import를 시작했으나, 연결된 Vercel GitHub App에 `Lightning-Public/senior-trust-gateway` 접근 권한이 없어 GitHub Mobile 재인증/최소 권한 부여가 필요하다.
+- `redsunjins-projects` team에서 GitHub repository import를 시작했고, GitHub Mobile 재인증 후 `Lightning-Public/senior-trust-gateway`가 Import 목록에 표시됐다.
+- Vercel은 이 저장소를 private GitHub organization repository로 판단한다. Hobby team에서는 정식 Import를 차단하며, existing Pro team 또는 Vercel Pro Trial/Pro 플랜이 필요하다고 안내한다. 플랜 변경은 사용자 선택 전에는 수행하지 않는다.
 
 ### Deployed actual-browser QA
 
@@ -224,7 +225,7 @@ aitestbed 화면과 별개로 **현재 저장소 MVP 자체의 실제 화면**�
 
 - [x] 실제 MVP 사용자 흐름 최종 QA (local browser)
 - [x] Vercel temporary URL에서 동일 흐름 QA
-- [ ] Vercel team project import 및 영구 URL QA (GitHub App repository access 필요)
+- [ ] Vercel team project import 및 영구 URL QA (Hobby team의 private organization repository 제한 — Pro team 또는 Pro Trial 결정 필요)
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX
