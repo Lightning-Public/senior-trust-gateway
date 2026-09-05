@@ -156,6 +156,7 @@ PR #14 current head `c962d7fe305d265f2d981a828173422e069332cf` 기준 Prototype 
 - snapshot generator: PASS
 - risk policy tests: PASS
 - production build: PASS
+- 이 세션 재검증: `npm test` 5 files / 35 tests PASS, `npm run build` (`tsc --noEmit && vite build`) PASS.
 
 안전정책/규칙엔진은 변경하지 않았다.
 
@@ -167,7 +168,8 @@ PR #14 current head `c962d7fe305d265f2d981a828173422e069332cf` 기준 Prototype 
 - production URL: `https://senior-trust-gateway.vercel.app` — `main` baseline `READY`.
 - 개인정보가 없는 fixture로 정식 URL의 초기 Trust Check와 LOW/MEDIUM/HIGH를 실제 브라우저로 확인했다.
 - Draft PR #14 Preview URL: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app`. Vercel 로그인 보호는 해제됐다.
-- current UI head의 실제 모바일 화면 QA는 이 Preview에서 새 화면 기준으로 다시 수행한다.
+- 위 Preview의 모바일 viewport `390 × 844`에서 current UI head를 실제 브라우저로 검수했다: 생활매니저 첫 화면, LOW/MEDIUM/HIGH, Hospital Kiosk 접수 → 예약 진료 → 민감정보 HIGH 중단 → 직원 확인 대기까지 통과했다. 실제 개인정보를 자동 진행·입력·저장하지 않는다.
+- favicon 404 한 건만 있으며 기능 흐름에는 영향이 없다.
 
 ## aitestbed role
 
@@ -199,7 +201,7 @@ aitestbed는 현재 MVP를 대신 만드는 주체가 아니다.
 - [x] 생활 도움 전체가 보이는 UI 정보구조 반영
 - [x] Hospital Kiosk를 두 번째 대표 생활 장면으로 적극 노출
 - [x] current product-identity UI CI test/build
-- [ ] current UI head 실제 모바일 화면 QA
+- [x] current UI head 실제 모바일 화면 QA (공개 Vercel Preview)
 - [ ] 제출용 MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 제출 PDF/PPT/PPTX
@@ -214,4 +216,4 @@ aitestbed는 현재 MVP를 대신 만드는 주체가 아니다.
 
 ## Next action
 
-**Draft PR #14 Preview URL을 확보한 뒤 첫 화면의 생활매니저 정체성과 Trust Check → Hospital Kiosk 연결을 실제 모바일 브라우저로 검수하고 제출 캡처를 확보한다.**
+**MVP 화면을 선별해 캡처하고 제출문서와 현재 구현을 1:1로 매핑한다.**

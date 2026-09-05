@@ -226,7 +226,15 @@ UI에서는 병원 접수를 기술 데모 메뉴가 아니라 **생활매니저
   - LOW: 안전 확정이 아님과 확인 한계 표시
   - MEDIUM: 링크 대신 공식 경로 확인 안내
   - HIGH: 행동 중단과 가족/공식 대표번호 확인 안내
-- Draft PR #14 Preview의 Vercel 로그인 보호는 해제됐다. current product-identity UI와 Hospital Kiosk 전체 흐름은 해당 Preview에서 새 화면 기준으로 다시 검수한다.
+- Draft PR #14 공개 Preview URL: `https://senior-trust-gateway-git-feat-modoo-2238a7-redsunjins-projects.vercel.app` (`READY`). Vercel 로그인 보호를 해제해 심사자가 바로 열 수 있다.
+- 개인정보가 없는 fixture로 위 Preview의 모바일 viewport `390 × 844`에서 current product-identity UI를 실제 브라우저로 검수했다.
+  - 첫 화면: `시니어 AI 생활매니저`, 문자·카톡 이해와 병원 접수 도움을 MVP 장면으로 표시하고 예약·일정/행정·생활 지원은 확장 방향으로 구분
+  - LOW: 안전 확정이 아님과 확인 한계 표시
+  - MEDIUM: 외부 링크를 위험 신호로 표시하고 공식 경로 확인 안내
+  - HIGH: `지금 멈추세요`, 송금·사칭 압박 위험, 사람/공식 대표번호 확인 안내
+  - Hospital Kiosk: 접수 시작 → 예약 진료 → 주민등록번호 입력 요청 단계 `HIGH · 멈춤` → 직원 도움 요청 → `안전 확인 대기`
+  - 민감정보를 자동 진행·입력·저장하지 않음
+- favicon 404 한 건은 기능 흐름과 무관하다.
 
 ## 8. 제출용 MVP 캡처
 
@@ -252,8 +260,8 @@ current UI head 기준 필수 후보:
 - [x] Product Boundary를 `생활매니저 제품 / 안심 공통원칙`으로 정정
 - [x] 생활 도움 전체가 보이는 UI 정보구조 반영
 - [x] Hospital Kiosk를 두 번째 대표 생활 장면으로 적극 노출
-- [ ] current head CI test/build
-- [ ] Draft PR #14 current UI head 실제 모바일 화면 QA
+- [x] current head CI test/build
+- [x] Draft PR #14 current UI head 실제 모바일 화면 QA
 - [ ] MVP 화면 캡처
 - [ ] 제출문서와 구현 기능 1:1 매핑
 - [ ] 최종 PDF/PPT/PPTX
