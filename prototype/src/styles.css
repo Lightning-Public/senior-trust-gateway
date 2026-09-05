@@ -214,6 +214,122 @@ textarea:focus {
 
 .family-status { margin-bottom: 0; color: #3d4a61; }
 
+.kiosk-scene {
+  margin-top: 30px;
+  border: 1px solid #dbe0e7;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(20, 31, 52, 0.05);
+}
+
+.kiosk-scene summary {
+  min-height: 58px;
+  padding: 17px 20px;
+  cursor: pointer;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.kiosk-demo {
+  padding: 0 20px 20px;
+}
+
+.scene-note {
+  margin: 0 0 14px;
+  color: #5a6478;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.kiosk-screen {
+  padding: 18px;
+  border-radius: 18px;
+  border: 2px solid #263249;
+  background: #101827;
+  color: #fff;
+}
+
+.kiosk-screen-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #d8deeb;
+}
+
+.kiosk-screen h2 {
+  margin: 20px 0 8px;
+  font-size: 1.65rem;
+}
+
+.kiosk-screen p {
+  margin: 0;
+  color: #d8deeb;
+  line-height: 1.6;
+}
+
+.kiosk-risk {
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.risk-low { background: #dff5e5; color: #155b2e; }
+.risk-medium { background: #fff0bd; color: #6b4900; }
+.risk-high { background: #ffdada; color: #8b1e1e; }
+
+.kiosk-target {
+  margin-top: 20px;
+  min-height: 74px;
+  padding: 16px;
+  border: 3px solid #f5c842;
+  border-radius: 16px;
+  background: #fff8d6;
+  color: #1d2433;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.kiosk-pointer { font-size: 1.8rem; }
+
+.kiosk-guide {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #eef3ff;
+}
+
+.kiosk-guide-label {
+  margin: 0 0 5px;
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #294b91;
+}
+
+.kiosk-guide h3 {
+  margin: 0 0 7px;
+  font-size: 1.12rem;
+}
+
+.kiosk-guide p:last-child {
+  margin: 0;
+  line-height: 1.65;
+}
+
+.kiosk-safety-note {
+  margin: 12px 2px 0;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: #5a6478;
+}
+
 footer {
   margin-top: 28px;
   color: #70798c;
@@ -225,4 +341,7 @@ footer {
   .shell { padding: 22px 16px 40px; }
   .check-card, .result { padding: 17px; border-radius: 18px; }
   .sample-list { grid-template-columns: 1fr; }
+  .kiosk-scene summary { padding: 16px; }
+  .kiosk-demo { padding: 0 16px 16px; }
+  .kiosk-screen { padding: 16px; }
 }
