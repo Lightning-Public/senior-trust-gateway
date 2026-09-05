@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Check snapshot generator
+        run: npm run check:snapshot-script
+
       - name: Test risk policy
         run: npm run test
 
